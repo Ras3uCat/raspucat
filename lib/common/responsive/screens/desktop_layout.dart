@@ -1,6 +1,8 @@
 import 'package:raspucat/app/modules/screens/projects_screen.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
+List<Widget> screens = [HomeScreen(), ProjectsScreen()];
+
 class DesktopLayout extends StatelessWidget {
   const DesktopLayout({super.key, this.body});
 
@@ -33,12 +35,12 @@ class DesktopLayout extends StatelessWidget {
       body: SingleChildScrollView(
         controller: scrollController.scrollController,
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 2,
+          height: MediaQuery.of(context).size.height * screens.length,
           // width: MediaQuery.of(context).size.width,
           child: Stack(
             children: [
               BackgroundTriangles(),
-              Column(children: [HomeScreen(), ProjectsScreen()]),
+              Column(children: screens),
               // BackgroundTriangles(),
             ],
           ),
