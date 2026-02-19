@@ -1,23 +1,16 @@
-# Payments Development Skill (Stripe)
-**Scope:** `execution/backend/payments/` | **Authority:** High (Financial Safety)
+# Payments Development (Financial Safety)
+**Scope:** `execution/backend/payments/` | **Authority:** High
 
-## Stripe Architecture
-- **Source of Truth:** All subscription states must be derived from Stripe Webhooks.
-- **Backend Flow:** Client -> Create Checkout Session -> Stripe -> Webhook -> Supabase.
-- **Polling:** Flutter clients must listen to the `profiles` table in Supabase for status updates post-payment.
+## Overview
+Payments in Raspucat are handled via Stripe. Follow the granular skills below for specific implementation details.
 
-## Implementation Rules (Non-Negotiable)
-- **Signature Verification:** All incoming webhooks MUST verify the `Stripe-Signature` header.
-- **Idempotency:** Handle `evt_id` to prevent double-processing of events.
-- **No Client Authority:** The Flutter app NEVER updates its own `is_premium` flag; it only reads what the backend provides.
-- **Environment:** Use `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` from protected env vars only.
+## Granular Payment Skills
+- **Subscription Flows:** [stripe-checkout-subscriptions](file:///home/ryan/Documents/development/flutter_apps/raspucat/.cloud/skills/stripe-checkout-subscriptions/SKILL.md)
+- **Webhooks & Access:** [stripe-webhooks-and-access-control](file:///home/ryan/Documents/development/flutter_apps/raspucat/.cloud/skills/stripe-webhooks-and-access-control/SKILL.md)
+- **API Management:** [stripe-api-versioning-and-upgrades](file:///home/ryan/Documents/development/flutter_apps/raspucat/.cloud/skills/stripe-api-versioning-and-upgrades/SKILL.md)
 
-## Event Mapping
-- `checkout.session.completed`: Provisions initial access.
-- `customer.subscription.deleted`: Revokes access immediately.
-- `invoice.payment_failed`: Triggers "payment required" UI state.
+## Core Non-Negotiables
+- **No Client Authority:** Flutter clients NEVER update their own premium state.
+- **Webhook Source of Truth:** All access changes must derive from verified Stripe Webhooks.
+- **Financial Safety:** Never hardcode secrets; always verify signatures.
 
-## Security Check
-Before any merge:
-1. Verify no Stripe Secret Keys are hardcoded or in logs.
-2. Ensure the webhook endpoint is public but protected by Stripe signature checks.

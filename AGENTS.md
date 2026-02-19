@@ -13,7 +13,7 @@
 | **Architect**| Safety Net & System Design | **Final Say** | No silent overrides. |
 | **Flutter** | `/lib` | Feature Owner| Logic in Widgets; bypass Repos. |
 | **Backend** | `backend/` (Supabase) | Data Owner | Skip RLS; trust client state. |
-| **Payments** | Stripe Integration | Financial Security| Client-side authority. |
+| **Payments** | Stripe (Checkout, Webhooks, Versioning) | Financial Security| Client-side authority. |
 | **QA** | Browser/Unit Testing | Validation | Modifying logic to pass tests. |
 
 ## Subagent Mapping

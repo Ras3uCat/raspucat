@@ -30,7 +30,7 @@
       "type": "anthropic",
       "model": "claude-3.6-sonnet",
       "role": "Payments Engineer",
-      "description": "Stripe integration, webhooks, signature verification."
+      "description": "Stripe (Checkout, Webhooks, Access control, API versioning)."
     },
     "qa": {
       "type": "anthropic",

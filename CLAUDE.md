@@ -14,7 +14,7 @@ You do not implement Flutter UI (Flutter subagent responsibility).
 ## TECH STACK & ARCHITECTURE
 - **State Management:** GetX (Strict). Feature-first: `lib/features/<feature>/`.
 - **Backend:** Supabase. All DB changes must be timestamped SQL migrations.
-- **Payments:** Stripe. Source of truth is Webhooks; verify signatures.
+- **Payments:** Stripe (Checkout + Webhooks). Use granular `.cloud/skills/stripe-*` for implementation.
 - **UI:** Material 3 + `E-Prefix` constants (e.g., `EColors.primary`).
 
 ## THE "NEVERS" (Critical Constraints)
