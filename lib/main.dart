@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
@@ -13,6 +14,12 @@ void main() {
 class Ras3uCatApp extends StatelessWidget {
   const Ras3uCatApp({super.key});
 
+  static String get _initialRoute {
+    if (!kIsWeb) return ERoutes.home;
+    final path = Uri.base.path;
+    return (path.isEmpty || path == '/') ? ERoutes.home : path;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -24,7 +31,7 @@ class Ras3uCatApp extends StatelessWidget {
       darkTheme: EAppTheme.darkTheme,
       initialBinding: GeneralBindings(),
       getPages: AppRoutes.pages,
-      initialRoute: ERoutes.home,
+      initialRoute: _initialRoute,
       unknownRoute: GetPage(
         name: ERoutes.notFound,
         page: () => const Scaffold(body: Center(child: Text('Not Found'))),
