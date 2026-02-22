@@ -121,7 +121,7 @@ const _privacyPolicySections = [
   ),
   _LegalEntry(
     'Contact',
-    'If you have questions about this Privacy Policy, please contact us at: support@bingequest.app',
+    'If you have questions about this Privacy Policy, please contact us at: meow@raspucat.com',
   ),
 ];
 
@@ -173,6 +173,6 @@ const _termsSections = [
   ),
   _LegalEntry(
     'Contact',
-    'For questions about these Terms of Service, contact us at: support@bingequest.app',
+    'For questions about these Terms of Service, contact us at: meow@raspucat.com',
   ),
 ];

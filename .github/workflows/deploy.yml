@@ -30,10 +30,6 @@ jobs:
       - name: Build Flutter Web
         run: flutter build web --release
 
-      # SPA fallback: GitHub Pages serves 404.html for unknown paths
-      - name: Copy index.html to 404.html
-        run: cp build/web/index.html build/web/404.html
-
       # Deploy to gh-pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
