@@ -1,65 +1,119 @@
 import 'package:flutter/material.dart';
 
+const _bgColor = Color(0xFF000612);
+const _cyanColor = Color(0xFF58E3EF);
+const _bodyColor = Color(0xFFCFD8DC);
+const _mutedColor = Color(0xFF607D8B);
+const _dividerColor = Color(0xFF1A2540);
+
 class BingeQuestLegalScreen extends StatelessWidget {
   const BingeQuestLegalScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: _bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: _bgColor,
         elevation: 0,
-        title: Text('BingeQuest — Legal', style: textTheme.titleMedium),
+        title: const Text(
+          'BingeQuest — Legal',
+          style: TextStyle(color: _cyanColor, fontSize: 16, letterSpacing: 1.2),
+        ),
+        iconTheme: const IconThemeData(color: _cyanColor),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('BingeQuest — Legal', style: textTheme.headlineMedium),
-              const SizedBox(height: 4),
-              Text('Last updated: January 2026', style: textTheme.bodySmall),
-              const Divider(height: 48),
-              _section(context, 'Privacy Policy', _privacyPolicySections),
-              const Divider(height: 48),
-              _section(context, 'Terms of Service', _termsSections),
-              const SizedBox(height: 64),
-            ],
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'BingeQuest — Legal',
+                  style: TextStyle(
+                    color: _cyanColor,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Last updated: January 2026',
+                  style: TextStyle(color: _mutedColor, fontSize: 13),
+                ),
+                const SizedBox(height: 40),
+                _section('Privacy Policy', _privacyPolicySections),
+                const _Divider(),
+                _section('Terms of Service', _termsSections),
+                const SizedBox(height: 64),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _section(BuildContext context, String title, List<_LegalEntry> entries) {
-    final textTheme = Theme.of(context).textTheme;
+  Widget _section(String title, List<_LegalEntry> entries) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: textTheme.headlineSmall),
+        Text(
+          title,
+          style: const TextStyle(
+            color: _cyanColor,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.2,
+          ),
+        ),
         const SizedBox(height: 24),
-        ...entries.map((e) => _entry(context, e)),
+        ...entries.map(_entry),
       ],
     );
   }
 
-  Widget _entry(BuildContext context, _LegalEntry entry) {
-    final textTheme = Theme.of(context).textTheme;
+  Widget _entry(_LegalEntry entry) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(entry.heading, style: textTheme.titleMedium),
+          Text(
+            entry.heading,
+            style: const TextStyle(
+              color: _bodyColor,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.4,
+            ),
+          ),
           const SizedBox(height: 8),
-          Text(entry.body, style: textTheme.bodyMedium?.copyWith(height: 1.6)),
+          SelectableText(
+            entry.body,
+            style: const TextStyle(
+              color: _mutedColor,
+              fontSize: 14,
+              height: 1.7,
+            ),
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 40),
+      child: Divider(color: _dividerColor, thickness: 1),
     );
   }
 }
