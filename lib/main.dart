@@ -1,6 +1,9 @@
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
 void main() {
+  usePathUrlStrategy();
+
   /// --- Waits for Flutter to initialize --- ///
   WidgetsFlutterBinding.ensureInitialized();
 
