@@ -15,7 +15,7 @@ You do not implement Flutter UI (Flutter subagent responsibility).
 - **State Management:** GetX (Strict). Feature-first: `lib/features/<feature>/`.
 - **Backend:** Supabase. All DB changes must be timestamped SQL migrations.
 - **Payments:** Stripe (Checkout + Webhooks). Use granular `.cloud/skills/stripe-*` for implementation.
-- **UI:** Material 3 + `E-Prefix` constants (e.g., `EColors.primary`).
+- **UI:** Material 3 + `E-Prefix` constants (e.g., `EColors.primary`). Use `.cloud/skills/frontend-design` for high-end aesthetic execution.
 
 ## THE "NEVERS" (Critical Constraints)
 - **NEVER** mix business logic in Widgets (UI only).

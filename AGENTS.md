@@ -11,7 +11,7 @@
 | :--- | :--- | :--- | :--- |
 | **Planner** | Decomposition & Roadmap | Strategic | No code implementation. |
 | **Architect**| Safety Net & System Design | **Final Say** | No silent overrides. |
-| **Flutter** | `/lib` | Feature Owner| Logic in Widgets; bypass Repos. |
+| **Flutter** | `/lib` & UI Design | Feature Owner | Logic in Widgets; bypass Repos; generic UI. |
 | **Backend** | `backend/` (Supabase) | Data Owner | Skip RLS; trust client state. |
 | **Payments** | Stripe (Checkout, Webhooks, Versioning) | Financial Security| Client-side authority. |
 | **QA** | Browser/Unit Testing | Validation | Modifying logic to pass tests. |

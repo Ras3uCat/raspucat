@@ -18,7 +18,7 @@
       "provider": "antigravity",
       "model": "gemini-3-flash",
       "role": "Flutter Engineer",
-      "description": "Frontend Flutter implementation only. No business logic in widgets."
+      "description": "Flutter implementation & high-end UI design. No logic in widgets."
     },
     "backend": {
       "type": "anthropic",
