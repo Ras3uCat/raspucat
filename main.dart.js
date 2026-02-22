@@ -16900,7 +16900,7 @@ r.toString
 A.hN(r)
 q=a.i(0,"swipeEdge")
 q.toString
-return new A.IY(s,r,B.GT[A.hM(q)])},
+return new A.IY(s,r,B.GV[A.hM(q)])},
 A6:function A6(a,b){this.a=a
 this.b=b},
 IY:function IY(a,b,c){this.a=a
@@ -18243,7 +18243,7 @@ if(a.as!==q)return q?-1:1
 return 0},
 aAM(a,b){var s=A.Y(b).h("a2<1,cV>")
 s=A.W(new A.a2(b,new A.XN(),s),s.h("ao.E"))
-return A.aAc(!0,s,a,B.Hd,!0,B.DZ,null)},
+return A.aAc(!0,s,a,B.He,!0,B.DZ,null)},
 aAK(a){a.c1()
 a.bl(A.avf())},
 wg(a){var s=a.a,r=s instanceof A.nI?s:null
@@ -18766,7 +18766,7 @@ _.as=!0
 _.at=!1
 _.$ti=d},
 aBD(a,b){var s
-if(a===b)return new A.Fg(B.Hm)
+if(a===b)return new A.Fg(B.Hn)
 s=A.c([],t.fJ)
 A.bY()
 a.ms(new A.a0y(b,A.aE(t.u),s))
@@ -23090,7 +23090,7 @@ IL(a,b){var s=A.c([],t.g)
 B.b.C(s,a)
 return new A.ej(s,b)},
 avy(a,b){var s,r,q,p
-if(a==="")return A.IL(B.Hn,b==null?B.aR:b)
+if(a==="")return A.IL(B.Ho,b==null?B.aR:b)
 s=new A.aaR(a,B.cs,a.length)
 s.pG()
 r=A.c([],t.g)
@@ -27078,7 +27078,7 @@ gq(a){var s=this
 return A.G(s.a,null,s.c,s.d,s.e,s.x,s.f,s.r,s.w,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)}}
 A.VY.prototype={
 E7(a,b,c,d){var s,r,q,p
-if(a<0||b<0)return B.Hk
+if(a<0||b<0)return B.Hl
 s=this.a
 s===$&&A.a()
 s=s.a
@@ -27336,7 +27336,7 @@ break
 default:s=null}return s}}
 A.YC.prototype={
 glE(){var s=this.b,r=s==null?null:s.canvasKitVariant
-return A.aAU(B.H2,r==null?"auto":r)},
+return A.aAU(B.H3,r==null?"auto":r)},
 gMi(){var s=this.b
 s=s==null?null:s.canvasKitForceCpuOnly
 return s==null?!1:s},
@@ -28643,7 +28643,7 @@ if(e.b){q=t.f
 d=q.a(q.a(B.bb.en(a2)).i(0,"data"))
 c=A.cx(d.i(0,"message"))
 if(c!=null&&c.length!==0){b=A.amC(d,"assertiveness")
-e.a.LN(c,B.GG[b==null?0:b])}}a.dm(a3,B.bb.br(!0))
+e.a.LN(c,B.GH[b==null?0:b])}}a.dm(a3,B.bb.br(!0))
 return
 case"flutter/navigation":q=a.gca().b
 p=t.e8
@@ -30984,7 +30984,7 @@ if(m.f!==B.lX){m.f=B.lX
 m.ID()}}return m.d.a.Sk(a)},
 ID(){var s,r
 for(s=this.w,r=0;r<s.length;++r)s[r].$1(this.f)},
-Sh(a){if(B.b.u(B.H7,a))return this.f===B.eL
+Sh(a){if(B.b.u(B.H8,a))return this.f===B.eL
 return!1}}
 A.Yo.prototype={
 $0(){return new A.iP(Date.now(),0,!1)},
@@ -32446,7 +32446,7 @@ m=A.ue(s.i(0,"fontWeightIndex"))
 l=m!=null?A.aJC(m):"normal"
 r=A.anO(s.i(0,"fontSize"))
 if(r==null)r=null
-p=new A.abl(new A.XJ(r,l,A.cx(s.i(0,"fontFamily")),B.GC[o],B.iw[n]))
+p=new A.abl(new A.XJ(r,l,A.cx(s.i(0,"fontFamily")),B.GD[o],B.iw[n]))
 break
 case"TextInput.clearClient":p=B.zS
 break
@@ -36637,7 +36637,7 @@ if(o>0)return s
 return null}}
 A.adR.prototype={
 v(a,b){this.GL(b,0,b.length,!1)},
-aM(){this.GL(B.Ha,0,0,!0)}}
+aM(){this.GL(B.Hb,0,0,!0)}}
 A.aj7.prototype={
 GL(a,b,c,d){var s=this.b.a9B(a,b,c,d)
 if(s!=null)this.a.lv(s,0,s.length,d)}}
@@ -38937,7 +38937,7 @@ h=r[4]
 g=r[5]
 f=r[6]
 e=r[7]
-for(d=l,q=0;q<64;++q,e=f,f=g,g=h,h=b,i=j,j=k,k=d,d=a){c=(e+(((h>>>6|h<<26)^(h>>>11|h<<21)^(h>>>25|h<<7))>>>0)>>>0)+(((h&g^~h&f)>>>0)+(B.GH[q]+s[q]>>>0)>>>0)>>>0
+for(d=l,q=0;q<64;++q,e=f,f=g,g=h,h=b,i=j,j=k,k=d,d=a){c=(e+(((h>>>6|h<<26)^(h>>>11|h<<21)^(h>>>25|h<<7))>>>0)>>>0)+(((h&g^~h&f)>>>0)+(B.GI[q]+s[q]>>>0)>>>0)>>>0
 b=i+c>>>0
 a=c+((((d>>>2|d<<30)^(d>>>13|d<<19)^(d>>>22|d<<10))>>>0)+((d&k^d&j^k&j)>>>0)>>>0)>>>0}r.$flags&2&&A.a8(r)
 r[0]=d+l>>>0
@@ -42238,7 +42238,7 @@ A.tp.prototype={
 H(){return"_CornerId."+this.b}}
 A.l0.prototype={}
 A.qV.prototype={
-je(){var s,r,q,p=this,o=A.aI1(B.H5,new A.a41(p,p.b.gaZ().a7(0,p.a.gaZ()))),n=p.a
+je(){var s,r,q,p=this,o=A.aI1(B.H6,new A.a41(p,p.b.gaZ().a7(0,p.a.gaZ()))),n=p.a
 n.toString
 s=o.a
 r=p.n1(n,s)
@@ -44745,7 +44745,7 @@ lB(a,b,c,d,e,f){return A.azY(a,b,c,d,e,f)}}
 A.IE.prototype={
 lB(a,b,c,d,e,f){return new A.tS(B.f1,a,c,d,e,null,f.h("tS<0>"))},
 X4(a){var s=t.Tr
-s=A.W(new A.a2(B.H4,new A.a5r(a),s),s.h("ao.E"))
+s=A.W(new A.a2(B.H5,new A.a5r(a),s),s.h("ao.E"))
 return s},
 j(a,b){if(b==null)return!1
 if(this===b)return!0
@@ -48251,7 +48251,7 @@ s=p==null?null:A.asr(p)
 if(s==null||r.gft().j(0,B.i))return s
 return new A.nV(s.a.dQ(r.gft()),s.b,s.c)},
 AO(){var s,r,q=this.b,p=q.gft()
-if(!isFinite(p.a)||!isFinite(p.b))return B.Hc
+if(!isFinite(p.a)||!isFinite(p.b))return B.Hd
 s=q.f
 if(s==null){s=q.a.c.AO()
 q.f=s}if(p.j(0,B.i))r=s
@@ -51295,7 +51295,7 @@ q=a.a7(0,s.gft())
 r=r.a
 r===$&&A.a()
 p=r.a.getGlyphPositionAtCoordinate(q.a,q.b)
-o=B.GU[J.a1(p.affinity.value)]
+o=B.GW[J.a1(p.affinity.value)]
 return new A.aA(J.a1(p.pos),o)},
 k0(a){this.km(t.k.a(A.z.prototype.gT.call(this)))
 return this.D.b.a.c.k0(a)},
@@ -55753,7 +55753,7 @@ break
 case 1:return A.P(q,r)}})
 return A.Q($async$yP,r)},
 Zx(a,b){var s,r,q,p
-if(a===b)return B.Hi
+if(a===b)return B.Hj
 s=A.c([],t.QP)
 if(a==null)s.push(b)
 else{r=B.b.d6(B.dB,a)
@@ -56951,7 +56951,7 @@ A.m3.prototype={}
 A.J3.prototype={
 jG(a,b){var s,r,q,p,o,n=$.ah.ah$.d.c
 if(n==null||n.e==null)return!1
-for(s=t.r,r=0;r<2;++r){q=B.H8[r]
+for(s=t.r,r=0;r<2;++r){q=B.H9[r]
 p=n.e
 p.toString
 o=A.alL(p,q,s)
@@ -60190,7 +60190,7 @@ if(b==null)return!1
 if(J.S(b)!==A.v(s))return!1
 return b instanceof A.iY&&b.a===s.a&&b.b==s.b&&b.c==s.c&&b.d===s.d&&A.d3(null,null)},
 gq(a){var s=this
-return A.G(s.a,s.b,s.c,s.d,A.b5(B.Hl),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
+return A.G(s.a,s.b,s.c,s.d,A.b5(B.Hm),B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a,B.a)},
 k(a){return"IconData(U+"+B.d.mg(B.h.i_(this.a,16).toUpperCase(),5,"0")+")"}}
 A.o_.prototype={
 bU(a){return!this.w.j(0,a.w)},
@@ -61083,7 +61083,7 @@ h=r&&e
 c=r?e:c.CW
 if(c==null)c=B.j_
 r=r&&e
-g=new A.xz(b,s,q,p,m,o,n,a,h===!0,a0,a1,i,d,l,k,j,c,new A.vT(e),B.Hg,r===!0)
+g=new A.xz(b,s,q,p,m,o,n,a,h===!0,a0,a1,i,d,l,k,j,c,new A.vT(e),B.Hh,r===!0)
 if(!g.j(0,f.e))f.aT(new A.agN(f,g))},
 uP(){if(this.d==null)this.no()},
 N4(){this.no()},
@@ -61444,7 +61444,7 @@ r.C(0,s.Q7(null,l))
 l.a.toString
 q=r.a
 p=0
-for(;!1;++p){o=B.He[p]
+for(;!1;++p){o=B.Hf[p]
 l.c.toString
 n=o.k3
 m=new A.h7(new A.y5(o,n,o).Rw(o,n,A.Y(o).c),null,!0,B.k5,B.bd,new A.pC(new ($.Ua())(B.bd)),B.bd)
@@ -61785,7 +61785,7 @@ L(a){var s,r,q=this,p=null,o=q.ga0j(),n=A.qt(a),m=q.bt$,l=q.d
 l===$&&A.a()
 s=q.a.ay
 if(l.gbq()==null){r=q.gFW()
-r=J.qJ(r.slice(0),A.Y(r).c)}else r=B.Hf
+r=J.qJ(r.slice(0),A.Y(r).c)}else r=B.Hg
 return new A.nX(p,new A.cK(new A.a5_(q,a),A.qR(B.c5,new A.EA(!1,A.amg(A.H_(!0,p,A.ac3(m,new A.r4(r,s,l)),p,p,p,q.y,!1,p,p,p,p,p,!0),n),p),o,q.ga1V(),p,p,o),p,t.w3),p)}}
 A.a4Z.prototype={
 $1(a){var s=this.a.c
@@ -66932,7 +66932,7 @@ r.ua()
 return s.aL()},
 l(){var s,r,q,p,o=this
 for(s=o.b,r=s.length,q=o.gyR(),p=0;p<s.length;s.length===r||(0,A.w)(s),++p)s[p].M(q)
-o.b=B.Hh
+o.b=B.Hi
 o.y=!1
 o.dT()},
 cI(a,b){return a.kD(b)},
@@ -68844,7 +68844,7 @@ return new A.nS(new A.ZN(this),new A.ZO(this),new A.ZP(this),$.fJ(),null,t.ii)},
 a8Q(a,b){var s,r
 $.bv()
 s=$.alm().a
-s=B.b.u(B.GS,s==null?null:s.gmb())?B.aC:B.a3
+s=B.b.u(B.GU,s==null?null:s.gmb())?B.aC:B.a3
 r=b==null?B.JE:b
 return A.aq7(r,s)},
 R9(a){return new A.y5(null,this.a2,a).Po(t.z)},
@@ -68879,7 +68879,7 @@ s=$.fJ()
 r=s.xr
 q=this.a
 s=A.c([new A.Hd(o,s.to)],t.tc)
-B.b.C(s,B.Hj)
+B.b.C(s,B.Hk)
 p=$.alm().a
 if(p==null)p=o
 p=new A.of(r,a.p1,o,B.Jp,q.r,q.gR7(),q.gabC(),o,s,o,o,o,o,q.ga8P(),q.as,o,q.ax,q.ay,q.ch,o,p,o,o,o,B.mn,!1,!1,!1,o,o,o)
@@ -70871,7 +70871,7 @@ $idC:1}
 A.a4.prototype={
 aA(a,b){var s=this.aw(new A.nt(a,b))
 return s instanceof A.aX?-1:s.b},
-gfl(){return B.Hb},
+gfl(){return B.Hc},
 hg(a,b){},
 k(a){return A.v(this).k(0)}}
 A.K2.prototype={}
@@ -71466,7 +71466,7 @@ A.J4.prototype={}
 A.mq.prototype={}
 A.pU.prototype={
 L(a){var s="BingeQuest \u2014 Legal",r=null,q=A.ar(a).ok,p=A.f8(s,r,r,r,r,r,r,r,q.w,r,r,r)
-return A.asd(new A.uS(p,0,B.k,new A.Q1(r,r,1/0,56),r),B.k,A.aso(new A.hi(B.yY,A.iN(A.c([A.f8(s,r,r,r,r,r,r,r,q.e,r,r,r),B.NI,A.f8("Last updated: January 2026",r,r,r,r,r,r,r,q.Q,r,r,r),B.lE,this.JR(a,"Privacy Policy",B.Hr),B.lE,this.JR(a,"Terms of Service",B.H1),B.NJ],t.E),B.aY,B.av,B.b3),r),r,B.Ex))},
+return A.asd(new A.uS(p,0,B.k,new A.Q1(r,r,1/0,56),r),B.k,A.aso(new A.hi(B.yY,A.iN(A.c([A.f8(s,r,r,r,r,r,r,r,q.e,r,r,r),B.NI,A.f8("Last updated: January 2026",r,r,r,r,r,r,r,q.Q,r,r,r),B.lE,this.JR(a,"Privacy Policy",B.GK),B.lE,this.JR(a,"Terms of Service",B.GC),B.NJ],t.E),B.aY,B.av,B.b3),r),r,B.Ex))},
 JR(a,b,c){var s=null,r=A.c([A.f8(b,s,s,s,s,s,s,s,A.ar(a).ok.f,s,s,s),B.NG],t.E)
 B.b.C(r,new A.a2(c,new A.V4(this,a),A.Y(c).h("a2<1,i>")))
 return A.iN(r,B.aY,B.av,B.b3)}}
@@ -71620,7 +71620,7 @@ p=B.e7}r=n.b
 r=A.c([A.ad(B.c.Y(25.5),r.p()>>>16&255,r.p()>>>8&255,r.p()&255),A.ad(B.c.Y(127.5),r.p()>>>16&255,r.p()>>>8&255,r.p()&255),r],t.W)
 $.aa()
 o=A.b9()
-o.slc(new A.j6(q,p,B.bs,r,B.GD,null).MR(new A.A(0,0,0+b.a,0+b.b)))
+o.slc(new A.j6(q,p,B.bs,r,B.GE,null).MR(new A.A(0,0,0+b.a,0+b.b)))
 o.b=B.aA
 o.c=n.c
 o.d=B.jB
@@ -71804,7 +71804,7 @@ r.push(B.j)
 q=this.a
 s=-2+q
 q=2+q
-return new A.j6(new A.cT(s,s),new A.cT(q,q),B.fE,r,B.GJ,null).MR(a)},
+return new A.j6(new A.cT(s,s),new A.cT(q,q),B.fE,r,B.GL,null).MR(a)},
 $S:479}
 A.Ip.prototype={
 L(a){var s,r,q,p,o,n,m,l=this,k=null
@@ -72116,7 +72116,7 @@ Pj(a,b,c,d,e,f,g,h,i){var s
 $.aa()
 s=A.b9()
 s.r=A.aR(b).gn()
-if(a!==0)s.a=B.GE[a]
+if(a!==0)s.a=B.GF[a]
 if(e!=null)s.slc(this.z[e])
 if(d===1){s.b=B.aA
 if(f!=null&&f!==0)s.d=B.HB[f]
@@ -72684,7 +72684,7 @@ c7=A.c([],n)
 if((c2&1)!==0)c7.push(B.xk)
 if((c2&2)!==0)c7.push(B.OF)
 if((c2&4)!==0)c7.push(B.OH)
-o.push(new A.RV(c6,c5,a,b,B.iB[c1],A.aEK(c7),B.GW[c3],A.aR(a0)))
+o.push(new A.RV(c6,c5,a,b,B.iB[c1],A.aEK(c7),B.GY[c3],A.aR(a0)))
 continue $label0$1
 case 44:b=r.getUint16(s.b,!0)
 a=r.getUint16(s.b+=2,!0)
@@ -72781,7 +72781,7 @@ r=a.k_(s)
 q=a.wZ(0)
 p=c?this.Yq(a.Eq(q)):a.rE(q)
 o=A.dE($.aa().w)
-n=B.GQ[e]
+n=B.GS[e]
 o.c=n
 m=o.d
 if(m!=null)m.sNK(n)
@@ -73682,7 +73682,7 @@ case"round":return B.O2
 default:return null}},
 a2M(a){var s,r,q,p,o,n,m
 if(a==null||a==="")return null
-else if(a==="none")return B.Ho
+else if(a==="none")return B.Hp
 s=B.d.xg(a,A.d0("[ ,]+",!1))
 r=A.c([],t.n)
 for(q=s.length,p=this.a,o=!1,n=0;n<s.length;s.length===q||(0,A.w)(s),++n){m=A.cS(s[n],p,!1)
@@ -77924,7 +77924,7 @@ B.S=new A.acd()
 B.bc=new A.ace()
 B.cD=new A.acg()
 B.cZ=new A.LU(0,0,0,0)
-B.Hg=s([],A.Z("r<Xc>"))
+B.Hh=s([],A.Z("r<Xc>"))
 B.VV=new A.acn()
 B.aK={}
 B.f2=new A.bf(B.aK,[],t.li)
@@ -78226,9 +78226,9 @@ B.EB=new A.wc(0,"noOpinion")
 B.EC=new A.wc(1,"enabled")
 B.ds=new A.wc(2,"disabled")
 B.ED=new A.GI(null)
-B.GV=s([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.2126,0.7152,0.0722,0,0],t.n)
+B.GX=s([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.2126,0.7152,0.0722,0,0],t.n)
 B.Aw=new A.Wk(1,"matrix")
-B.EE=new A.Y2(null,null,B.GV,B.Aw)
+B.EE=new A.Y2(null,null,B.GX,B.Aw)
 B.lN=new A.bx(0,"incrementable")
 B.hN=new A.bx(1,"scrollable")
 B.hO=new A.bx(10,"link")
@@ -78414,8 +78414,8 @@ B.Ft=new A.iZ(B.Fh,!1,0,"png")
 B.Ff=new A.kf(B.Hx,B.Ft,0,"png")
 B.Hy=s([71,73,70,56,55,97],t.Z)
 B.Fe=new A.kf(B.Hy,B.eN,1,"gif87a")
-B.H3=s([71,73,70,56,57,97],t.Z)
-B.Fd=new A.kf(B.H3,B.eN,2,"gif89a")
+B.H4=s([71,73,70,56,57,97],t.Z)
+B.Fd=new A.kf(B.H4,B.eN,2,"gif89a")
 B.FW=s([255,216,255],t.Z)
 B.Fi=new A.lF(2,"jpeg")
 B.Fx=new A.iZ(B.Fi,!1,3,"jpeg")
@@ -78431,14 +78431,26 @@ B.k7=new A.CE(0,"named")
 B.y_=new A.CE(1,"anonymous")
 B.Gs=s([B.k7,B.y_],A.Z("r<CE>"))
 B.ml=s([0,4,12,1,5,13,3,7,15],t.t)
+B.US=new A.cw("Agreement to Terms","By using BingeQuest, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our app.")
+B.UP=new A.cw("Description of Service","BingeQuest is a watchlist tracking application that helps users manage their movie and TV show backlog. We provide tools to track progress, receive recommendations, and earn achievements.")
+B.UQ=new A.cw("User Accounts","You must create an account using Google or Apple Sign-In to use the app. You are responsible for maintaining the security of your account and all activities that occur under your account.")
+B.UX=new A.cw("Acceptable Use","You agree not to:\n\u2022 Use the app for any unlawful purpose\n\u2022 Attempt to gain unauthorized access to our systems\n\u2022 Interfere with or disrupt the app's functionality\n\u2022 Share your account credentials with others\n\u2022 Use automated systems to access the app")
+B.UN=new A.cw("Content","Movie and TV show data is provided by TMDB (The Movie Database). This product uses the TMDB API but is not endorsed or certified by TMDB. We do not host or provide any streaming content.")
+B.UU=new A.cw("Intellectual Property","The BingeQuest app, including its design, features, and content, is owned by us and protected by intellectual property laws. You may not copy, modify, or distribute our app without permission.")
+B.UW=new A.cw("Disclaimer of Warranties",'The app is provided "as is" without warranties of any kind. We do not guarantee that the app will be error-free or uninterrupted.')
+B.UZ=new A.cw("Limitation of Liability","To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the app.")
+B.V1=new A.cw("Account Termination","You may delete your account at any time through the Settings screen. We reserve the right to suspend or terminate accounts that violate these terms.")
+B.V4=new A.cw("Changes to Terms","We may modify these terms at any time. Continued use of the app after changes constitutes acceptance of the new terms.")
+B.UT=new A.cw("Contact","For questions about these Terms of Service, contact us at: meow@raspucat.com")
+B.GC=s([B.US,B.UP,B.UQ,B.UX,B.UN,B.UU,B.UW,B.UZ,B.V1,B.V4,B.UT],t.mU)
 B.cu=new A.kR(0,"left")
 B.jO=new A.kR(1,"right")
 B.bJ=new A.kR(2,"center")
 B.fD=new A.kR(3,"justify")
 B.b7=new A.kR(4,"start")
 B.jP=new A.kR(5,"end")
-B.GC=s([B.cu,B.jO,B.bJ,B.fD,B.b7,B.jP],A.Z("r<kR>"))
-B.GD=s([0,0.4,1],t.n)
+B.GD=s([B.cu,B.jO,B.bJ,B.fD,B.b7,B.jP],A.Z("r<kR>"))
+B.GE=s([0,0.4,1],t.n)
 B.ye=new A.bQ(0,"clear")
 B.yf=new A.bQ(1,"src")
 B.yu=new A.bQ(2,"dst")
@@ -78463,10 +78475,20 @@ B.yF=new A.bQ(25,"hue")
 B.yH=new A.bQ(26,"saturation")
 B.yJ=new A.bQ(27,"color")
 B.yL=new A.bQ(28,"luminosity")
-B.GE=s([B.ye,B.yf,B.yu,B.bS,B.yN,B.kl,B.km,B.yO,B.yP,B.yQ,B.yg,B.yh,B.kj,B.kk,B.yi,B.yk,B.ym,B.yo,B.yq,B.ys,B.yv,B.yx,B.yz,B.yB,B.yD,B.yF,B.yH,B.yJ,B.yL],A.Z("r<bQ>"))
-B.GG=s([B.h7,B.h8],A.Z("r<uU>"))
-B.GH=s([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],t.t)
-B.GJ=s([0,0.2,0.4,0.6,1],t.n)
+B.GF=s([B.ye,B.yf,B.yu,B.bS,B.yN,B.kl,B.km,B.yO,B.yP,B.yQ,B.yg,B.yh,B.kj,B.kk,B.yi,B.yk,B.ym,B.yo,B.yq,B.ys,B.yv,B.yx,B.yz,B.yB,B.yD,B.yF,B.yH,B.yJ,B.yL],A.Z("r<bQ>"))
+B.GH=s([B.h7,B.h8],A.Z("r<uU>"))
+B.GI=s([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298],t.t)
+B.V0=new A.cw("Introduction",'BingeQuest ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.')
+B.UO=new A.cw("Information We Collect","We collect information you provide directly to us:\n\u2022 Account information (email, name) when you sign in with Google or Apple\n\u2022 Watchlist data including movies and TV shows you add\n\u2022 Watch progress and completion data\n\u2022 Badge and achievement data\n\u2022 Device token for push notifications")
+B.UY=new A.cw("How We Use Your Information","We use the information we collect to:\n\u2022 Provide and maintain the app\n\u2022 Sync your watchlist across devices\n\u2022 Generate personalized recommendations\n\u2022 Track your achievements and badges\n\u2022 Send push notifications for new episodes and streaming changes\n\u2022 Improve our services")
+B.V2=new A.cw("Data Storage","Your data is securely stored using Supabase, a trusted cloud platform. We implement industry-standard security measures to protect your information.")
+B.V3=new A.cw("Third-Party Services","We use the following third-party services:\n\u2022 TMDB (The Movie Database) for movie and TV show information\n\u2022 Google Sign-In for authentication\n\u2022 Apple Sign-In for authentication\n\u2022 Supabase for data storage\n\u2022 Firebase for push notifications and analytics")
+B.UR=new A.cw("Data Deletion","You can delete your account and all associated data at any time through the Settings screen. This action is permanent and cannot be undone.")
+B.V_=new A.cw("Children's Privacy","Our app is not intended for children under 13. We do not knowingly collect personal information from children under 13.")
+B.UV=new A.cw("Changes to This Policy","We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy in the app.")
+B.UM=new A.cw("Contact","If you have questions about this Privacy Policy, please contact us at: meow@raspucat.com")
+B.GK=s([B.V0,B.UO,B.UY,B.V2,B.V3,B.UR,B.V_,B.UV,B.UM],t.mU)
+B.GL=s([0,0.2,0.4,0.6,1],t.n)
 B.bs=new A.pc(0,"clamp")
 B.fE=new A.pc(1,"repeated")
 B.T0=new A.pc(2,"mirror")
@@ -78483,15 +78505,15 @@ B.UF=new A.l1(12,0.14)
 B.mo=s([B.UE,B.UJ,B.UH,B.UI,B.UG,B.UF],A.Z("r<l1>"))
 B.fa=new A.yc(0,"nonZero")
 B.KH=new A.yc(1,"evenOdd")
-B.GQ=s([B.fa,B.KH],A.Z("r<yc>"))
-B.GR=s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0],t.n)
-B.GS=s(["ar","fa","he","ps","ur"],t.s)
+B.GS=s([B.fa,B.KH],A.Z("r<yc>"))
+B.GT=s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0],t.n)
+B.GU=s(["ar","fa","he","ps","ur"],t.s)
 B.Oc=new A.A6(0,"left")
 B.Od=new A.A6(1,"right")
-B.GT=s([B.Oc,B.Od],A.Z("r<A6>"))
+B.GV=s([B.Oc,B.Od],A.Z("r<A6>"))
 B.aL=new A.Ab(0,"upstream")
 B.r=new A.Ab(1,"downstream")
-B.GU=s([B.aL,B.r],A.Z("r<Ab>"))
+B.GW=s([B.aL,B.r],A.Z("r<Ab>"))
 B.aC=new A.Af(0,"rtl")
 B.a3=new A.Af(1,"ltr")
 B.iw=s([B.aC,B.a3],A.Z("r<Af>"))
@@ -78500,25 +78522,13 @@ B.xi=new A.js(1,"double")
 B.Oz=new A.js(2,"dotted")
 B.OB=new A.js(3,"dashed")
 B.OD=new A.js(4,"wavy")
-B.GW=s([B.Ow,B.xi,B.Oz,B.OB,B.OD],A.Z("r<js>"))
-B.UR=new A.cw("Agreement to Terms","By using BingeQuest, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our app.")
-B.UO=new A.cw("Description of Service","BingeQuest is a watchlist tracking application that helps users manage their movie and TV show backlog. We provide tools to track progress, receive recommendations, and earn achievements.")
-B.UP=new A.cw("User Accounts","You must create an account using Google or Apple Sign-In to use the app. You are responsible for maintaining the security of your account and all activities that occur under your account.")
-B.UW=new A.cw("Acceptable Use","You agree not to:\n\u2022 Use the app for any unlawful purpose\n\u2022 Attempt to gain unauthorized access to our systems\n\u2022 Interfere with or disrupt the app's functionality\n\u2022 Share your account credentials with others\n\u2022 Use automated systems to access the app")
-B.UM=new A.cw("Content","Movie and TV show data is provided by TMDB (The Movie Database). This product uses the TMDB API but is not endorsed or certified by TMDB. We do not host or provide any streaming content.")
-B.US=new A.cw("Intellectual Property","The BingeQuest app, including its design, features, and content, is owned by us and protected by intellectual property laws. You may not copy, modify, or distribute our app without permission.")
-B.UU=new A.cw("Disclaimer of Warranties",'The app is provided "as is" without warranties of any kind. We do not guarantee that the app will be error-free or uninterrupted.')
-B.UY=new A.cw("Limitation of Liability","To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the app.")
-B.V0=new A.cw("Account Termination","You may delete your account at any time through the Settings screen. We reserve the right to suspend or terminate accounts that violate these terms.")
-B.V4=new A.cw("Changes to Terms","We may modify these terms at any time. Continued use of the app after changes constitutes acceptance of the new terms.")
-B.V2=new A.cw("Contact","For questions about these Terms of Service, contact us at: support@bingequest.app")
-B.H1=s([B.UR,B.UO,B.UP,B.UW,B.UM,B.US,B.UU,B.UY,B.V0,B.V4,B.V2],t.mU)
+B.GY=s([B.Ow,B.xi,B.Oz,B.OB,B.OD],A.Z("r<js>"))
 B.Aj=new A.nj(0,"auto")
 B.Ak=new A.nj(1,"full")
 B.Al=new A.nj(2,"chromium")
-B.H2=s([B.Aj,B.Ak,B.Al,B.bZ],A.Z("r<nj>"))
+B.H3=s([B.Aj,B.Ak,B.Al,B.bZ],A.Z("r<nj>"))
 B.b6=new A.f7(1,"fuchsia")
-B.H4=s([B.ak,B.b6,B.ab,B.aS,B.aT,B.aU],A.Z("r<f7>"))
+B.H5=s([B.ak,B.b6,B.ab,B.aS,B.aT,B.aU],A.Z("r<f7>"))
 B.xH=new A.tp(0,"topLeft")
 B.xK=new A.tp(3,"bottomRight")
 B.Uz=new A.l0(B.xH,B.xK)
@@ -78527,48 +78537,38 @@ B.xI=new A.tp(1,"topRight")
 B.xJ=new A.tp(2,"bottomLeft")
 B.UA=new A.l0(B.xI,B.xJ)
 B.UB=new A.l0(B.xJ,B.xI)
-B.H5=s([B.Uz,B.UC,B.UA,B.UB],A.Z("r<l0>"))
-B.H7=s(["click","scroll"],t.s)
+B.H6=s([B.Uz,B.UC,B.UA,B.UB],A.Z("r<l0>"))
+B.H8=s(["click","scroll"],t.s)
 B.z4=new A.pN()
 B.jb=new A.Kt(1,"page")
 B.jc=new A.fw(B.a1,B.jb)
-B.H8=s([B.z4,B.jc],A.Z("r<aN>"))
-B.Hi=s([],t.QP)
+B.H9=s([B.z4,B.jc],A.Z("r<aN>"))
+B.Hj=s([],t.QP)
 B.ix=s([],t.UO)
 B.mq=s([],A.Z("r<aLg>"))
-B.Hd=s([],t.D)
+B.He=s([],t.D)
 B.iz=s([],t.RT)
-B.Hm=s([],t.fJ)
-B.Hc=s([],t.ER)
-B.Hj=s([],t.tc)
+B.Hn=s([],t.fJ)
+B.Hd=s([],t.ER)
+B.Hk=s([],t.tc)
 B.eT=s([],t.d)
-B.Hf=s([],t.wi)
-B.He=s([],A.Z("r<lW<@>>"))
-B.Hb=s([],t.C)
-B.Hn=s([],t.g)
+B.Hg=s([],t.wi)
+B.Hf=s([],A.Z("r<lW<@>>"))
+B.Hc=s([],t.C)
+B.Ho=s([],t.g)
 B.iy=s([],t.AO)
-B.Hh=s([],t.D1)
+B.Hi=s([],t.D1)
 B.iA=s([],t.e)
 B.mp=s([],t.s)
 B.ai=s([],t.oU)
-B.Hk=s([],t.Lx)
+B.Hl=s([],t.Lx)
 B.W2=s([],t.E)
-B.Ho=s([],t.n)
-B.Ha=s([],t.t)
+B.Hp=s([],t.n)
+B.Hb=s([],t.t)
 B.p=s([],t.ee)
-B.Hl=s([],t.XS)
+B.Hm=s([],t.XS)
 B.lU=new A.eV(1)
 B.iB=s([B.c2,B.lU,B.bj,B.n,B.B,B.du,B.as,B.eJ,B.dv],A.Z("r<eV>"))
-B.V_=new A.cw("Introduction",'BingeQuest ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.')
-B.UN=new A.cw("Information We Collect","We collect information you provide directly to us:\n\u2022 Account information (email, name) when you sign in with Google or Apple\n\u2022 Watchlist data including movies and TV shows you add\n\u2022 Watch progress and completion data\n\u2022 Badge and achievement data\n\u2022 Device token for push notifications")
-B.UX=new A.cw("How We Use Your Information","We use the information we collect to:\n\u2022 Provide and maintain the app\n\u2022 Sync your watchlist across devices\n\u2022 Generate personalized recommendations\n\u2022 Track your achievements and badges\n\u2022 Send push notifications for new episodes and streaming changes\n\u2022 Improve our services")
-B.V1=new A.cw("Data Storage","Your data is securely stored using Supabase, a trusted cloud platform. We implement industry-standard security measures to protect your information.")
-B.V3=new A.cw("Third-Party Services","We use the following third-party services:\n\u2022 TMDB (The Movie Database) for movie and TV show information\n\u2022 Google Sign-In for authentication\n\u2022 Apple Sign-In for authentication\n\u2022 Supabase for data storage\n\u2022 Firebase for push notifications and analytics")
-B.UQ=new A.cw("Data Deletion","You can delete your account and all associated data at any time through the Settings screen. This action is permanent and cannot be undone.")
-B.UZ=new A.cw("Children's Privacy","Our app is not intended for children under 13. We do not knowingly collect personal information from children under 13.")
-B.UT=new A.cw("Changes to This Policy","We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy in the app.")
-B.UV=new A.cw("Contact","If you have questions about this Privacy Policy, please contact us at: support@bingequest.app")
-B.Hr=s([B.V_,B.UN,B.UX,B.V1,B.V3,B.UQ,B.UZ,B.UT,B.UV],t.mU)
 B.dB=s([B.bP,B.bA,B.ea,B.eb,B.h6],t.QP)
 B.D3=new A.C(0.2,0.30980392156862746,0.7647058823529411,0.9686274509803922,B.f)
 B.CS=new A.C(0.2,0.1607843137254902,0.7137254901960784,0.9647058823529412,B.f)
@@ -79300,28 +79300,28 @@ B.Gn=s([54,null,null,8589935158],t.Z)
 B.Go=s([55,null,null,8589935159],t.Z)
 B.Gp=s([56,null,null,8589935160],t.Z)
 B.Gr=s([57,null,null,8589935161],t.Z)
-B.GX=s([8589934852,8589934852,8589934853,null],t.Z)
+B.GZ=s([8589934852,8589934852,8589934853,null],t.Z)
 B.G_=s([4294967555,null,4294967555,null],t.Z)
 B.G0=s([4294968065,null,null,8589935154],t.Z)
 B.G1=s([4294968066,null,null,8589935156],t.Z)
 B.G2=s([4294968067,null,null,8589935158],t.Z)
 B.G3=s([4294968068,null,null,8589935160],t.Z)
 B.G8=s([4294968321,null,null,8589935157],t.Z)
-B.GY=s([8589934848,8589934848,8589934849,null],t.Z)
+B.H_=s([8589934848,8589934848,8589934849,null],t.Z)
 B.FZ=s([4294967423,null,null,8589935150],t.Z)
 B.G4=s([4294968069,null,null,8589935153],t.Z)
 B.FY=s([4294967309,null,null,8589935117],t.Z)
 B.G5=s([4294968070,null,null,8589935159],t.Z)
 B.G9=s([4294968327,null,null,8589935152],t.Z)
-B.GZ=s([8589934854,8589934854,8589934855,null],t.Z)
+B.H0=s([8589934854,8589934854,8589934855,null],t.Z)
 B.G6=s([4294968071,null,null,8589935155],t.Z)
 B.G7=s([4294968072,null,null,8589935161],t.Z)
-B.H_=s([8589934850,8589934850,8589934851,null],t.Z)
-B.rr=new A.cj(["*",B.Ga,"+",B.Gb,"-",B.Gc,".",B.Gd,"/",B.Ge,"0",B.Gf,"1",B.Gg,"2",B.Gi,"3",B.Gk,"4",B.Gl,"5",B.Gm,"6",B.Gn,"7",B.Go,"8",B.Gp,"9",B.Gr,"Alt",B.GX,"AltGraph",B.G_,"ArrowDown",B.G0,"ArrowLeft",B.G1,"ArrowRight",B.G2,"ArrowUp",B.G3,"Clear",B.G8,"Control",B.GY,"Delete",B.FZ,"End",B.G4,"Enter",B.FY,"Home",B.G5,"Insert",B.G9,"Meta",B.GZ,"PageDown",B.G6,"PageUp",B.G7,"Shift",B.H_],A.Z("cj<h,K<k?>>"))
+B.H1=s([8589934850,8589934850,8589934851,null],t.Z)
+B.rr=new A.cj(["*",B.Ga,"+",B.Gb,"-",B.Gc,".",B.Gd,"/",B.Ge,"0",B.Gf,"1",B.Gg,"2",B.Gi,"3",B.Gk,"4",B.Gl,"5",B.Gm,"6",B.Gn,"7",B.Go,"8",B.Gp,"9",B.Gr,"Alt",B.GZ,"AltGraph",B.G_,"ArrowDown",B.G0,"ArrowLeft",B.G1,"ArrowRight",B.G2,"ArrowUp",B.G3,"Clear",B.G8,"Control",B.H_,"Delete",B.FZ,"End",B.G4,"Enter",B.FY,"Home",B.G5,"Insert",B.G9,"Meta",B.H0,"PageDown",B.G6,"PageUp",B.G7,"Shift",B.H1],A.Z("cj<h,K<k?>>"))
 B.Gq=s([B.mz,null,null,B.rf],t.L)
-B.Hp=s([B.r1,null,null,B.rg],t.L)
-B.GI=s([B.r2,null,null,B.rh],t.L)
-B.H0=s([B.r3,null,null,B.ca],t.L)
+B.Hq=s([B.r1,null,null,B.rg],t.L)
+B.GJ=s([B.r2,null,null,B.rh],t.L)
+B.H2=s([B.r3,null,null,B.ca],t.L)
 B.FT=s([B.r4,null,null,B.ri],t.L)
 B.Hz=s([B.r5,null,null,B.iO],t.L)
 B.Hw=s([B.r6,null,null,B.dK],t.L)
@@ -79330,27 +79330,27 @@ B.HD=s([B.r8,null,null,B.dL],t.L)
 B.Hv=s([B.r9,null,null,B.cc],t.L)
 B.Gu=s([B.ra,null,null,B.iP],t.L)
 B.FX=s([B.rb,null,null,B.cd],t.L)
-B.GF=s([B.rc,null,null,B.dM],t.L)
-B.Hq=s([B.rd,null,null,B.ce],t.L)
+B.GG=s([B.rc,null,null,B.dM],t.L)
+B.Hr=s([B.rd,null,null,B.ce],t.L)
 B.Hs=s([B.re,null,null,B.dN],t.L)
 B.Gx=s([B.dI,B.dI,B.f_,null],t.L)
 B.HA=s([B.eW,null,B.eW,null],t.L)
-B.GK=s([B.b1,null,null,B.cb],t.L)
-B.GL=s([B.aP,null,null,B.cc],t.L)
-B.GM=s([B.aQ,null,null,B.cd],t.L)
+B.GM=s([B.b1,null,null,B.cb],t.L)
+B.GN=s([B.aP,null,null,B.cc],t.L)
+B.GO=s([B.aQ,null,null,B.cd],t.L)
 B.HC=s([B.b2,null,null,B.ce],t.L)
 B.Ht=s([B.iH,null,null,B.iP],t.L)
 B.Gy=s([B.dH,B.dH,B.eZ,null],t.L)
-B.H6=s([B.aa,null,null,B.ca],t.L)
-B.GN=s([B.c7,null,null,B.dK],t.L)
+B.H7=s([B.aa,null,null,B.ca],t.L)
+B.GP=s([B.c7,null,null,B.dK],t.L)
 B.Gt=s([B.eV,null,null,B.iN],t.L)
-B.GO=s([B.c8,null,null,B.dM],t.L)
+B.GQ=s([B.c8,null,null,B.dM],t.L)
 B.Hu=s([B.iI,null,null,B.iO],t.L)
 B.Gz=s([B.dJ,B.dJ,B.f0,null],t.L)
-B.GP=s([B.dF,null,null,B.dL],t.L)
-B.H9=s([B.dG,null,null,B.dN],t.L)
+B.GR=s([B.dF,null,null,B.dL],t.L)
+B.Ha=s([B.dG,null,null,B.dN],t.L)
 B.GA=s([B.c9,B.c9,B.cH,null],t.L)
-B.Jr=new A.cj(["*",B.Gq,"+",B.Hp,"-",B.GI,".",B.H0,"/",B.FT,"0",B.Hz,"1",B.Hw,"2",B.Gw,"3",B.HD,"4",B.Hv,"5",B.Gu,"6",B.FX,"7",B.GF,"8",B.Hq,"9",B.Hs,"Alt",B.Gx,"AltGraph",B.HA,"ArrowDown",B.GK,"ArrowLeft",B.GL,"ArrowRight",B.GM,"ArrowUp",B.HC,"Clear",B.Ht,"Control",B.Gy,"Delete",B.H6,"End",B.GN,"Enter",B.Gt,"Home",B.GO,"Insert",B.Hu,"Meta",B.Gz,"PageDown",B.GP,"PageUp",B.H9,"Shift",B.GA],A.Z("cj<h,K<e?>>"))
+B.Jr=new A.cj(["*",B.Gq,"+",B.Hq,"-",B.GJ,".",B.H2,"/",B.FT,"0",B.Hz,"1",B.Hw,"2",B.Gw,"3",B.HD,"4",B.Hv,"5",B.Gu,"6",B.FX,"7",B.GG,"8",B.Hr,"9",B.Hs,"Alt",B.Gx,"AltGraph",B.HA,"ArrowDown",B.GM,"ArrowLeft",B.GN,"ArrowRight",B.GO,"ArrowUp",B.HC,"Clear",B.Ht,"Control",B.Gy,"Delete",B.H7,"End",B.GP,"Enter",B.Gt,"Home",B.GQ,"Insert",B.Hu,"Meta",B.Gz,"PageDown",B.GR,"PageUp",B.Ha,"Shift",B.GA],A.Z("cj<h,K<e?>>"))
 B.Js=new A.cj([B.c2,"Thin",B.lU,"ExtraLight",B.bj,"Light",B.n,"Regular",B.B,"Medium",B.du,"SemiBold",B.as,"Bold",B.eJ,"ExtraBold",B.dv,"Black"],A.Z("cj<eV,h>"))
 B.K2={multiply:0,screen:1,overlay:2,darken:3,lighten:4,"color-dodge":5,"color-burn":6,"hard-light":7,"soft-light":8,difference:9,exclusion:10,hue:11,saturation:12,color:13,luminosity:14}
 B.yE=new A.dy(24,"multiply")
@@ -80774,7 +80774,7 @@ return A.c([A.y(A.y(A.ab(),q),"Alphabetic"),A.y(A.y(A.ab(),q),"Ideographic")],t.
 r($,"aP5","ayk",()=>A.cE().gNV()+"roboto/v32/KFOmCnqEu92Fr1Me4GZLCzYlKw.woff2")
 r($,"aOt","axU",()=>A.aGO(A.uf(A.uf(A.iD(),"window"),"FinalizationRegistry"),A.jK(new A.ajU())))
 r($,"aPP","ayP",()=>new A.a4U())
-s($,"aOz","axX",()=>A.aCo(B.GR))
+s($,"aOz","axX",()=>A.aCo(B.GT))
 s($,"aOy","Ud",()=>A.a1y(A.azF($.axX())))
 s($,"aOl","axP",()=>A.ass(A.y(A.ab(),"ParagraphBuilder")))
 s($,"aPX","ayS",()=>{var q=t.N,p=A.Z("+breaks,graphemes,words(ta,ta,ta)"),o=A.amI(1e5,q,p),n=A.amI(1e4,q,p)
