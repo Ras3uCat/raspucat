@@ -1,3 +1,5 @@
+import 'package:raspucat/utils/constants/brand.dart';
+
 class EText {
   EText._();
 
@@ -10,14 +12,13 @@ class EText {
   /// --- APP TEXT --- ///
   ///
   ///
-  static const String name = 'Ras3uCat';
+  static const String name = EBrand.appName;
 
   /// --- HERO SCREEN TEXT --- ///
   ///
   ///
-  static const String heroHeading = name;
-  static const String heroSubtext =
-      'Building the future, \none line of code at a time';
+  static const String heroHeading = EBrand.stylizedAppName;
+  static const String heroSubtext = EBrand.voiceTagline;
 
   /// --- PROJECTS SCREEN TEXT --- ///
   ///

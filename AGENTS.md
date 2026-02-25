@@ -19,7 +19,7 @@
 ## Subagent Mapping
 - Planner → Claude (cloud)
 - Architect → Claude (cloud)
-- Flutter → frontend subagent **AntiGravity system agent (external)
+- Flutter → **AntiGravity** (external system agent)
 - Backend → backend subagent
 - Payments → payments subagent
 - QA → qa subagent
@@ -30,7 +30,7 @@
 - Raw code or logs must not be forwarded to Main.
 
 ## Investigation Rule
-- Multi-file exploration must be delegated to a subagent.
+- Multi-file exploration should be delegated to a subagent.
 - Subagent returns:
   - affected files
   - key findings
@@ -41,12 +41,12 @@
 - **Planner → Engineer:** Plan is approved in `STUDIO_PLAN.md`.
 - **Engineer → QA:** Code is implemented and local unit tests pass.
 - **QA → Architect: Validation report saved to `qa/reports/` with "PASS".
-- **Architect → Main: Final approval given; `current_task.md` marked complete.
+- **Architect/Planner (Claude) → AntiGravity:** Final approval given; `CURRENT_TASK.md` marked complete.
 
 ## Communication Protocol
-1. **Current Status:** `planning/current_task.md` (What is happening right now).
+1. **Current Status:** `planning/CURRENT_TASK.md` (What is happening right now).
 2. **Technical Blueprint:** `STUDIO_PLAN.md` (Deep dive for the current feature).
-3. **Audit Trail:** `planning/decisions.md` (Why we chose X over Y).
+3. **Audit Trail:** `planning/DECISIONS.md` (Why we chose X over Y).
 
 ## Conflict Resolution
 1. If **QA** fails a build, **Engineer** must revert or fix; **Architect** cannot override a QA "FAIL" without a documented `decision.md` entry.

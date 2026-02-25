@@ -3,21 +3,33 @@ import 'package:raspucat/utils/constants/exports.dart';
 class EColors {
   EColors._();
 
-  // static const Color _midnight = Color(0xFF000612);
+  // ------------------------------------------------------------------ //
+  // BRAND PALETTE (Ras3uCat Identity System v1.0)
+  //
+  // P-Cyan     #58E3EF — primary actions, outlines, focus
+  // A-Magenta  #D34CF1 — hover, highlights, energy states
+  // Midnight   #000612 — deep background
+  // C-Slate    #1A1C2C — cards, panels, containers
+  // M3OW-Gold  #FFB938 — sigil text, emphasis, badges
+  // ------------------------------------------------------------------ //
 
   /// --- App Basic Colors --- ///
   ///
   ///
-  static const Color primary = Color(0xFF58E3EF);
+  static const Color primary = Color(0xFF58E3EF); // P-Cyan
   static const Color secondary = Color(0xFFD9BDAD);
   static const Color tertiary = Color(0xFF607D8B);
-  static const Color accent = Color(0xFFD34CF1);
+  static const Color accent = Color(0xFFD34CF1); // A-Magenta
+  static const Color gold = Color(0xFFFFB938); // M3OW-Gold — sigil & badges
+  static const Color circuitSlate = Color(0xFF1A1C2C); // surface containers
 
   /// --- Background Colors --- ///
   ///
   ///
   static const Color backgroundLight = EColors.white;
-  static const Color backgroundDark = Color(0xFF000612);
+  static const Color backgroundDark = Color(0xFF000612); // Midnight-Base
+  // Brand rule: never use pure white as text — use this cyan-tinted white instead
+  static const Color cyanTintedWhite = Color(0xFFE8FEFF);
 
   /// --- Gradient Colors --- ///
   ///
@@ -93,7 +105,7 @@ class EColors {
   static const Color black = Colors.black;
   static const Color darkGrey = Colors.grey;
   static const Color grey = Colors.blueGrey;
-  static const Color softGrey = Colors.deepOrangeAccent;
+  static const Color softGrey = Color(0xFF9E9E9E);
   static const Color white = Colors.white;
 
   /// --- Product Colors --- ///

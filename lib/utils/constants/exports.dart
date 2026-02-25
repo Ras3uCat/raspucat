@@ -38,6 +38,7 @@ export 'package:raspucat/app/controllers/carousel_controller.dart';
 ///
 ///
 ///
+export 'package:raspucat/utils/constants/brand.dart';
 export 'package:raspucat/utils/constants/colors.dart';
 export 'package:raspucat/utils/constants/text.dart';
 export 'package:raspucat/utils/constants/sizes.dart';
@@ -58,6 +59,7 @@ export 'package:raspucat/common/widgets/triangles/triangle_widget.dart';
 export 'package:raspucat/app/modules/widgets/center_logo.dart';
 export 'package:raspucat/common/widgets/text/neon_text.dart';
 export 'package:raspucat/common/widgets/gradients/gradient_overlay.dart';
+export 'package:raspucat/common/widgets/branding/m3ow_brand_mark.dart';
 export 'package:raspucat/common/widgets/buttons/neon_button.dart';
 export 'package:raspucat/common/widgets/animations/animation_on_view.dart';
 export 'package:raspucat/common/widgets/cards/project_card.dart';
