@@ -154,23 +154,21 @@ class _ProjectScreenState extends State<ProjectScreen> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-        child: MouseRegion(
-          onEnter: (_) => _carouselController.stopAutoPlay(),
-          onExit: (_) => _carouselController.startAutoPlay(),
-          child: CarouselSlider.builder(
-            carouselController: _carouselController,
-            itemCount: project.imagePaths.length,
-            options: CarouselOptions(
-              height: ESizes.imageSizeXl,
-              viewportFraction: 1.0,
-              enableInfiniteScroll: project.imagePaths.length > 1,
-              autoPlay: project.imagePaths.length > 1,
-              autoPlayInterval: const Duration(seconds: 4),
-              autoPlayAnimationDuration: const Duration(milliseconds: 800),
-              autoPlayCurve: Curves.fastOutSlowIn,
-              enlargeCenterPage: false,
-            ),
-            itemBuilder: (context, index, realIndex) {
+        child: Stack(
+          children: [
+            CarouselSlider.builder(
+              carouselController: _carouselController,
+              itemCount: project.imagePaths.length,
+              options: CarouselOptions(
+                height: ESizes.imageSizeXl,
+                viewportFraction: 1.0,
+                enableInfiniteScroll: project.imagePaths.length > 1,
+                autoPlay: false,
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: false,
+              ),
+              itemBuilder: (context, index, realIndex) {
               return Stack(
                 children: [
                   Image.asset(
@@ -215,8 +213,43 @@ class _ProjectScreenState extends State<ProjectScreen> {
                     ),
                 ],
               );
-            },
-          ),
+              },
+            ),
+            if (project.imagePaths.length > 1) ...[
+              Positioned(
+                left: ESizes.sm,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: NeonButton(
+                    padding: const EdgeInsets.all(ESizes.sm),
+                    onTap: () => _carouselController.previousPage(),
+                    child: Icon(
+                      FontAwesomeIcons.chevronLeft,
+                      color: EColors.primary,
+                      size: ESizes.iconSm,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: ESizes.sm,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: NeonButton(
+                    padding: const EdgeInsets.all(ESizes.sm),
+                    onTap: () => _carouselController.nextPage(),
+                    child: Icon(
+                      FontAwesomeIcons.chevronRight,
+                      color: EColors.primary,
+                      size: ESizes.iconSm,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
