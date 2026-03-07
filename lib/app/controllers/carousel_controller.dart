@@ -27,6 +27,14 @@ class ECarouselController extends GetxController {
     hoveredIndex.value = -1;
   }
 
+  void pauseAutoPlay() {
+    carouselController.stopAutoPlay();
+  }
+
+  void resumeAutoPlay() {
+    carouselController.startAutoPlay();
+  }
+
   @override
   void onClose() {
     hoveredIndex.close();

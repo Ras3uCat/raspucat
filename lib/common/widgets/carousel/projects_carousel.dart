@@ -19,37 +19,39 @@ class ProjectsCarousel extends StatelessWidget {
         Obx(() {
           final currentPage = controller.currentPage.value;
 
-          return CarouselSlider.builder(
-            carouselController: controller.carouselController,
-            itemCount: controller.projects.length,
-            options: CarouselOptions(
-              height: ESizes.carouselHeightMd,
+          return MouseRegion(
+            onEnter: (_) => controller.pauseAutoPlay(),
+            onExit: (_) => controller.resumeAutoPlay(),
+            child: CarouselSlider.builder(
+              carouselController: controller.carouselController,
+              itemCount: controller.projects.length,
+              options: CarouselOptions(
+                height: ESizes.carouselHeightMd,
+                enlargeCenterPage: true,
+                viewportFraction: isMobile ? 0.9 : 0.4,
+                enableInfiniteScroll: true,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 3),
+                onPageChanged: (index, reason) {
+                  controller.onPageChanged(index);
+                },
+              ),
+              itemBuilder: (context, index, realIndex) {
+                final project = controller.projects[index];
+                final isSelected = currentPage == index;
 
-              enlargeCenterPage: true,
-              viewportFraction: isMobile ? 0.9 : 0.4,
-              enableInfiniteScroll: true,
-              autoPlay: true,
-              autoPlayInterval: const Duration(seconds: 3),
-              onPageChanged: (index, reason) {
-                controller.onPageChanged(index);
+                /// --- PROJECT CARD --- ///
+                ///
+                ///
+                return ProjectCard(
+                  project: project,
+                  isSelected: isSelected,
+                  onTap: () {
+                    ELoaders.customDialog(child: ProjectScreen(project: project));
+                  },
+                );
               },
             ),
-            itemBuilder: (context, index, realIndex) {
-              final project = controller.projects[index];
-              final isSelected = currentPage == index;
-
-              /// --- PROJECT CARD --- ///
-              ///
-              ///
-              return ProjectCard(
-                project: project,
-
-                isSelected: isSelected,
-                onTap: () {
-                  ELoaders.customDialog(child: ProjectScreen(project: project));
-                },
-              );
-            },
           );
         }),
 
