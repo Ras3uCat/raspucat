@@ -1,8 +1,17 @@
 import 'package:raspucat/utils/constants/exports.dart';
 
-class ProjectScreen extends StatelessWidget {
+class ProjectScreen extends StatefulWidget {
   final ProjectModel project;
   const ProjectScreen({super.key, required this.project});
+
+  @override
+  State<ProjectScreen> createState() => _ProjectScreenState();
+}
+
+class _ProjectScreenState extends State<ProjectScreen> {
+  final CarouselSliderController _carouselController = CarouselSliderController();
+
+  ProjectModel get project => widget.project;
 
   @override
   Widget build(BuildContext context) {
@@ -145,66 +154,69 @@ class ProjectScreen extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-        child: CarouselSlider.builder(
-          itemCount: project.imagePaths.length,
-          options: CarouselOptions(
-            height: ESizes.imageSizeXl,
-
-            viewportFraction: 1.0,
-            enableInfiniteScroll: project.imagePaths.length > 1,
-            autoPlay: project.imagePaths.length > 1,
-            autoPlayInterval: const Duration(seconds: 4),
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enlargeCenterPage: false,
-            // aspectRatio: 16 / 9,
-          ),
-          itemBuilder: (context, index, realIndex) {
-            return Stack(
-              children: [
-                Image.asset(
-                  project.imagePaths[index],
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-                Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  color: EColors.primary.withOpacity(0.1),
-                ),
-                // Image counter overlay
-                if (project.imagePaths.length > 1)
-                  Positioned(
-                    top: 16,
-                    right: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: EColors.backgroundDark.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(
-                          ESizes.borderRadiusMd,
+        child: MouseRegion(
+          onEnter: (_) => _carouselController.stopAutoPlay(),
+          onExit: (_) => _carouselController.startAutoPlay(),
+          child: CarouselSlider.builder(
+            carouselController: _carouselController,
+            itemCount: project.imagePaths.length,
+            options: CarouselOptions(
+              height: ESizes.imageSizeXl,
+              viewportFraction: 1.0,
+              enableInfiniteScroll: project.imagePaths.length > 1,
+              autoPlay: project.imagePaths.length > 1,
+              autoPlayInterval: const Duration(seconds: 4),
+              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              enlargeCenterPage: false,
+            ),
+            itemBuilder: (context, index, realIndex) {
+              return Stack(
+                children: [
+                  Image.asset(
+                    project.imagePaths[index],
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: EColors.primary.withOpacity(0.1),
+                  ),
+                  // Image counter overlay
+                  if (project.imagePaths.length > 1)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
                         ),
-                        border: Border.all(
-                          color: EColors.primary.withOpacity(0.3),
-                          width: 1,
+                        decoration: BoxDecoration(
+                          color: EColors.backgroundDark.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(
+                            ESizes.borderRadiusMd,
+                          ),
+                          border: Border.all(
+                            color: EColors.primary.withOpacity(0.3),
+                            width: 1,
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        '${index + 1} / ${project.imagePaths.length}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: EColors.textPrimary,
-                          fontWeight: FontWeight.w500,
+                        child: Text(
+                          '${index + 1} / ${project.imagePaths.length}',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: EColors.textPrimary,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
