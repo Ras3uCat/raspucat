@@ -24,7 +24,7 @@ class EText {
   ///
   ///
   static const String projectsHeading = 'Projects';
-  static const String projectsSubheading = 'Explore my latest projects';
+  static const String projectsSubheading = 'Explore our latest projects';
   static const String code = 'Code';
   static const String live = 'Live';
 }

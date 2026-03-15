@@ -21,6 +21,7 @@ export 'package:raspucat/common/responsive/screens/tablet_layout.dart';
 ///
 ///
 export 'package:raspucat/app/modules/screens/home_screen.dart';
+export 'package:raspucat/app/modules/screens/plans_screen.dart';
 
 /// ------------------------------------------------------------------ ///
 /// CONTROLLERS
@@ -97,6 +98,7 @@ export 'package:raspucat/bindings.dart/general_bindings.dart';
 ///
 export 'package:raspucat/app/data/models/project_model.dart';
 export 'package:raspucat/app/data/models/triangle_model.dart';
+export 'package:raspucat/app/data/models/plan_model.dart';
 
 /// ------------------------------------------------------------------ ///
 /// DATA
@@ -104,6 +106,7 @@ export 'package:raspucat/app/data/models/triangle_model.dart';
 ///
 ///
 export 'package:raspucat/app/data/projects/project_data.dart';
+export 'package:raspucat/app/data/projects/plan_data.dart';
 
 /// ------------------------------------------------------------------ ///
 /// ROUTES

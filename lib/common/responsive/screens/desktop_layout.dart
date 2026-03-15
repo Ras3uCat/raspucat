@@ -1,7 +1,7 @@
 import 'package:raspucat/app/modules/screens/projects_screen.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
-List<Widget> screens = [HomeScreen(), ProjectsScreen()];
+List<Widget> screens = [HomeScreen(), ProjectsScreen(), PlansScreen()];
 
 class DesktopLayout extends StatelessWidget {
   const DesktopLayout({super.key, this.body});

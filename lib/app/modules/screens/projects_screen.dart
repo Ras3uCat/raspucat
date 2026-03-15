@@ -35,9 +35,10 @@ class ProjectsScreen extends StatelessWidget {
             controller: sectionAnimationController,
             startOffset: const Offset(0, 50),
             child: Text(
-              EText.projectsSubheading,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: EColors.textPrimary.withOpacity(0.8),
+              EText.projectsSubheading.toUpperCase(),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: EColors.textSecondary,
+                letterSpacing: 3.0,
               ),
               textAlign: TextAlign.center,
             ),
