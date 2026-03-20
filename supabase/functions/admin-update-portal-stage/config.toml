@@ -1,0 +1,2 @@
+[functions.admin-update-portal-stage]
+verify_jwt = false

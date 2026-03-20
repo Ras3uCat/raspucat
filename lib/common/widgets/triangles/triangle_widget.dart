@@ -25,8 +25,9 @@ class TriangleWidget extends StatelessWidget {
 
       // Calculate parallax offset based on triangle size
       // Larger triangles move slower (more background), smaller triangles move faster (more foreground)
-      final parallaxFactor =
-          (triangle.size - 40) / 120; // Normalize size to 0-1 range
+      const double parallaxMinSize = 40.0;   // smallest triangle size (fastest, foreground)
+      const double parallaxSizeRange = 120.0; // full range of triangle sizes for 0-1 normalization
+      final parallaxFactor = (triangle.size - parallaxMinSize) / parallaxSizeRange;
       final parallaxOffsetY =
           scrollOffset *
           (0.3 + parallaxFactor * 0.4); // Range: 0.3x to 0.7x scroll speed

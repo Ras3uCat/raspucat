@@ -1,0 +1,2 @@
+[functions.admin-get-pending-modules]
+verify_jwt = false

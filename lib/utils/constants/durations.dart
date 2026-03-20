@@ -3,4 +3,6 @@ class EDurations {
   static const Duration pageTransition = Duration(milliseconds: 500);
   static const Duration animationOnView = Duration(milliseconds: 600);
   static const Duration buttonHover = Duration(milliseconds: 300);
+  static const Duration carouselAutoPlay = Duration(seconds: 4);
+  static const Duration carouselAnimation = Duration(milliseconds: 800);
 }

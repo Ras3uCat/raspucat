@@ -3,7 +3,7 @@
 **Focus:** Flutter Web, Supabase Auth, Stripe Checkout.
 
 ## Execution Protocol
-1. **Scenario Prep:** Read the `Acceptance Criteria` in the `STUDIO_PLAN.md`.
+1. **Scenario Prep:** Read the `Acceptance Criteria` in the active feature file (`planning/features/01_active/`).
 2. **Action:** Navigate to the target URL. Perform actions as a "Naive User" (no assumptions).
 3. **Verification:** Check console logs for 400/500 errors. Verify DB state via Supabase MCP if available.
 4. **Reporting:** Always save results to `qa/reports/YYYY-MM-DD_feature_name.md`.

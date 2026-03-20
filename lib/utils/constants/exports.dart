@@ -21,6 +21,7 @@ export 'package:raspucat/common/responsive/screens/tablet_layout.dart';
 ///
 ///
 export 'package:raspucat/app/modules/screens/home_screen.dart';
+export 'package:raspucat/app/modules/screens/not_found_screen.dart';
 export 'package:raspucat/app/modules/screens/plans_screen.dart';
 
 /// ------------------------------------------------------------------ ///
@@ -67,6 +68,7 @@ export 'package:raspucat/common/widgets/cards/project_card.dart';
 export 'package:raspucat/common/widgets/carousel/projects_carousel.dart';
 export 'package:raspucat/app/modules/widgets/project_screen.dart';
 export 'package:raspucat/common/widgets/dialogs/dialog.dart';
+export 'package:raspucat/common/widgets/footer/site_footer.dart';
 
 /// ------------------------------------------------------------------ ///
 /// PAINTERS
@@ -99,6 +101,8 @@ export 'package:raspucat/bindings.dart/general_bindings.dart';
 export 'package:raspucat/app/data/models/project_model.dart';
 export 'package:raspucat/app/data/models/triangle_model.dart';
 export 'package:raspucat/app/data/models/plan_model.dart';
+export 'package:raspucat/app/data/models/module_model.dart';
+export 'package:raspucat/app/data/models/management_option_model.dart';
 
 /// ------------------------------------------------------------------ ///
 /// DATA
@@ -127,6 +131,7 @@ export 'dart:io' hide HeaderValue;
 export 'package:flutter/foundation.dart';
 export 'package:flutter/services.dart';
 export 'package:url_launcher/url_launcher_string.dart';
+export 'package:url_launcher/url_launcher.dart';
 
 /// ------------------------------------------------------------------ ///
 /// PUB PACKAGES

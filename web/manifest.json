@@ -5,8 +5,8 @@
     "display": "standalone",
     "background_color": "#000000",
     "theme_color": "#000000",
-    "description": "Ras3uCat",
-    "orientation": "portrait-primary",
+    "description": "Ras3uCat — Flutter & Mobile Developer. Building retro-futuristic apps with clean code and high-end design.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

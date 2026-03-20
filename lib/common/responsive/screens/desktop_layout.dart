@@ -35,12 +35,12 @@ class DesktopLayout extends StatelessWidget {
       body: SingleChildScrollView(
         controller: scrollController.scrollController,
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * screens.length,
+          height: MediaQuery.of(context).size.height * screens.length + ESizes.footerHeight,
           // width: MediaQuery.of(context).size.width,
           child: Stack(
             children: [
               BackgroundTriangles(),
-              Column(children: screens),
+              Column(children: [...screens, const SiteFooter()]),
               // BackgroundTriangles(),
             ],
           ),

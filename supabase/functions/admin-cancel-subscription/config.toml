@@ -1,0 +1,2 @@
+[functions.admin-cancel-subscription]
+verify_jwt = false

@@ -1,4 +1,5 @@
 import 'package:raspucat/utils/constants/exports.dart';
+import 'package:raspucat/app/controllers/plans_controller.dart';
 
 class GeneralBindings extends Bindings {
   @override
@@ -9,5 +10,6 @@ class GeneralBindings extends Bindings {
     Get.put(EScrollController());
     Get.put(SectionAnimationController());
     Get.put(ECarouselController(projects: EData.projects));
+    Get.put(PlansController());
   }
 }

@@ -1,0 +1,2 @@
+[functions.admin-list-quotes]
+verify_jwt = false

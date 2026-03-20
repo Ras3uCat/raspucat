@@ -1,0 +1,2 @@
+[functions.create-module-checkout]
+verify_jwt = false

@@ -7,32 +7,34 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.sizeOf(context).width;
 
-    final isMobile = width < ESizes.mobile;
+    final isMobile = EDeviceUtils.isMobileWidth(width);
 
     return SectionContainer(
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CenterLogo(),
-            const SizedBox(height: ESizes.spaceBtwSections),
-            FittedBox(
-              child: NeonText(
-                text: EText.heroHeading.toUpperCase(),
-                style: Theme.of(context).textTheme.headlineLarge,
+        child: SelectionArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CenterLogo(),
+              const SizedBox(height: ESizes.spaceBtwSections),
+              FittedBox(
+                child: NeonText(
+                  text: EText.heroHeading.toUpperCase(),
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
               ),
-            ),
 
-            Text(
-              EText.heroSubtext.toUpperCase(),
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(color: EColors.textPrimary),
-              textAlign: TextAlign.center,
-            ),
+              Text(
+                EText.heroSubtext.toUpperCase(),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: EColors.textPrimary),
+                textAlign: TextAlign.center,
+              ),
             // NeonButton(onTap: () {}, child: Text("Contact Us")),
           ],
+          ),
         ),
       ),
     );

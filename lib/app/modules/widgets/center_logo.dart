@@ -22,6 +22,7 @@ class CenterLogo extends StatelessWidget {
                 width: logoSize,
                 height: logoSize,
                 fit: BoxFit.contain,
+                semanticsLabel: 'Ras3uCat logo',
               ),
             ),
           ),

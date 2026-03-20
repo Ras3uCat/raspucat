@@ -6,7 +6,7 @@ AntiGravity is the **Flutter Subagent** (Feature Implementation & UI Design).
 
 ## AGENT BEHAVIOR
 1. **Bootstrap:** On session start, run the `pre_session` hook (`bash ./.agent/hooks/skill_loader.sh`).
-2. **Handshake:** Confirm the active sub-task in `planning/CURRENT_TASK.md`. AntiGravity leads Flutter/UI tasks, including sub-task planning within those scopes.
+2. **Handshake:** Confirm the active task in `planning/features/01_active/`. AntiGravity leads Flutter/UI tasks, including sub-task planning within those scopes.
 3. **Skill Check:** Verify corresponding `.cloud/skill` is loaded before implementation.
 4. **Constraint:** No implementation until a task is assigned. Summary-only on first message.
 
@@ -25,10 +25,10 @@ AntiGravity is the **Flutter Subagent** (Feature Implementation & UI Design).
 
 ## WORKFLOW MODES
 - **FLOW:** Small diffs/bugs. Incremental commits.
-- **STUDIO:** Complex features. **MANDATORY:** Ensure `STUDIO_PLAN.md` exists (created by Planner / AntiGravity) and approve or reject it before implementation.
+- **STUDIO:** Complex features. **MANDATORY:** The active feature file in `planning/features/01_active/` must have `Mode: STUDIO` and complete scope/acceptance criteria before implementation begins.
 
 ## MEMORY & KNOWLEDGE
-- **Source of Truth:** `planning/CURRENT_TASK.md`.
+- **Source of Truth:** `planning/features/01_active/` (active feature file is the current task).
 - **Historical Context:** `planning/DECISIONS.md`.
 
 ## CONTEXT BUDGET

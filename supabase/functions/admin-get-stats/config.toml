@@ -1,0 +1,2 @@
+[functions.admin-get-stats]
+verify_jwt = false

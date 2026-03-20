@@ -27,7 +27,7 @@ class ProjectsScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: ESizes.spaceBtwItems),
 
           // Projects Subtitle
           AnimatedOnView(
@@ -44,7 +44,7 @@ class ProjectsScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 48),
+          const SizedBox(height: ESizes.spaceBtwSections),
 
           // Projects Carousel
           AnimatedOnView(

@@ -1,0 +1,2 @@
+[functions.start-subscription]
+verify_jwt = false

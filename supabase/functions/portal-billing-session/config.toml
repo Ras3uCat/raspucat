@@ -1,0 +1,6 @@
+[functions.portal-billing-session]
+# verify_jwt = false is intentional: the function handles JWT verification manually
+# via jose (jwtVerify + JWKS) so that CORS OPTIONS preflight requests are not
+# rejected at the gateway before the function can respond with the required headers.
+# Security is equivalent — unauthenticated requests are rejected with 401 inside the function.
+verify_jwt = false

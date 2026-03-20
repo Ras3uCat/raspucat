@@ -1,0 +1,2 @@
+[functions.admin-add-module]
+verify_jwt = false

@@ -4,11 +4,15 @@ class ProjectCard extends StatefulWidget {
   const ProjectCard({
     super.key,
     required this.project,
+    required this.index,
+    required this.hoveredCardIndex,
     this.onTap,
     this.isSelected = true,
   });
 
   final ProjectModel project;
+  final int index;
+  final ValueNotifier<int?> hoveredCardIndex;
   final VoidCallback? onTap;
   final bool isSelected;
 
@@ -33,6 +37,7 @@ class _ProjectCardState extends State<ProjectCard>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
     if (widget.isSelected) _pulseController.repeat(reverse: true);
+    widget.hoveredCardIndex.addListener(_onHoverChanged);
   }
 
   @override
@@ -40,7 +45,10 @@ class _ProjectCardState extends State<ProjectCard>
     super.didUpdateWidget(old);
     if (widget.isSelected == old.isSelected) return;
     if (widget.isSelected) {
-      _pulseController.repeat(reverse: true);
+      // Only start pulsing if no card is currently hovered
+      if (widget.hoveredCardIndex.value == null) {
+        _pulseController.repeat(reverse: true);
+      }
     } else {
       _pulseController.stop();
       _pulseController.reset();
@@ -49,12 +57,33 @@ class _ProjectCardState extends State<ProjectCard>
 
   @override
   void dispose() {
+    widget.hoveredCardIndex.removeListener(_onHoverChanged);
     _pulseController.dispose();
     super.dispose();
   }
 
+  void _onHoverChanged() {
+    if (!widget.isSelected) return;
+    final hovered = widget.hoveredCardIndex.value;
+    if (hovered == null) {
+      _pulseController.repeat(reverse: true);
+    } else {
+      _pulseController.stop();
+    }
+  }
+
+  // Glow rules (mirrors PlanCard):
+  //   this card hovered          → 1.0 (full)
+  //   another card hovered,
+  //     this is selected         → 0.15 (dim hold)
+  //   nothing hovered,
+  //     this is selected         → pulse value
+  //   nothing hovered,
+  //     not selected             → 0.0
   double get _glowValue {
-    if (_hovered) return 1.0;
+    final hovered = widget.hoveredCardIndex.value;
+    if (hovered == widget.index) return 1.0;
+    if (hovered != null && widget.isSelected) return 0.15;
     if (widget.isSelected) return _pulseAnim.value;
     return 0.0;
   }
@@ -72,19 +101,23 @@ class _ProjectCardState extends State<ProjectCard>
       cursor: SystemMouseCursors.click,
       onEnter: (_) {
         setState(() => _hovered = true);
-        if (widget.isSelected) _pulseController.stop();
+        widget.hoveredCardIndex.value = widget.index;
       },
       onExit: (_) {
         setState(() => _hovered = false);
-        if (widget.isSelected) _pulseController.repeat(reverse: true);
+        widget.hoveredCardIndex.value = null;
       },
       child: widget.isSelected
-          // Selected: AnimatedBuilder drives the pulse glow each frame
-          ? AnimatedBuilder(
-              animation: _pulseAnim,
-              child: body,
-              builder: (_, child) =>
-                  _CardShell(glow: _glowValue, child: child!),
+          // Selected: ValueListenableBuilder catches notifier changes (dim/undim),
+          // AnimatedBuilder drives the pulse each frame.
+          ? ValueListenableBuilder<int?>(
+              valueListenable: widget.hoveredCardIndex,
+              builder: (_, __, ___) => AnimatedBuilder(
+                animation: _pulseAnim,
+                child: body,
+                builder: (_, child) =>
+                    _CardShell(glow: _glowValue, child: child!),
+              ),
             )
           // Non-selected: TweenAnimationBuilder smoothly interpolates hover in/out
           : TweenAnimationBuilder<double>(
@@ -169,7 +202,7 @@ class _CardBody extends StatelessWidget {
       highlightColor: Colors.transparent,
       splashColor: EColors.primary.withValues(alpha: 0.08),
       child: Padding(
-        padding: const EdgeInsets.all(ESizes.defaultSpace),
+        padding: const EdgeInsets.symmetric(horizontal: ESizes.defaultSpace, vertical: ESizes.sm),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -220,6 +253,7 @@ class _ImageBlock extends StatelessWidget {
                   ? Image.asset(
                       project.imagePaths.first,
                       fit: BoxFit.cover,
+                      semanticLabel: project.title,
                     )
                   : Container(
                       decoration: BoxDecoration(

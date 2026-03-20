@@ -53,6 +53,34 @@ The brand copy for Footer already exists in `EBrand` but is unused.
 
 ---
 
+## Customer Flow
+
+The site is a conversion funnel. Every section has one job in moving a visitor toward making contact.
+
+```
+[Hero] → [About] → [Skills] → [Projects] → [Plans] → [Contact]
+  ↓          ↓          ↓           ↓            ↓          ↓
+Hook      Trust      Fit         Proof       Anchor     Action
+```
+
+### Stage Breakdown
+
+| Stage | Section | Visitor Question Answered | Conversion Job |
+| :--- | :--- | :--- | :--- |
+| **Hook** | Hero | "Who is this?" | Stop the scroll. Brand impression in < 3 seconds. |
+| **Trust** | About | "Can I trust this person?" | Establish credibility and personality. Makes it personal. |
+| **Fit** | Skills | "Do they know my stack?" | Let the visitor self-qualify. If they see their tech, they stay. |
+| **Proof** | Projects | "Have they done this before?" | Show, don't tell. Real work closes the deal. |
+| **Anchor** | Plans | "What does this cost?" | Set expectations early. Prevents sticker shock at contact. |
+| **Action** | Contact | "How do I hire them?" | Single clear CTA. Remove all friction. |
+
+### Key Principles
+- **No dead ends** — every section should have a visual pull toward the next one (scroll cue, anchor link, or CTA).
+- **Plans before Contact** — pricing is shown *before* the contact CTA so leads are pre-qualified. Unqualified visitors self-select out.
+- **Contact is the only goal** — the entire page exists to get one click: the "Get In Touch" button.
+
+---
+
 ## Design Decisions
 | Decision | Choice | Rationale |
 | :--- | :--- | :--- |

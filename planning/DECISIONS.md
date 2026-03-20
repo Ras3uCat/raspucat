@@ -10,7 +10,7 @@
 - **Context:** The project requires a fine-grained orchestration between high-level strategic reasoning (Claude) and low-level code implementation (AntiGravity).
 - **Decision:** Formalize a hybrid model where Claude (Cloud) serves as the Planner/Architect, while AntiGravity (System) serves as the Flutter Subagent and UI Lead.
 - **Rationale:** Claude excels at global context and safety checks, while AntiGravity's system access makes it more efficient for multi-file edits and UI automation.
-- **Consequences:** All UI/Flutter tasks must be led by AntiGravity. Claude approves the high-level `STUDIO_PLAN.md` before AntiGravity begins implementation.
+- **Consequences:** All UI/Flutter tasks must be led by AntiGravity. Claude approves the active feature file in `planning/features/01_active/` before AntiGravity begins implementation.
 
 ---
 

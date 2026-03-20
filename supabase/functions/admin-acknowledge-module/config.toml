@@ -1,0 +1,2 @@
+[functions.admin-acknowledge-module]
+verify_jwt = false

@@ -1,7 +1,7 @@
 import 'package:raspucat/utils/constants/exports.dart';
 
 /// --- REUSABLE NEON BUTTON WIDGET --- ///
-class NeonButton extends StatelessWidget {
+class NeonButton extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final Color neonColor;
@@ -26,56 +26,58 @@ class NeonButton extends StatelessWidget {
   });
 
   @override
+  State<NeonButton> createState() => _NeonButtonState();
+}
+
+class _NeonButtonState extends State<NeonButton> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    final isHovered = false.obs; // Local hover state per button
+    final disabled = widget.onTap == null;
 
-    return Obx(() {
-      return SizedBox(
-        width: width,
-        height: height,
-
+    return Opacity(
+      opacity: disabled ? 0.38 : 1.0,
+      child: SizedBox(
+        width: widget.width,
+        height: widget.height,
         child: InkWell(
-          borderRadius: BorderRadius.circular(borderRadius),
-          onHover: (value) {
-            isHovered.value = value;
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          onHover: disabled ? null : (value) {
+            setState(() => _isHovered = value);
           },
           hoverColor: Colors.transparent,
           highlightColor: EColors.primary.withOpacity(0.1),
           splashColor: EColors.primary,
-          onTap: onTap,
+          onTap: widget.onTap,
           child: AnimatedContainer(
             duration: EDurations.buttonHover,
-
-            padding: padding,
+            padding: widget.padding,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(borderRadius),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               boxShadow: [
                 for (double i = 1; i < 3; i++)
                   BoxShadow(
-                    color: isHovered.value
-                        ? hoverColor!.withOpacity(1 - (i * 0.3))
+                    color: _isHovered
+                        ? widget.hoverColor!.withOpacity(1 - (i * 0.3))
                         : EColors.backgroundDark.withOpacity(1 - (i * 0.3)),
                     blurRadius: 3 * i,
                   ),
               ],
-
               color: EColors.backgroundDark.withOpacity(0.8),
-              // color: isHovered.value
-              //     ? hoverColor!.withOpacity(0.1)
-              //     : EColors.backgroundDark,
               border: Border.all(
-                color: isHovered.value
-                    ? hoverColor?.withOpacity(0.7) ?? neonColor.withOpacity(0.8)
-                    : neonColor.withOpacity(0.8),
+                color: _isHovered
+                    ? widget.hoverColor?.withOpacity(0.7) ?? widget.neonColor.withOpacity(0.8)
+                    : widget.neonColor.withOpacity(0.8),
                 width: 2,
               ),
             ),
-            child: isHovered.value && enableOverlay
-                ? GradientOverlay(child: child)
-                : child,
+            child: _isHovered && widget.enableOverlay
+                ? GradientOverlay(child: widget.child)
+                : widget.child,
           ),
         ),
-      );
-    });
+      ),
+    );
   }
 }

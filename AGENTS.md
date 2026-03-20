@@ -4,7 +4,7 @@
 | Mode | Usage | Requirements |
 | :--- | :--- | :--- |
 | **FLOW** | Bugs, UI, Small Refactors | Small diffs, no schema changes. |
-| **STUDIO**| Features, Migrations, Auth | Requires `STUDIO_PLAN.md` + Architect approval. |
+| **STUDIO**| Features, Migrations, Auth | Active feature file must have `Mode: STUDIO` + Architect approval before implementation. |
 
 ## The Pilot Army (Roles & Scopes)
 | Role | Responsibility | Authority | Forbidden Actions |
@@ -38,19 +38,18 @@
   - recommendation
 
 ## Handshake Protocol (The "Done" Definition)
-- **Planner → Engineer:** Plan is approved in `STUDIO_PLAN.md`.
+- **Planner → Engineer:** Active feature file in `planning/features/01_active/` is complete with scope + acceptance criteria.
 - **Engineer → QA:** Code is implemented and local unit tests pass.
-- **QA → Architect: Validation report saved to `qa/reports/` with "PASS".
-- **Architect/Planner (Claude) → AntiGravity:** Final approval given; `CURRENT_TASK.md` marked complete.
+- **QA → Architect:** Validation report saved to `qa/reports/` with "PASS".
+- **Architect/Planner (Claude) → AntiGravity:** Final approval given; feature file moved to `planning/features/02_completed/`.
 
 ## Communication Protocol
-1. **Current Status:** `planning/CURRENT_TASK.md` (What is happening right now).
-2. **Technical Blueprint:** `STUDIO_PLAN.md` (Deep dive for the current feature).
-3. **Audit Trail:** `planning/DECISIONS.md` (Why we chose X over Y).
+1. **Current Status:** `planning/features/01_active/` (active feature file = current task).
+2. **Audit Trail:** `planning/DECISIONS.md` (Why we chose X over Y).
 
 ## Conflict Resolution
 1. If **QA** fails a build, **Engineer** must revert or fix; **Architect** cannot override a QA "FAIL" without a documented `decision.md` entry.
-2. If **Engineer** finds a plan flaw, they must signal **Planner** to revise the `STUDIO_PLAN.md` before writing more code.
+2. If **Engineer** finds a plan flaw, they must signal **Planner** to revise the active feature file before writing more code.
 
 ## Critical Guardrails
 - **Separate Concerns:** Never combine Planning + Implementation in STUDIO mode.

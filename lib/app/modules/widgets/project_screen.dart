@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:raspucat/utils/constants/exports.dart';
 
 class ProjectScreen extends StatefulWidget {
@@ -8,132 +9,96 @@ class ProjectScreen extends StatefulWidget {
   State<ProjectScreen> createState() => _ProjectScreenState();
 }
 
-class _ProjectScreenState extends State<ProjectScreen> {
+class _ProjectScreenState extends State<ProjectScreen>
+    with SingleTickerProviderStateMixin {
   final CarouselSliderController _carouselController = CarouselSliderController();
+  late final AnimationController _enterCtrl;
+  late final Animation<double> _carouselAnim;
+  late final Animation<double> _detailsAnim;
+  int _titleChars = 0;
+  Timer? _typewriter;
 
   ProjectModel get project => widget.project;
+  String get _fullTitle => project.title.toUpperCase();
+
+  @override
+  void initState() {
+    super.initState();
+    _enterCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _carouselAnim = CurvedAnimation(
+      parent: _enterCtrl,
+      curve: const Interval(0.1, 0.65, curve: Curves.easeOut),
+    );
+    _detailsAnim = CurvedAnimation(
+      parent: _enterCtrl,
+      curve: const Interval(0.45, 1.0, curve: Curves.easeOut),
+    );
+    _enterCtrl.forward();
+    _typewriter = Timer.periodic(const Duration(milliseconds: 42), (t) {
+      if (_titleChars >= _fullTitle.length) {
+        t.cancel();
+        return;
+      }
+      if (mounted) setState(() => _titleChars++);
+    });
+  }
+
+  @override
+  void dispose() {
+    _typewriter?.cancel();
+    _enterCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // width: double.infinity,
-      child: Column(
-        children: [
-          SizedBox(height: ESizes.spaceBtwSections),
+    final visibleTitle = _fullTitle.substring(0, _titleChars);
 
-          /// --- PROJECT TITLE --- ///
-          NeonText(
-            isHeadline: true,
-            neonColor: EColors.textPrimary.withOpacity(0.5),
-            text: project.title.toUpperCase(),
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(color: EColors.textPrimary),
+    return Column(
+      children: [
+        SizedBox(height: ESizes.spaceBtwSections),
+
+        // Typewriter title
+        NeonText(
+          isHeadline: true,
+          neonColor: EColors.textPrimary.withValues(alpha: 0.5),
+          text: visibleTitle.isEmpty ? '\u200B' : visibleTitle,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: EColors.textPrimary,
           ),
-          SizedBox(height: ESizes.spaceBtwSections),
+        ),
 
-          /// --- PROJECT IMAGE CAROUSEL --- ///
-          if (project.imagePaths.isNotEmpty) ...[
-            _buildImageCarousel(context),
-          ] else
-            _buildPlaceholderImage(context),
-          SizedBox(height: ESizes.spaceBtwSections),
+        SizedBox(height: ESizes.spaceBtwSections),
 
-          /// --- PROJECT DESCRIPTION --- ///
-          if (project.description.isNotEmpty) ...[
-            Text(
-              project.description,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: EColors.textPrimary.withOpacity(0.8),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: ESizes.spaceBtwSections),
-          ],
+        // Image carousel — slides up on entrance
+        AnimatedBuilder(
+          animation: _carouselAnim,
+          child: project.imagePaths.isNotEmpty
+              ? _buildImageCarousel(context)
+              : _buildPlaceholder(context),
+          builder: (_, child) => Transform.translate(
+            offset: Offset(0, 30 * (1 - _carouselAnim.value)),
+            child: Opacity(opacity: _carouselAnim.value, child: child),
+          ),
+        ),
 
-          /// --- TECHNOLOGIES --- ///
-          if (project.technologies.isNotEmpty) ...[
-            Wrap(
-              spacing: ESizes.sm,
-              runSpacing: ESizes.sm,
-              alignment: WrapAlignment.center,
-              children: project.technologies.map((tech) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                    border: Border.all(
-                      color: EColors.primary.withOpacity(0.5),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    tech,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: EColors.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: ESizes.spaceBtwSections),
-          ],
+        SizedBox(height: ESizes.spaceBtwSections),
 
-          /// --- ACTION BUTTONS --- ///
-          if (project.githubUrl != null || project.liveUrl != null) ...[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                /// --- CODE BUTTON --- ///
-                if (project.githubUrl != null)
-                  NeonButton(
-                    onTap: () {
-                      // Handle GitHub link
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        EIcons.iconModify(EIcons.code, size: ESizes.iconSm),
+        // Description, tech, buttons — fades in after carousel
+        AnimatedBuilder(
+          animation: _detailsAnim,
+          child: _ProjectDetails(project: project),
+          builder: (_, child) => Transform.translate(
+            offset: Offset(0, 20 * (1 - _detailsAnim.value)),
+            child: Opacity(opacity: _detailsAnim.value, child: child),
+          ),
+        ),
 
-                        SizedBox(width: 8),
-                        Text(
-                          EText.code,
-                          style: Theme.of(context).textTheme.bodySmall!
-                              .copyWith(color: EColors.textPrimary),
-                        ),
-                      ],
-                    ),
-                  ),
-                if (project.githubUrl != null && project.liveUrl != null)
-                  SizedBox(width: 16),
-                if (project.liveUrl != null)
-                  NeonButton(
-                    onTap: () {
-                      EDeviceUtils.launchUrl(project.liveUrl!);
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        EIcons.iconModify(EIcons.launch, size: ESizes.iconSm),
-
-                        SizedBox(width: 8),
-                        Text(
-                          EText.live,
-                          style: Theme.of(context).textTheme.bodySmall!
-                              .copyWith(color: EColors.textPrimary),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ],
-      ),
+        SizedBox(height: ESizes.spaceBtwSections),
+      ],
     );
   }
 
@@ -143,10 +108,13 @@ class _ProjectScreenState extends State<ProjectScreen> {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-        border: Border.all(color: EColors.primary.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: EColors.primary.withValues(alpha: 0.3),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: EColors.primary.withOpacity(0.1),
+            color: EColors.primary.withValues(alpha: 0.08),
             blurRadius: 8,
             spreadRadius: 2,
           ),
@@ -164,56 +132,51 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 viewportFraction: 1.0,
                 enableInfiniteScroll: project.imagePaths.length > 1,
                 autoPlay: false,
-                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enlargeCenterPage: false,
               ),
-              itemBuilder: (context, index, realIndex) {
-              return Stack(
+              itemBuilder: (context, index, _) => Stack(
                 children: [
                   Image.asset(
                     project.imagePaths[index],
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.cover,
+                    semanticLabel: '${project.title} screenshot',
                   ),
                   Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: EColors.primary.withOpacity(0.1),
+                    color: EColors.primary.withValues(alpha: 0.08),
                   ),
-                  // Image counter overlay
                   if (project.imagePaths.length > 1)
                     Positioned(
-                      top: 16,
-                      right: 16,
+                      top: ESizes.md,
+                      right: ESizes.md,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
+                          horizontal: ESizes.sm,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: EColors.backgroundDark.withOpacity(0.8),
+                          color: EColors.backgroundDark.withValues(alpha: 0.85),
                           borderRadius: BorderRadius.circular(
                             ESizes.borderRadiusMd,
                           ),
                           border: Border.all(
-                            color: EColors.primary.withOpacity(0.3),
+                            color: EColors.primary.withValues(alpha: 0.5),
                             width: 1,
                           ),
                         ),
                         child: Text(
                           '${index + 1} / ${project.imagePaths.length}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: EColors.textPrimary,
-                            fontWeight: FontWeight.w500,
+                          style: TextStyle(
+                            color: EColors.primary,
+                            fontSize: ESizes.fontSizeLabel,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.0,
                           ),
                         ),
                       ),
                     ),
                 ],
-              );
-              },
+              ),
             ),
             if (project.imagePaths.length > 1) ...[
               Positioned(
@@ -255,7 +218,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
     );
   }
 
-  Widget _buildPlaceholderImage(BuildContext context) {
+  Widget _buildPlaceholder(BuildContext context) {
     return Container(
       height: ESizes.imageSizeLg,
       width: double.infinity,
@@ -265,19 +228,151 @@ class _ProjectScreenState extends State<ProjectScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            EColors.primary.withOpacity(0.2),
-            EColors.secondary.withOpacity(0.2),
+            EColors.primary.withValues(alpha: 0.2),
+            EColors.secondary.withValues(alpha: 0.2),
           ],
         ),
-        border: Border.all(color: EColors.primary.withOpacity(0.3), width: 1),
+        border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
       ),
       child: Center(
         child: Icon(
           Icons.code,
           size: 80,
-          color: EColors.primary.withOpacity(0.6),
+          color: EColors.primary.withValues(alpha: 0.6),
         ),
       ),
+    );
+  }
+}
+
+// ─── Details block ────────────────────────────────────────────────────────────
+
+class _ProjectDetails extends StatelessWidget {
+  const _ProjectDetails({required this.project});
+
+  final ProjectModel project;
+
+  static const _backendTechs = {
+    'Firebase', 'Stripe', 'Supabase',
+    'Firebase Auth', 'Supabase Auth', 'Node', 'PostgreSQL',
+  };
+
+  Color _tagColor(String tech) =>
+      _backendTechs.contains(tech) ? EColors.accent : EColors.primary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (project.description.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: ESizes.lg),
+            child: Text(
+              project.description,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: EColors.textPrimary.withValues(alpha: 0.8),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: ESizes.spaceBtwSections),
+        ],
+        if (project.technologies.isNotEmpty) ...[
+          Wrap(
+            spacing: ESizes.sm,
+            runSpacing: ESizes.sm,
+            alignment: WrapAlignment.center,
+            children: project.technologies.map((tech) {
+              final color = _tagColor(tech);
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  tech,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          SizedBox(height: ESizes.spaceBtwSections),
+        ],
+        if (project.githubUrl != null || project.liveUrl != null)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (project.githubUrl != null) ...[
+                NeonButton(
+                  neonColor: EColors.primary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ESizes.lg,
+                    vertical: ESizes.md,
+                  ),
+                  onTap: () => EDeviceUtils.launchUrl(project.githubUrl!),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        FontAwesomeIcons.github,
+                        color: EColors.primary,
+                        size: ESizes.iconSm,
+                      ),
+                      const SizedBox(width: ESizes.sm),
+                      Text(
+                        'SOURCE CODE',
+                        style: TextStyle(
+                          color: EColors.primary,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0,
+                          fontSize: ESizes.fontSizeSm,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: ESizes.md),
+              ],
+              if (project.liveUrl != null)
+                NeonButton(
+                  neonColor: EColors.accent,
+                  hoverColor: EColors.primary,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ESizes.lg,
+                    vertical: ESizes.md,
+                  ),
+                  onTap: () => EDeviceUtils.launchUrl(project.liveUrl!),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.open_in_new,
+                        color: EColors.accent,
+                        size: ESizes.iconSm,
+                      ),
+                      const SizedBox(width: ESizes.sm),
+                      Text(
+                        'VIEW LIVE',
+                        style: TextStyle(
+                          color: EColors.accent,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0,
+                          fontSize: ESizes.fontSizeSm,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+      ],
     );
   }
 }

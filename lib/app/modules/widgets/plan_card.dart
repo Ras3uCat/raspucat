@@ -1,11 +1,8 @@
 import 'package:raspucat/utils/constants/exports.dart';
+import 'package:raspucat/app/modules/widgets/plan_configurator_overlay.dart';
 
 class PlanCard extends StatefulWidget {
-  const PlanCard({
-    super.key,
-    required this.plan,
-    required this.hoveredId,
-  });
+  const PlanCard({super.key, required this.plan, required this.hoveredId});
 
   final PlanModel plan;
   final ValueNotifier<String?> hoveredId;
@@ -14,7 +11,8 @@ class PlanCard extends StatefulWidget {
   State<PlanCard> createState() => _PlanCardState();
 }
 
-class _PlanCardState extends State<PlanCard> with SingleTickerProviderStateMixin {
+class _PlanCardState extends State<PlanCard>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _pulseController;
   late final Animation<double> _pulseAnim;
 
@@ -67,13 +65,18 @@ class _PlanCardState extends State<PlanCard> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    final Color accentColor = widget.plan.isCustom ? EColors.accent : EColors.primary;
+    final Color accentColor = widget.plan.isCustom
+        ? EColors.accent
+        : EColors.primary;
 
     // Content built once — not inside any builder — preserves NeonButton hover state.
     final content = _PlanCardContent(
       plan: widget.plan,
       accentColor: accentColor,
-      onCta: () => launchUrlString('mailto:meow@raspucat.com'),
+      onCta: () => Get.dialog(
+        PlanConfiguratorOverlay(plan: widget.plan),
+        barrierColor: Colors.transparent,
+      ),
     );
 
     return MouseRegion(
@@ -130,7 +133,11 @@ class _CardShell extends StatelessWidget {
     final borderWidth = 1.0 + 0.5 * glow;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 530, minWidth: 300, maxWidth: 300),
+      constraints: const BoxConstraints(
+        minHeight: 570,
+        minWidth: 300,
+        maxWidth: 300,
+      ),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
@@ -150,7 +157,9 @@ class _CardShell extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: accentColor.withValues(alpha: glow > 0 ? 0.28 * glow : 0.06),
+              color: accentColor.withValues(
+                alpha: glow > 0 ? 0.28 * glow : 0.06,
+              ),
               blurRadius: glow > 0 ? 28.0 * glow : 4,
               spreadRadius: glow > 0 ? 3.0 * glow : 1,
             ),
@@ -204,14 +213,6 @@ class _PlanCardContent extends StatelessWidget {
                 isHeadline: false,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
-              Text(
-                plan.label.toUpperCase(),
-                style: TextStyle(
-                  color: EColors.textSecondary,
-                  fontSize: ESizes.fontSizeLabel,
-                  letterSpacing: 2.5,
-                ),
-              ),
               const SizedBox(height: ESizes.md),
               Text(
                 plan.price,
@@ -222,43 +223,131 @@ class _PlanCardContent extends StatelessWidget {
                   letterSpacing: 0.5,
                 ),
               ),
+              if (plan.monthlyPrice.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  plan.monthlyPrice,
+                  style: TextStyle(
+                    color: EColors.textSecondary,
+                    fontSize: ESizes.fontSizeLabel,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 1),
+                Text(
+                  'or \$400 one-time handover',
+                  style: TextStyle(
+                    color: EColors.textSecondary.withValues(alpha: 0.55),
+                    fontSize: ESizes.fontSizeLabel - 1,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 6),
+              // Always reserve pill height so all cards align vertically.
+              if (plan.bundleSavings != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: ESizes.sm,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: EColors.gold.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+                    border: Border.all(
+                      color: EColors.gold.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: Text(
+                    plan.bundleSavings!,
+                    style: TextStyle(
+                      color: EColors.gold,
+                      fontSize: ESizes.fontSizeLabel,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                )
+              else
+                const SizedBox(height: 20),
               const SizedBox(height: 4),
-              Text(
-                plan.idealFor,
-                style: TextStyle(
-                  color: EColors.textSecondary,
-                  fontSize: ESizes.fontSizeLabel,
+              // Always reserve two lines of height so cards align regardless
+              // of whether idealFor wraps to one or two lines.
+              SizedBox(
+                height: 34,
+                child: Text(
+                  plan.idealFor,
+                  style: TextStyle(
+                    color: EColors.textSecondary,
+                    fontSize: ESizes.fontSizeLabel,
+                    height: 1.4,
+                  ),
+                  maxLines: 2,
                 ),
               ),
               const SizedBox(height: ESizes.md),
-              Divider(color: EColors.primary.withValues(alpha: 0.15), thickness: 1),
+              Divider(
+                color: EColors.primary.withValues(alpha: 0.15),
+                thickness: 1,
+              ),
               const SizedBox(height: ESizes.md),
-              ...plan.features.map(
-                (f) => Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '✓  ',
-                        style: TextStyle(
-                          color: EColors.primary,
-                          fontSize: ESizes.fontSizeSm,
-                          height: 1.4,
+              // Fixed-height block — 4 feature slots + 1 overflow row = 150px.
+              // Keeps all cards the same height regardless of feature count.
+              SizedBox(
+                height: 150,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ...plan.features
+                        .take(4)
+                        .map(
+                          (f) => Padding(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '✓  ',
+                                  style: TextStyle(
+                                    color: EColors.primary,
+                                    fontSize: ESizes.fontSizeSm,
+                                    height: 1.4,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    f,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: EColors.textWhite.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                      fontSize: ESizes.fontSizeSm,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      Expanded(
+                    if (plan.features.length > 4)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
                         child: Text(
-                          f,
+                          plan.features.last.startsWith('+')
+                              ? plan.features.last
+                              : '+ ${plan.features.length - 4} more included',
                           style: TextStyle(
-                            color: EColors.textWhite.withValues(alpha: 0.8),
+                            color: EColors.textSecondary,
                             fontSize: ESizes.fontSizeSm,
                             height: 1.4,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ],
@@ -276,7 +365,7 @@ class _PlanCardContent extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    plan.isCustom ? 'Get In Touch' : 'Select Plan',
+                    'Select Plan',
                     style: const TextStyle(
                       color: EColors.textWhite,
                       fontWeight: FontWeight.w600,

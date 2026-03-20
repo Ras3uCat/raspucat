@@ -96,6 +96,9 @@ class ESizes {
   /// --- Divider Sizes --- ///
   static const double dividerHeight = 1.0;
 
+  /// --- Footer --- ///
+  static const double footerHeight = 80.0;
+
   /// --- Section Sizes --- ///
   static const double section2Xs = 35;
   static const double sectionXs = 50; // --- Using on Drawer

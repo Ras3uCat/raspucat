@@ -1,5 +1,6 @@
 import 'dart:ui' as html;
 
+import 'package:flutter/foundation.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
 class EDeviceUtils {
@@ -37,6 +38,10 @@ class EDeviceUtils {
     return GetPlatform.isMobile;
   }
 
+  static bool isMobileWidth(double width) {
+    return width < ESizes.mobile;
+  }
+
   static bool isWeb() {
     return GetPlatform.isWeb;
     //All platforms are supported independently in web!
@@ -57,15 +62,15 @@ class EDeviceUtils {
   }
 
   static bool isMacOS() {
-    return GetPlatform.isIOS;
+    return GetPlatform.isMacOS;
   }
 
   static bool isWindows() {
-    return GetPlatform.isIOS;
+    return GetPlatform.isWindows;
   }
 
   static bool isLinux() {
-    return GetPlatform.isIOS;
+    return GetPlatform.isLinux;
   }
 
   /// --- SCREEN SIZE --- ///
@@ -183,7 +188,7 @@ class EDeviceUtils {
         await launchUrlString(url, mode: LaunchMode.platformDefault);
       }
     } catch (e) {
-      print('Could not launch $url: $e');
+      if (kDebugMode) print('Could not launch $url: $e');
       throw 'Could not launch $url';
     }
   }

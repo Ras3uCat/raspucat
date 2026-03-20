@@ -9,7 +9,7 @@ class M3OWBrandMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: size * 3,
+      width: size * 4,
       height: size,
       child: CustomPaint(
         painter: _M3OWPainter(color: color ?? EColors.primary),
@@ -56,8 +56,16 @@ class _M3OWPainter extends CustomPainter {
     path.lineTo(start3 + unit * 0.4, unit);
     path.lineTo(start3, unit);
 
+    // Geometric "O" (rectangular outline)
+    double startO = unit * 2.2;
+    path.moveTo(startO, 0);
+    path.lineTo(startO + unit * 0.8, 0);
+    path.lineTo(startO + unit * 0.8, unit);
+    path.lineTo(startO, unit);
+    path.close();
+
     // Simplified Geometric "W" (inverted M basically)
-    double startW = unit * 2.2;
+    double startW = unit * 3.2;
     path.moveTo(startW, 0);
     path.lineTo(startW, unit);
     path.lineTo(startW + unit * 0.4, unit * 0.5);
