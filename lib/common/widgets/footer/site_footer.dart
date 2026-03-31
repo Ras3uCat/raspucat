@@ -86,14 +86,22 @@ class _DesktopFooter extends StatelessWidget {
 
         const Spacer(),
 
-        // Copyright
-        Text(
-          '© ${DateTime.now().year} ${EBrand.creditCompact}',
-          style: TextStyle(
-            color: EColors.textSecondary.withValues(alpha: 0.5),
-            fontSize: ESizes.fontSizeLabel,
-            letterSpacing: 0.5,
-          ),
+        // Legal links + copyright
+        Row(
+          children: [
+            _FooterLink(label: 'Terms', route: ERoutes.terms),
+            Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: ESizes.fontSizeLabel)),
+            _FooterLink(label: 'Privacy', route: ERoutes.privacy),
+            Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: ESizes.fontSizeLabel)),
+            Text(
+              '© ${DateTime.now().year} ${EBrand.creditCompact}',
+              style: TextStyle(
+                color: EColors.textSecondary.withValues(alpha: 0.5),
+                fontSize: ESizes.fontSizeLabel,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -135,7 +143,42 @@ class _MobileFooter extends StatelessWidget {
             letterSpacing: 0.8,
           ),
         ),
+        const SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _FooterLink(label: 'Terms', route: ERoutes.terms),
+            Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: 10)),
+            _FooterLink(label: 'Privacy', route: ERoutes.privacy),
+          ],
+        ),
       ],
+    );
+  }
+}
+
+// ─── Shared link widget ───────────────────────────────────────────────────────
+
+class _FooterLink extends StatelessWidget {
+  const _FooterLink({required this.label, required this.route});
+  final String label;
+  final String route;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Get.toNamed(route),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Text(
+          label,
+          style: TextStyle(
+            color: EColors.textSecondary.withValues(alpha: 0.5),
+            fontSize: ESizes.fontSizeLabel,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
     );
   }
 }

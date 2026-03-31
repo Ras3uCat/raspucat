@@ -27,6 +27,26 @@ class EText {
   static const String notFoundMessage = 'Lost in space.';
   static const String notFoundCta = 'RETURN HOME';
 
+  /// --- ABOUT SECTION TEXT --- ///
+  ///
+  static const String aboutSubLabel = 'Signal acquired. Systems online.';
+  static const String aboutBio =
+      'Flutter developer. Full-stack. Precision interfaces, payment-connected backends, '
+      'and real-time systems — the full sequence from brief to launch. '
+      'Past builds include booking platforms, interactive frontends, and production '
+      'mobile apps deployed to iOS and Android. One point of contact. No overhead.';
+
+  /// --- SKILLS SECTION TEXT --- ///
+  ///
+  static const String skillsSubLabel = 'The stack behind the work.';
+
+  /// --- CONTACT SECTION TEXT --- ///
+  ///
+  static const String contactSubLabel = 'Ready when you are.';
+  static const String contactCopy =
+      'Have a project in mind? Drop a message and let\'s see if we\'re a good fit. '
+      'Most inquiries get a reply within one business day.';
+
   /// --- PROJECTS SCREEN TEXT --- ///
   ///
   ///
@@ -34,6 +54,20 @@ class EText {
   static const String projectsSubheading = 'Explore our latest projects';
   static const String code = 'Code';
   static const String live = 'Live';
+
+  /// --- HOW IT WORKS SECTION TEXT --- ///
+  ///
+  static const String howItWorksHeading = 'THE SEQUENCE';
+  static const String howItWorksSubLabel = 'From first signal to fully operational.';
+  static const String howItWorksPortalBadge = 'Portal opens on deposit';
+
+  /// --- PLANS SCREEN TEXT --- ///
+  ///
+  static const String plansBaseInclusions =
+      'Every plan includes a full website (home, services, about & FAQ), '
+      'contact form, mobile-responsive design, and SEO-ready setup — '
+      'all starting from \$1,200.';
+  static const String planHandoverNote = 'or \$400 one-time handover';
 
   /// --- PORTAL LOGIN TEXT --- ///
   ///

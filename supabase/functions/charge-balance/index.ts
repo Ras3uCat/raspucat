@@ -193,33 +193,8 @@ Deno.serve(async (req) => {
       `,
     );
 
-    // Email client
-    await sendEmail(
-      quote.client_email,
-      `Final payment confirmed — your site is fully funded`,
-      themedEmail(`
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58E3EF;margin:0 0 14px;text-transform:uppercase;">Mission Funded</p>
-        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#E8FEFF;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">You're all paid up, ${quote.client_name}.</h1>
-        <p style="color:rgba(232,254,255,0.6);font-size:15px;line-height:1.8;margin:0 0 28px;">
-          Your final payment has been received. Your site build is fully funded — from here, we cross every finish line together.
-        </p>
-        <div style="background:#0B0E1F;border:1px solid rgba(88,227,239,0.18);border-radius:12px;padding:24px;margin-bottom:24px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <tr>
-              <td style="color:rgba(232,254,255,0.45);font-size:13px;">Final payment received</td>
-              <td style="color:#FFB938;font-size:13px;font-weight:600;text-align:right;">${fmt(quote.balance_cents)}</td>
-            </tr>
-            <tr>
-              <td style="padding-top:10px;color:rgba(232,254,255,0.45);font-size:13px;">Status</td>
-              <td style="padding-top:10px;color:#58E3EF;font-size:13px;font-weight:500;text-align:right;">Fully Funded ✓</td>
-            </tr>
-          </table>
-        </div>
-        <p style="color:rgba(232,254,255,0.55);font-size:14px;line-height:1.8;margin:0;">
-          We will be in touch shortly with next steps. The final stretch is always the most exciting.
-        </p>
-      `),
-    );
+    // Client launch email is sent by stripe-webhook handleBalancePaid
+    // (fires on payment_intent.succeeded with is_balance=true) — not sent here to avoid duplicate.
 
     return new Response(
       JSON.stringify({ success: true }),

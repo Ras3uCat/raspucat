@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
     // Fetch quote
     const { data: quote, error: quoteError } = await supabase
       .from('quotes')
-      .select('id, client_name, client_email, stripe_customer_id, stripe_payment_method_id, module_ids')
+      .select('id, client_name, client_email, stripe_customer_id, stripe_payment_method_id, module_ids, site_url')
       .eq('id', quoteId)
       .single();
 
@@ -166,6 +166,27 @@ Deno.serve(async (req) => {
       .eq('id', quoteId);
 
     logEvent(quoteId, 'module_added', { module_id: moduleId, module_name: module.name, amount_cents: module.price });
+
+    // Add module admin URL to portal_deliverables if site_url is set
+    const moduleAdminPaths: Record<string, string> = {
+      booking:       '/admin/bookings',
+      shop:          '/admin/shop',
+      events:        '/admin/events',
+      blog:          '/admin/blog',
+      gallery:       '/admin/gallery',
+      testimonials:  '/admin/testimonials',
+      newsletter:    '/admin/newsletter',
+      faq:           '/admin/faq',
+    };
+    const adminPath = moduleAdminPaths[moduleId];
+    if (adminPath && quote.site_url) {
+      await supabase.from('portal_deliverables').insert({
+        quote_id: quoteId,
+        title:    `${module.name} Admin Panel`,
+        url:      `${quote.site_url}${adminPath}`,
+        status:   'approved',
+      });
+    }
 
     // Send emails (non-blocking — do not await so a failed email doesn't block the response)
     const clientHtml = themedEmail(`

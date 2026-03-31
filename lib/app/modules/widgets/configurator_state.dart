@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
@@ -29,6 +28,86 @@ class ConfiguratorState {
   final RxString clientSecret = ''.obs;
   final RxString quoteId = ''.obs;
 
+  // Promo code
+  final RxString appliedPromoCode = ''.obs;
+  final RxInt promoDiscountCents = 0.obs;
+  final RxBool promoIsLoading = false.obs;
+  final RxnString promoError = RxnString();
+  final RxString promoAppliesTo = ''.obs;          // 'setup', 'subscription', 'both'
+  final RxnString promoSubscriptionLabel = RxnString(); // e.g. "50% off forever"
+  final RxnInt subDiscountPct = RxnInt();           // e.g. 99 (percent)
+  final RxnInt subDiscountFixed = RxnInt();         // cents off per period
+
+  int get discountedSetup => computedSetup.value - promoDiscountCents.value;
+
+  void clearPromoCode() {
+    appliedPromoCode.value = '';
+    promoDiscountCents.value = 0;
+    promoError.value = null;
+    promoAppliesTo.value = '';
+    promoSubscriptionLabel.value = null;
+    subDiscountPct.value = null;
+    subDiscountFixed.value = null;
+  }
+
+  Future<void> applyPromoCode(String code) async {
+    final trimmed = code.trim().toUpperCase();
+    if (trimmed.isEmpty) return;
+    promoIsLoading.value = true;
+    promoError.value = null;
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'validate-promo-code',
+        body: {'code': trimmed, 'setupTotalCents': computedSetup.value},
+      );
+      final data = response.data as Map<String, dynamic>?;
+      if (data == null || data['valid'] != true) {
+        promoError.value = (data?['error'] as String?) ?? 'Invalid promo code.';
+        return;
+      }
+      appliedPromoCode.value = trimmed;
+      final appliesTo = (data['appliesTo'] as String?) ?? 'both';
+      promoAppliesTo.value = appliesTo;
+      promoDiscountCents.value = (appliesTo == 'subscription')
+          ? 0
+          : (data['discountAmtCents'] as int? ?? 0);
+
+      // Build subscription discount label and store raw values for price calc
+      if (appliesTo == 'subscription' || appliesTo == 'both') {
+        final pct = data['subscriptionDiscountPct'] as num?;
+        final fixed = data['subscriptionDiscountFixed'] as num?;
+        final duration = data['subscriptionDuration'] as String?;
+        final months = data['subscriptionDurationMonths'] as num?;
+        final desc = data['description'] as String?;
+
+        subDiscountPct.value = pct?.toInt();
+        subDiscountFixed.value = fixed?.toInt();
+
+        if (desc != null) {
+          promoSubscriptionLabel.value = desc;
+        } else if (pct != null) {
+          final durationStr = duration == 'forever'
+              ? 'forever'
+              : duration == 'once'
+                  ? 'first month'
+                  : '${months?.toInt() ?? ''} months';
+          promoSubscriptionLabel.value = '${pct.toInt()}% off $durationStr';
+        } else if (fixed != null) {
+          promoSubscriptionLabel.value =
+              '\$${(fixed / 100).toStringAsFixed(0)} off subscription';
+        }
+      } else {
+        subDiscountPct.value = null;
+        subDiscountFixed.value = null;
+        promoSubscriptionLabel.value = null;
+      }
+    } catch (_) {
+      promoError.value = 'Could not validate code. Please try again.';
+    } finally {
+      promoIsLoading.value = false;
+    }
+  }
+
   void _initSelections(List<ModuleModel> modules) {
     for (final m in modules) {
       final locked = plan.lockedModuleIds.contains(m.id);
@@ -48,6 +127,7 @@ class ConfiguratorState {
 
   void toggleModule(String id, bool value, List<ModuleModel> modules) {
     if (isLocked(id)) return;
+    clearPromoCode();
     moduleSelections[id] = value;
     if (!value) {
       for (final m in modules) {
@@ -106,7 +186,7 @@ class ConfiguratorState {
     errorMessage.value = null;
 
     try {
-      final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+      const publishableKey = EEnv.stripePublishableKey;
       if (publishableKey.isEmpty) {
         errorMessage.value = 'Stripe configuration missing.';
         return false;
@@ -126,6 +206,7 @@ class ConfiguratorState {
               ? (mgmt.onetimePrice > 0 ? 'onetime' : isAnnual.value ? 'annual' : 'monthly')
               : null,
           'setupTotalCents': computedSetup.value,
+          'promoCode': appliedPromoCode.value.isEmpty ? null : appliedPromoCode.value,
         },
       );
 
@@ -138,6 +219,10 @@ class ConfiguratorState {
 
       clientSecret.value = data['clientSecret'] as String;
       quoteId.value = (data['quoteId'] as String?) ?? '';
+      // Sync server-confirmed discount (re-validation may differ from client estimate)
+      if (data['discountAmountCents'] != null) {
+        promoDiscountCents.value = data['discountAmountCents'] as int;
+      }
       return true;
     } catch (e) {
       errorMessage.value = 'Something went wrong. Please try again.';

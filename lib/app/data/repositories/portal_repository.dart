@@ -1,14 +1,10 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:raspucat/app/data/models/portal_quote_model.dart';
 
 class PortalRepository {
   final _client = Supabase.instance.client;
 
-  String get _portalRedirectUrl {
-    final base = dotenv.env['APP_URL'] ?? 'https://raspucat.com';
-    return '$base/portal';
-  }
+  String get _portalRedirectUrl => 'https://raspucat.com/portal';
 
   // ---------------------------------------------------------------------------
   // Auth
@@ -39,6 +35,21 @@ class PortalRepository {
       throw Exception(data?['error'] ?? 'No billing account found.');
     }
     return data['url'] as String;
+  }
+
+  Future<DateTime?> cancelSubscription(String quoteId, String deliveryEmail) async {
+    final session = await _client.functions
+        .invoke(
+          'portal-cancel-subscription',
+          method: HttpMethod.post,
+          body: {'quoteId': quoteId, 'deliveryEmail': deliveryEmail},
+        )
+        .timeout(const Duration(seconds: 15));
+
+    final data = session.data as Map<String, dynamic>?;
+    if (data?['error'] != null) throw Exception(data!['error'] as String);
+    final periodEnd = data?['period_end'] as String?;
+    return periodEnd != null ? DateTime.parse(periodEnd) : null;
   }
 
   Future<List<PortalQuote>> fetchMyQuotes() async {

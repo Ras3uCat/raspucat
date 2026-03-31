@@ -5,16 +5,16 @@ Claude is the **Planner/Architect** (Global Strategy & Safety).
 AntiGravity is the **Flutter Subagent** (Feature Implementation & UI Design).
 
 ## AGENT BEHAVIOR
-1. **Bootstrap:** On session start, run the `pre_session` hook (`bash ./.agent/hooks/skill_loader.sh`).
+1. **Bootstrap:** Hooks are wired automatically via `.claude/settings.json` — `skill_loader.sh` + `pre_task.sh` fire on SessionStart.
 2. **Handshake:** Confirm the active task in `planning/features/01_active/`. AntiGravity leads Flutter/UI tasks, including sub-task planning within those scopes.
-3. **Skill Check:** Verify corresponding `.cloud/skill` is loaded before implementation.
+3. **Skill Check:** Verify corresponding `.claude/skills/` pack is loaded before implementation.
 4. **Constraint:** No implementation until a task is assigned. Summary-only on first message.
 
 ## TECH STACK & ARCHITECTURE
-- **State Management:** GetX (Strict). Feature-first: `lib/features/<feature>/`.
-- **Backend:** Supabase. All DB changes must be timestamped SQL migrations.
-- **Payments:** Stripe (Checkout + Webhooks). Use granular `.cloud/skills/stripe-*` for implementation.
-- **UI:** Material 3 + `E-Prefix` constants (e.g., `EColors.primary`). Use `.cloud/skills/frontend-design` for high-end aesthetic execution.
+- **State Management:** GetX (Strict). Feature-first: `lib/app/modules/<feature>/`.
+- **Backend:** Supabase. All DB changes must be timestamped SQL migrations in `supabase/migrations/`.
+- **Payments:** Stripe (Checkout + Webhooks). Use `.claude/skills/stripe-*` for implementation.
+- **UI:** Material 3 + `E-Prefix` constants (e.g., `EColors.primary`). Use `.claude/skills/frontend-design` for high-end aesthetic execution.
 
 ## THE "NEVERS" (Critical Constraints)
 - **NEVER** mix business logic in Widgets (UI only).
@@ -45,27 +45,19 @@ AntiGravity is the **Flutter Subagent** (Feature Implementation & UI Design).
 - Flutter UI tasks → delegate to **Flutter subagent AntiGravity**.
 - Multi-file investigation → delegate to subagents.
 - Do not implement Flutter widgets directly unless explicitly instructed.
+- Specialist agents: see `.claude/agents/` (architect, planner, flutter, backend, payments, qa, security-auditor).
 
 ## LOCAL SUBAGENT OPTIMIZATION
-1. **Bootstrap Speed:** Skip the `pre_session` hook and full project analysis. Focus ONLY on the immediate file/task.
+1. **Bootstrap Speed:** Skip full project analysis. Focus ONLY on the immediate file/task.
 2. **Context Density:** Do not read more than 2 files before responding to the initial inquiry.
 3. **No-Wait Mode:** Respond as soon as the core task is identified.
 
-## TOOL CALLING PROTOCOL (CRITICAL)
-If you need to use a tool, you MUST use the standard Claude XML format. DO NOT output JSON or bullet points.
-Example:
-<tool_code>
-run_command(command="ls")
-</tool_code>
-
-DO NOT imitate the user interface with "●" or "Baked for" symbols. Just output the tool code block.
-
----
-
-{
-  "hooks": {
-    "pre_session": "./.agent/hooks/skill_loader.sh",
-    "pre_task": "./.agent/hooks/pre_task.sh",
-    "post_task": "./.agent/hooks/post_task.sh"
-  }
-}
+## SLASH COMMANDS
+- `/health` — environment health check
+- `/status` — current sprint status
+- `/review` — structured code review
+- `/fix-issue` — bug fix workflow
+- `/gen-feature` — scaffold new feature
+- `/migrate` — generate Supabase migration boilerplate
+- `/deliver` — pre-flight client delivery check
+- `/new-client` — scaffold new client project

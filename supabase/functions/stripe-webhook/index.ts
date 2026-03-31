@@ -1,10 +1,11 @@
 // Edge Function: stripe-webhook
 // Handles incoming Stripe webhook events:
 //   - payment_intent.succeeded        → deposit paid, update quote, email owner + client
+//   - invoice.paid                    → handoff fee paid → send client handoff package
 //   - invoice.payment_succeeded       → subscription renewal, email owner + client
 //   - invoice.payment_failed          → failed renewal, alert owner + client
-//   - customer.subscription.updated   → plan changed via portal, log event + notify owner
-//   - customer.subscription.deleted   → subscription cancelled, update quote, notify owner
+//   - customer.subscription.updated   → plan changed, or cancel_at_period_end=true → handoff
+//   - customer.subscription.deleted   → mark cancelled, trigger handoff fallback
 
 import Stripe from 'npm:stripe@14';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -41,7 +42,30 @@ function buildPriceLabels(): Record<string, string> {
 }
 const PRICE_LABELS = buildPriceLabels();
 
+// Forward map: management plan + billing cycle → Stripe Price ID (for auto-subscription)
+const PRICE_IDS: Record<string, Record<string, string>> = {
+  standard: {
+    monthly: Deno.env.get('STRIPE_PRICE_STANDARD_MONTHLY') ?? '',
+    annual:  Deno.env.get('STRIPE_PRICE_STANDARD_ANNUAL')  ?? '',
+  },
+  premium: {
+    monthly: Deno.env.get('STRIPE_PRICE_PREMIUM_MONTHLY') ?? '',
+    annual:  Deno.env.get('STRIPE_PRICE_PREMIUM_ANNUAL')  ?? '',
+  },
+};
+
 // ─── Event logger ─────────────────────────────────────────────────────────────
+
+// Fire-and-forget call to admin-send-handoff (internal function-to-function)
+function callSendHandoff(quoteId: string, action: 'admin_alert' | 'client_package'): void {
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+  fetch(`${supabaseUrl}/functions/v1/admin-send-handoff`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${serviceKey}` },
+    body: JSON.stringify({ quoteId, action }),
+  }).catch((err) => console.error(`admin-send-handoff (${action}) failed:`, err));
+}
 
 function logEvent(quoteId: string, eventType: string, metadata: Record<string, unknown> = {}): void {
   supabase.from('quote_events').insert({ quote_id: quoteId, event_type: eventType, metadata }).then(() => {}).catch(console.error);
@@ -198,9 +222,116 @@ async function handleModuleAddonPaymentIntent(paymentIntent: Stripe.PaymentInten
   );
 }
 
+// ─── Balance paid → auto-activate subscription ────────────────────────────────
+
+async function handleBalancePaid(paymentIntent: Stripe.PaymentIntent): Promise<void> {
+  const quoteId = paymentIntent.metadata?.quote_id;
+  if (!quoteId) { console.warn('balance payment_intent missing quote_id'); return; }
+
+  const { data: quote } = await supabase.from('quotes').select('*').eq('id', quoteId).single();
+  if (!quote) { console.error('Quote not found for balance payment:', quoteId); return; }
+
+  // Idempotency: skip if already activated
+  if (quote.activated_at) { console.log('Quote already activated — skipping:', quoteId); return; }
+
+  const managementId = quote.management_option_id as string;
+  const billingCycle  = quote.billing_cycle as string;
+  let subscriptionId: string | null = null;
+  let subscriptionAmountCents: number | null = null;
+
+  if (billingCycle !== 'onetime' && quote.stripe_customer_id && quote.stripe_payment_method_id) {
+    const priceId = PRICE_IDS[managementId]?.[billingCycle];
+    if (!priceId) {
+      console.error(`No Price ID for ${managementId}/${billingCycle} — subscription not created automatically`);
+    } else {
+      try {
+        await stripe.customers.update(quote.stripe_customer_id, {
+          invoice_settings: { default_payment_method: quote.stripe_payment_method_id },
+        });
+        const sub = await stripe.subscriptions.create({
+          customer: quote.stripe_customer_id,
+          items: [{ price: priceId }],
+          default_payment_method: quote.stripe_payment_method_id,
+          metadata: { quote_id: quote.id },
+        });
+        subscriptionId = sub.id;
+        subscriptionAmountCents = sub.items.data[0]?.price?.unit_amount ?? null;
+      } catch (err) {
+        console.error('Subscription creation failed in handleBalancePaid:', err);
+      }
+    }
+  }
+
+  const now = new Date().toISOString();
+  await supabase.from('quotes').update({
+    status: 'active',
+    activated_at: now,
+    ...(subscriptionId ? { stripe_subscription_id: subscriptionId, subscription_started_at: now } : {}),
+  }).eq('id', quoteId);
+
+  logEvent(quoteId, 'subscription_activated', {
+    subscription_id: subscriptionId,
+    billing_cycle: billingCycle,
+    auto_activated: true,
+  });
+
+  // Merged client launch email
+  const portalBlock = CUSTOMER_PORTAL_URL
+    ? `<div style="text-align:center;margin-bottom:24px;"><a href="${CUSTOMER_PORTAL_URL}" style="display:inline-block;padding:12px 28px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58E3EF;font-family:'Space Grotesk',sans-serif;font-size:13px;letter-spacing:1px;text-decoration:none;">Manage Subscription</a></div>`
+    : '';
+  const cycleLabel = billingCycle === 'annual' ? '/yr' : '/mo';
+  const planLabel  = managementId.charAt(0).toUpperCase() + managementId.slice(1);
+  const subRows = subscriptionId ? `
+    <tr>
+      <td style="border-top:1px solid rgba(88,227,239,0.08);padding-top:10px;color:rgba(232,254,255,0.45);font-size:13px;">Plan</td>
+      <td style="border-top:1px solid rgba(88,227,239,0.08);padding-top:10px;color:#E8FEFF;font-size:13px;font-weight:500;text-align:right;">${planLabel}</td>
+    </tr>
+    <tr>
+      <td style="padding-top:10px;color:rgba(232,254,255,0.45);font-size:13px;">Billing</td>
+      <td style="padding-top:10px;color:#E8FEFF;font-size:13px;font-weight:500;text-align:right;">${subscriptionAmountCents != null ? fmt(subscriptionAmountCents) : '—'}${cycleLabel}</td>
+    </tr>
+    <tr>
+      <td style="padding-top:10px;color:rgba(232,254,255,0.45);font-size:13px;">Subscription</td>
+      <td style="padding-top:10px;color:#58E3EF;font-size:13px;font-weight:500;text-align:right;">Active ✓</td>
+    </tr>` : '';
+
+  await sendEmail(
+    quote.client_email,
+    `Your site is live — you're all set, ${quote.client_name}.`,
+    themedEmail(`
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58E3EF;margin:0 0 14px;text-transform:uppercase;">We Have Liftoff</p>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#E8FEFF;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">Your site is live, ${quote.client_name}.</h1>
+      <p style="color:rgba(232,254,255,0.6);font-size:15px;line-height:1.8;margin:0 0 28px;">
+        Your final payment has been received and your site is fully live.
+        ${billingCycle !== 'onetime' ? "Your management subscription is now active — we're in your corner from here on out." : 'Your handover package will follow separately.'}
+      </p>
+      <div style="background:#0B0E1F;border:1px solid rgba(88,227,239,0.18);border-radius:12px;padding:24px;margin-bottom:16px;">
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58E3EF;margin:0 0 16px;text-transform:uppercase;">Summary</p>
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="color:rgba(232,254,255,0.45);font-size:13px;padding-bottom:10px;">Final payment</td>
+            <td style="color:#FFB938;font-size:13px;font-weight:600;text-align:right;padding-bottom:10px;">${fmt(paymentIntent.amount)} ✓</td>
+          </tr>
+          <tr>
+            <td style="border-top:1px solid rgba(88,227,239,0.08);padding-top:10px;color:rgba(232,254,255,0.45);font-size:13px;">Status</td>
+            <td style="border-top:1px solid rgba(88,227,239,0.08);padding-top:10px;color:#58E3EF;font-size:13px;font-weight:500;text-align:right;">Fully Funded ✓</td>
+          </tr>
+          ${subRows}
+        </table>
+      </div>
+      ${portalBlock}
+      <p style="color:rgba(232,254,255,0.55);font-size:14px;line-height:1.8;margin:0;">
+        ${billingCycle !== 'onetime'
+          ? `Your billing cycle renews automatically.${CUSTOMER_PORTAL_URL ? ' You can manage your subscription at any time via the link above.' : ''}`
+          : 'Your handover documentation and credentials will be delivered separately.'}
+      </p>
+    `),
+  );
+}
+
 async function handleDepositPaid(paymentIntent: Stripe.PaymentIntent): Promise<void> {
-  // Skip balance charges and module add-ons — handled separately
-  if (paymentIntent.metadata?.is_balance === 'true') return;
+  // Balance charges handled in handleBalancePaid; module add-ons handled separately
+  if (paymentIntent.metadata?.is_balance === 'true') { await handleBalancePaid(paymentIntent); return; }
   if (paymentIntent.metadata?.type === 'module_addon') return;
 
   const quoteId = paymentIntent.metadata?.quote_id;
@@ -218,6 +349,7 @@ async function handleDepositPaid(paymentIntent: Stripe.PaymentIntent): Promise<v
     .from('quotes')
     .update({
       status: 'deposit_paid',
+      portal_stage: 'awaiting_discovery',
       stripe_payment_intent_id: paymentIntent.id,
       stripe_payment_method_id: paymentMethodId,
     })
@@ -407,10 +539,16 @@ async function handleDepositPaid(paymentIntent: Stripe.PaymentIntent): Promise<v
 
   <!-- Next steps -->
   <div style="padding:28px 0;border-top:1px solid rgba(88,227,239,0.08);">
-    <p style="color:rgba(232,254,255,0.55);font-size:14px;line-height:1.8;margin:0 0 14px;">
-      We will be in touch shortly to schedule a discovery session and align on your mission. From there — we engineer, refine, and deploy with precision.
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58E3EF;margin:0 0 14px;text-transform:uppercase;">Your Next Step</p>
+    <p style="color:rgba(232,254,255,0.55);font-size:14px;line-height:1.8;margin:0 0 20px;">
+      Complete your Discovery Form in the portal — it takes about 5 minutes and sets the foundation for everything we build. Once submitted, we'll schedule a deep discovery session to align on your vision and goals.
     </p>
-    <p style="color:rgba(232,254,255,0.55);font-size:14px;line-height:1.8;margin:0;">
+    <div style="text-align:center;margin-bottom:20px;">
+      <a href="${Deno.env.get('APP_URL') ?? 'https://raspucat.com'}/portal" style="display:inline-block;padding:14px 32px;background:rgba(88,227,239,0.1);border:1px solid rgba(88,227,239,0.5);border-radius:8px;color:#58E3EF;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-decoration:none;">
+        Complete Your Discovery Form →
+      </a>
+    </div>
+    <p style="color:rgba(232,254,255,0.35);font-size:13px;line-height:1.8;margin:0;">
       The remaining balance is collected at launch, once you are completely satisfied with the result.
     </p>
   </div>
@@ -660,10 +798,80 @@ async function handleModuleAddonPurchase(session: Stripe.Checkout.Session): Prom
   );
 }
 
+async function handleCancelAtPeriodEnd(subscription: Stripe.Subscription): Promise<void> {
+  const quoteId = subscription.metadata?.quote_id;
+  const customerId = typeof subscription.customer === 'string'
+    ? subscription.customer : subscription.customer?.id;
+
+  const query = supabase.from('quotes').select('*');
+  const { data: quote } = await (quoteId
+    ? query.eq('id', quoteId)
+    : query.eq('stripe_customer_id', customerId ?? '')
+  ).single();
+
+  if (!quote) {
+    console.warn('handleCancelAtPeriodEnd: no quote found', { quoteId, customerId });
+    return;
+  }
+
+  const periodEnd = new Date(subscription.current_period_end * 1000).toISOString();
+
+  // Write subscription_cancel_at if not already set
+  if (!quote.subscription_cancel_at) {
+    await supabase
+      .from('quotes')
+      .update({ subscription_cancel_at: periodEnd })
+      .eq('id', quote.id);
+  }
+
+  callSendHandoff(quote.id, 'admin_alert');
+
+  if ((quote.handoff_fee_cents ?? 0) > 0 && !quote.handoff_invoice_id) {
+    // Create handoff invoice — client package fires after invoice.paid
+    try {
+      const invoice = await stripe.invoices.create({
+        customer: quote.stripe_customer_id as string,
+        metadata: { type: 'handoff', quote_id: quote.id as string },
+        auto_advance: false,
+        collection_method: 'send_invoice',
+        days_until_due: 7,
+      });
+      await stripe.invoiceItems.create({
+        customer: quote.stripe_customer_id as string,
+        amount: quote.handoff_fee_cents as number,
+        currency: 'usd',
+        description: `Handoff fee — ${quote.business_name ?? 'site delivery'}`,
+        invoice: invoice.id,
+      });
+      await stripe.invoices.finalizeInvoice(invoice.id);
+      await stripe.invoices.sendInvoice(invoice.id);
+      await supabase.from('quotes').update({ handoff_invoice_id: invoice.id }).eq('id', quote.id);
+    } catch (err) {
+      console.error('Failed to create handoff invoice:', err);
+    }
+  } else if ((quote.handoff_fee_cents ?? 0) === 0) {
+    callSendHandoff(quote.id, 'client_package');
+  }
+}
+
+async function handleHandoffInvoicePaid(invoice: Stripe.Invoice): Promise<void> {
+  const quoteId = invoice.metadata?.quote_id;
+  if (!quoteId) return;
+  callSendHandoff(quoteId, 'client_package');
+}
+
 async function handleSubscriptionUpdated(
   subscription: Stripe.Subscription,
   previousAttributes: Record<string, unknown>,
 ): Promise<void> {
+  // Detect cancel_at_period_end being set to true
+  if (
+    subscription.cancel_at_period_end === true &&
+    previousAttributes['cancel_at_period_end'] === false
+  ) {
+    await handleCancelAtPeriodEnd(subscription);
+  }
+
   // Only act on plan-relevant changes:
   //   scheduleChanged  → portal scheduled end-of-period change (schedule attached)
   //   itemsChanged     → immediate plan change (items replaced)
@@ -781,9 +989,13 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Pro
       : subscription.customer?.id;
   if (!customerId) return;
 
+  const now = new Date().toISOString();
+
   const { data: quote, error } = await supabase
     .from('quotes')
     .update({
+      status: 'cancelled',
+      cancelled_at: now,
       stripe_subscription_id: null,
       subscription_started_at: null,
     })
@@ -796,21 +1008,12 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription): Pro
     return;
   }
 
-  const effectiveDate = new Date(subscription.canceled_at! * 1000).toLocaleDateString(
-    'en-US',
-    { month: 'long', day: 'numeric', year: 'numeric' },
-  );
+  logEvent(quote.id, 'subscription_cancelled', { subscription_id: subscription.id });
 
-  await sendEmail(
-    NOTIFICATION_EMAIL,
-    `🔴 Subscription cancelled — ${quote.client_name}`,
-    `
-      <h2>Subscription cancelled</h2>
-      <p><strong>Client:</strong> ${quote.client_name} (${quote.client_email})</p>
-      <p><strong>Plan:</strong> ${quote.management_option_id}</p>
-      <p><strong>Effective:</strong> ${effectiveDate}</p>
-    `,
-  );
+  // Fallback: send client package if not already sent via cancel_at_period_end flow
+  if (!quote.handoff_package_ready) {
+    callSendHandoff(quote.id, 'client_package');
+  }
 }
 
 // ─── Main handler ─────────────────────────────────────────────────────────────
@@ -853,6 +1056,13 @@ Deno.serve(async (req) => {
       case 'invoice.upcoming':
         await handleUpcomingRenewal(event.data.object as Stripe.Invoice);
         break;
+      case 'invoice.paid': {
+        const inv = event.data.object as Stripe.Invoice;
+        if (inv.metadata?.type === 'handoff') {
+          await handleHandoffInvoicePaid(inv);
+        }
+        break;
+      }
       case 'invoice.payment_succeeded':
         await handleSubscriptionRenewal(event.data.object as Stripe.Invoice);
         break;

@@ -61,6 +61,8 @@ class _ProjectScreenState extends State<ProjectScreen>
       children: [
         SizedBox(height: ESizes.spaceBtwSections),
 
+        SizedBox(height: ESizes.sm),
+
         // Typewriter title
         NeonText(
           isHeadline: true,

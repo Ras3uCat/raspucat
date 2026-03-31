@@ -164,6 +164,11 @@ class _ConfiguratorPanel extends StatelessWidget {
                 addonSavings: state.addonSavings.value,
                 selectedManagement: state.selectedManagement.value,
                 isAnnual: state.isAnnual.value,
+                promoDiscountCents: state.promoDiscountCents.value,
+                appliedPromoCode: state.appliedPromoCode.value,
+                promoSubscriptionLabel: state.promoSubscriptionLabel.value,
+                subDiscountPct: state.subDiscountPct.value,
+                subDiscountFixed: state.subDiscountFixed.value,
               );
             }),
             ConfiguratorFooter(plan: plan, state: state, formKey: formKey),

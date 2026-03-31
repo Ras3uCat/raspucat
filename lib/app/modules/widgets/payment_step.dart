@@ -2,7 +2,6 @@
 import 'package:raspucat/utils/constants/exports.dart';
 import 'package:raspucat/app/modules/widgets/configurator_state.dart';
 import 'package:raspucat/app/data/services/stripe_payment_service.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PaymentStep extends StatefulWidget {
   const PaymentStep({super.key, required this.state});
@@ -27,7 +26,7 @@ class _PaymentStepState extends State<PaymentStep> {
 
   void _mountStripe() {
     final secret = widget.state.clientSecret.value;
-    final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+    const publishableKey = EEnv.stripePublishableKey;
     if (secret.isEmpty || publishableKey.isEmpty) return;
     // Show the HtmlElementView first so the div exists in the DOM,
     // then let Stripe mount into it on the next frame.

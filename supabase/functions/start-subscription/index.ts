@@ -183,20 +183,27 @@ Deno.serve(async (req) => {
       invoice_settings: { default_payment_method: quote.stripe_payment_method_id },
     });
 
-    // Create the subscription
-    const subscription = await stripe.subscriptions.create({
+    // Create the subscription — apply promo code discount if one was used at checkout
+    const subscriptionParams: Stripe.SubscriptionCreateParams = {
       customer: quote.stripe_customer_id,
       items: [{ price: priceId }],
       default_payment_method: quote.stripe_payment_method_id,
       metadata: { quote_id: quote.id },
-    });
+    };
+    if (quote.subscription_promotion_code_id) {
+      subscriptionParams.discounts = [{ promotion_code: quote.subscription_promotion_code_id }];
+    }
+    const subscription = await stripe.subscriptions.create(subscriptionParams);
 
     // Update quote with subscription details
+    const now = new Date().toISOString();
     await supabase
       .from('quotes')
       .update({
         stripe_subscription_id: subscription.id,
-        subscription_started_at: new Date().toISOString(),
+        subscription_started_at: now,
+        activated_at: now,
+        status: 'active',
       })
       .eq('id', quoteId);
 

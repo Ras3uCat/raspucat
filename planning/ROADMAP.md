@@ -1,50 +1,68 @@
 # Strategic Roadmap
 
 ## Vision
-One sentence describing the core "Why" of this project and who it serves.
+Raspucat is the internal operations platform for building, delivering, and managing client websites — from quote to live site, all in one admin + client portal.
 
 ## Tech Stack (Active)
-- **Frontend:** Flutter (GetX)
-- **Backend:** Supabase (PostgreSQL + RLS)
-- **Payments:** Stripe 
-- **Architecture:** [ADR History](planning/decisions.md)
+- **Frontend:** Flutter (GetX) — Material 3 + E-prefix design tokens
+- **Backend:** Supabase (PostgreSQL + RLS + Edge Functions)
+- **Payments:** Stripe (Checkout + Webhooks)
+- **Architecture:** [ADR History](DECISIONS.md)
 
 ---
 
 ## Release Phases
-This section defines the "When." Use IDs that link directly to your /features directory.
 
-### Phase 0: Setup & Infrastructure
-Status: [ 📝 BACKLOG | 🏗️ ACTIVE | ✅ COMPLETE ]
-Goal: Establish the foundation.
-- [ ] 000_ci_cd_pipeline
-- [ ] 001_database_schema_v1
-- [ ] 002_auth_foundation
+### Phase 0–3: Foundation → Payments → Portal → Delivery
+Status: ✅ COMPLETE (features 001–023)
 
-### Phase 1: Minimum Viable Product (MVP)
-Status: [ 📝 QUEUED ]
-Goal: Solve the core problem for the first user.
-- [ ] 003_core_feature_a
-- [ ] 004_core_feature_b
+Key milestones completed:
+- Plans section, Stripe integration, Admin dashboard
+- Client portal, subscription activation, cancellation handoff
+- Email provisioning, delivery progress tracking, module redeploy
+- Promo codes, legal pages, Claude harness upgrade
 
-### Phase 2: Growth & Optimization
-Status: [ 📝 QUEUED ]
-Goal: Scale usage and refine UX.
-- [ ] 005_analytics_integration
-- [ ] 006_onboarding_flow_v2
+---
+
+### Phase 4: Delivery Pipeline Efficiency
+Status: 🏗️ ACTIVE
+Goal: Reduce manual effort per client delivery and improve visibility into live client state.
+
+| Priority | Feature | Effort | Value |
+|:---:|:---|:---:|:---:|
+| 1 | [024 — Discovery Form → client.json](features/00_backlog/024_discovery_form_client_json.md) | M | High |
+| 2 | [026 — Smoke Test Auto-Trigger](features/00_backlog/026_smoke_test_auto_trigger.md) | M | Medium |
+
+**Rationale:**
+- **024 first** — Each new client delivery requires significant manual `client.json` fill-in. A discovery form compounds value with every engagement.
+- **026 second** — High payoff (fully automated delivery gate), but requires coordinated changes to the `modular_project` template repo in addition to this one.
+
+> Note: 025 (Template Version Tracking) was removed — fully implemented under feature 018.
+
+---
+
+### Phase 5: Internal Tooling
+Status: 📝 QUEUED
+Goal: Improve developer/designer experience and internal brand consistency.
+
+| Priority | Feature | Effort | Value |
+|:---:|:---|:---:|:---:|
+| 4 | [004 — Brand Kit Screen](features/00_backlog/004_brand_kit_screen.md) | M | Low |
 
 ---
 
 ## Critical Path & Constraints
-- Current Blocker: [List any technical or resource bottlenecks]
-- Hard Deadlines: [e.g., "Must launch Beta by Sept 1st"]
-- Non-Negotiables: [e.g., "Must be 100% offline-first"]
+- **No active blockers** as of 2026-03-27
+- Features 025 and 024 are self-contained to this repo
+- Feature 026 requires a coordinated PR in `modular_project` (deliver.sh + Playwright setup)
 
-## Project Guardrails (The "Rules")
-- Code Quality: All files must stay under 300 lines; use [Specific Pattern] for state management.
-- Security: Every database table must have Row Level Security (RLS) policies defined.
-- Documentation: No PR merged without an updated Current Task Tracking log.
+## Project Guardrails
+- All files ≤ 300 lines — extract rather than grow
+- No business logic in widgets — controllers only
+- All DB changes require a timestamped migration file
+- RLS enabled on every table — never expose `service_role` to Flutter
 
-## Success Metrics (KPIs)
-- Metric 1: (e.g., Time to value < 2 minutes)
-- Metric 2: (e.g., 99.9% Crash-free users)
+## Success Metrics
+- Time from quote-accepted → client site live: target < 2 business days
+- Manual steps per delivery: target 0 (fully automated handoff)
+- Admin fill-in time for client.json: target < 5 minutes (from ~30 min)

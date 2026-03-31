@@ -235,7 +235,7 @@ class _PlanCardContent extends StatelessWidget {
                 ),
                 const SizedBox(height: 1),
                 Text(
-                  'or \$400 one-time handover',
+                  EText.planHandoverNote,
                   style: TextStyle(
                     color: EColors.textSecondary.withValues(alpha: 0.55),
                     fontSize: ESizes.fontSizeLabel - 1,

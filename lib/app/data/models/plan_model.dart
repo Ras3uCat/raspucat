@@ -1,3 +1,5 @@
+import 'package:raspucat/app/utils/price_formatter.dart';
+
 class PlanModel {
   const PlanModel({
     required this.id,
@@ -62,16 +64,18 @@ class PlanModel {
   }
 
   factory PlanModel.fromJson(Map<String, dynamic> json) {
+    final isCustom = json['is_custom'] as bool? ?? false;
+    final setupPrice = json['setup_price'] as int? ?? 0;
     return PlanModel(
       id: json['id'] as String,
       name: json['name'] as String,
       label: json['label'] as String? ?? '',
-      price: _buildPriceString(json),
+      price: _buildPriceString(isCustom, setupPrice),
       idealFor: json['ideal_for'] as String? ?? '',
       features: const [],
       isFeatured: json['is_featured'] as bool? ?? false,
-      isCustom: json['is_custom'] as bool? ?? false,
-      setupPrice: json['setup_price'] as int? ?? 0,
+      isCustom: isCustom,
+      setupPrice: setupPrice,
       basePrice: json['base_price'] as int? ?? 0,
       monthlyPriceCents: json['monthly_price'] as int? ?? 0,
       bundleSavingsCents: json['bundle_savings'] as int?,
@@ -82,23 +86,9 @@ class PlanModel {
     );
   }
 
-  static String _buildPriceString(Map<String, dynamic> json) {
-    final isCustom = json['is_custom'] as bool? ?? false;
-    final setup = json['setup_price'] as int? ?? 0;
-    if (setup == 0) return 'Custom Quote';
-    final dollars = (setup / 100).round();
-    final formatted = _formatDollars(dollars);
+  static String _buildPriceString(bool isCustom, int setupCents) {
+    if (setupCents == 0) return 'Custom Quote';
+    final formatted = PriceFormatter.dollars((setupCents / 100).round());
     return isCustom ? 'From \$$formatted' : '\$$formatted';
-  }
-
-  static String _formatDollars(int dollars) {
-    final s = dollars.toString();
-    if (s.length <= 3) return s;
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
-    }
-    return buf.toString();
   }
 }

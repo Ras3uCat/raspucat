@@ -146,3 +146,66 @@ One-click tip selector before checkout. A favorite for salons and spas — often
 
 ### 4. Monthly Stats Digest
 Most SMBs don't know which services drive the most revenue. This branded monthly PDF — showing revenue trends, top services, and growth metrics — is what justifies the management fee and keeps clients retained long-term.
+
+---
+
+## Promo Codes — How to Create & Manage
+
+All promo codes are created and managed entirely in **Stripe**. Raspucat reads Stripe coupon metadata to determine how a code behaves — no Supabase table entries needed.
+
+### How It Works
+
+Raspucat supports three promo code types, controlled by a single metadata field on the Stripe coupon:
+
+| `applies_to` metadata value | Effect |
+|:---|:---|
+| `both` (or not set) | Discounts the setup fee **and** applies to the recurring subscription |
+| `setup` | Discounts the setup fee only — subscription is full price |
+| `subscription` | No setup discount — subscription gets the discount only |
+
+### Creating a Promo Code in Stripe
+
+1. Go to **Stripe Dashboard → Product Catalog → Coupons → + New coupon**
+2. Set your discount:
+   - **Percentage** (e.g. 95% off) or **Fixed amount** (e.g. $200 off)
+   - Duration: **Forever**, **Once**, or **Repeating** (if subscription applies)
+3. Under **Metadata**, add:
+   ```
+   applies_to = both
+   ```
+   (or `setup` or `subscription` as needed — omit this key to default to `both`)
+4. Save the coupon → copy its **Coupon ID**
+5. Go to **Stripe Dashboard → Product Catalog → Promotion codes → + New promotion code**
+6. Select the coupon you just created
+7. Set the **Code** (e.g. `LAUNCH50`, `TEST95`)
+8. Toggle **Active** on, optionally set a redemption limit or expiry
+9. Save
+
+That's it. The code is live and Raspucat will pick it up automatically.
+
+### Both Discounts, Different Amounts
+
+If you need the setup discount and the subscription discount to be **different values** (e.g. $200 off setup + 20% off subscription forever):
+
+1. Create **two separate Stripe coupons** — one for setup, one for subscription
+2. Create a **promotion code** on the setup coupon (this is the code clients enter)
+3. Create a **promotion code** on the subscription coupon (this is internal-only — clients never see it)
+4. On the **setup coupon**, add metadata:
+   ```
+   applies_to = both
+   subscription_promo_code_id = promo_XXXXXXXXXX
+   ```
+   (replace with the Stripe promotion code ID from step 3 — starts with `promo_`)
+
+When a client redeems the code:
+- The setup coupon's discount is applied to the one-time setup fee
+- The subscription promotion code is stored and applied automatically when their subscription is created at launch
+
+### Quick Reference
+
+| Scenario | Coupon `applies_to` | `subscription_promo_code_id` needed? |
+|:---|:---:|:---:|
+| Full discount on everything (same %) | `both` (or omit) | No |
+| Setup fee discount only | `setup` | No |
+| Subscription discount only | `subscription` | No |
+| Different amounts for setup + subscription | `both` | Yes |

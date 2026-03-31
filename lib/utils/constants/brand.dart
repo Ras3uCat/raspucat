@@ -1,3 +1,12 @@
+class EEnv {
+  EEnv._();
+
+  static const String stripePublishableKey = String.fromEnvironment('STRIPE_PUBLISHABLE_KEY');
+
+  // Plans section is hidden from public. Visible only via ?preview=plans in the URL.
+  static bool get showPlans => Uri.base.queryParameters['preview'] == 'plans';
+}
+
 class EBrand {
   EBrand._();
 
@@ -25,8 +34,7 @@ class EBrand {
 
   /// --- Brand Voice --- ///
   /// Tone: technical, confident, precise, slightly mysterious.
-  static const String voiceTagline =
-      'Building the future, one line of code at a time.';
+  static const String voiceTagline = 'Building the future, one line of code at a time.';
   static const String voiceDeploy = 'D3ploy with Ras3uCat.';
   static const String voiceFooter = 'Sync complete △ M3OW';
 }

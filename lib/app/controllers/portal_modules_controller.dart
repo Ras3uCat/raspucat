@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:raspucat/utils/constants/brand.dart';
 import 'package:raspucat/app/controllers/portal_controller.dart';
 import 'package:raspucat/app/data/models/module_model.dart';
 import 'package:raspucat/app/data/models/pending_module_model.dart';
@@ -98,7 +98,7 @@ class PortalModulesController extends GetxController {
     isPaying.value = true;
     paymentError.value = null;
     try {
-      final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+      const publishableKey = EEnv.stripePublishableKey;
       final error = await StripePaymentService.confirmCardPayment(
         publishableKey,
         prep.clientSecret,
@@ -162,7 +162,7 @@ class PortalModulesController extends GetxController {
   Future<void> _mountEmbeddedElement(ModuleCheckoutPrep prep) async {
     StripePaymentService.registerViewFactory();
     showPaymentElement.value = true;
-    final publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+    const publishableKey = EEnv.stripePublishableKey;
     // Wait for the HtmlElementView to be rendered before mounting.
     // addPostFrameCallback fires only after the frame is committed to the screen,
     // making this reliable on slow connections unlike a hardcoded delay.

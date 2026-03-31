@@ -47,7 +47,7 @@ class _NeonButtonState extends State<NeonButton> {
             setState(() => _isHovered = value);
           },
           hoverColor: Colors.transparent,
-          highlightColor: EColors.primary.withOpacity(0.1),
+          highlightColor: EColors.primary.withValues(alpha: 0.1),
           splashColor: EColors.primary,
           onTap: widget.onTap,
           child: AnimatedContainer(
@@ -59,16 +59,16 @@ class _NeonButtonState extends State<NeonButton> {
                 for (double i = 1; i < 3; i++)
                   BoxShadow(
                     color: _isHovered
-                        ? widget.hoverColor!.withOpacity(1 - (i * 0.3))
-                        : EColors.backgroundDark.withOpacity(1 - (i * 0.3)),
+                        ? widget.hoverColor!.withValues(alpha: 1 - (i * 0.3))
+                        : EColors.backgroundDark.withValues(alpha: 1 - (i * 0.3)),
                     blurRadius: 3 * i,
                   ),
               ],
-              color: EColors.backgroundDark.withOpacity(0.8),
+              color: EColors.backgroundDark.withValues(alpha: 0.8),
               border: Border.all(
                 color: _isHovered
-                    ? widget.hoverColor?.withOpacity(0.7) ?? widget.neonColor.withOpacity(0.8)
-                    : widget.neonColor.withOpacity(0.8),
+                    ? widget.hoverColor?.withValues(alpha: 0.7) ?? widget.neonColor.withValues(alpha: 0.8)
+                    : widget.neonColor.withValues(alpha: 0.8),
                 width: 2,
               ),
             ),

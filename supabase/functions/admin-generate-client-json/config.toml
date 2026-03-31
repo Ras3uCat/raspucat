@@ -1,0 +1,2 @@
+[functions.admin-generate-client-json]
+verify_jwt = false

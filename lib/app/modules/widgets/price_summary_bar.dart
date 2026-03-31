@@ -1,3 +1,4 @@
+import 'package:raspucat/app/utils/price_formatter.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
 class PriceSummaryBar extends StatelessWidget {
@@ -9,66 +10,105 @@ class PriceSummaryBar extends StatelessWidget {
     required this.addonSavings,
     required this.selectedManagement,
     required this.isAnnual,
+    this.promoDiscountCents = 0,
+    this.appliedPromoCode = '',
+    this.promoSubscriptionLabel,
+    this.subDiscountPct,
+    this.subDiscountFixed,
   });
 
   final PlanModel plan;
-  final int setupPrice;             // cents — already discounted
+  final int setupPrice;             // cents — volume-discounted but pre-promo
   final int selectedAddonCount;
   final int addonSavings;           // cents saved via volume discount
   final ManagementOptionModel? selectedManagement;
   final bool isAnnual;
+  final int promoDiscountCents;     // cents saved via promo code
+  final String appliedPromoCode;
+  final String? promoSubscriptionLabel;
+  final int? subDiscountPct;        // e.g. 99 → 99% off subscription
+  final int? subDiscountFixed;      // cents off per period
 
   String? get _savingsLabel {
-    if (!plan.isCustom) return plan.bundleSavings; // e.g. "Save ~$300"
-    if (addonSavings <= 0) return null;
-    final dollars = (addonSavings / 100).round();
-    final pct = selectedAddonCount >= 9 ? 15
-        : selectedAddonCount >= 6 ? 10
-        : 5;
-    return 'Saving \$${_formatDollars(dollars)} ($pct% off)';
+    // Base savings: bundle discount (Pro/Premium) or addon volume discount (Custom)
+    int baseSavings = 0;
+    String? baseSuffix;
+    if (!plan.isCustom) {
+      baseSavings = plan.bundleSavingsCents ?? 0;
+    } else if (addonSavings > 0) {
+      baseSavings = addonSavings;
+      final pct = selectedAddonCount >= 9 ? 15
+          : selectedAddonCount >= 6 ? 10
+          : 5;
+      baseSuffix = '$pct% off';
+    }
+
+    final totalSavings = baseSavings + promoDiscountCents;
+    if (totalSavings <= 0) return null;
+
+    final dollars = PriceFormatter.dollars((totalSavings / 100).round());
+    if (baseSuffix != null && promoDiscountCents <= 0) {
+      return 'Saving \$$dollars ($baseSuffix)';
+    }
+    return 'Saving \$$dollars';
   }
 
-  // Deposit is always 50% of setup fee. Handover $400 is collected by admin at delivery.
-  int get _depositCents => (setupPrice / 2).floor();
-  int get _balanceCents => setupPrice - _depositCents;
+  int get _effectiveSetup => setupPrice - promoDiscountCents;
+  // Deposit is always 50% of effective (post-promo) setup fee.
+  int get _depositCents => (_effectiveSetup / 2).floor();
+  int get _balanceCents => _effectiveSetup - _depositCents;
 
   bool get _isHandover =>
       selectedManagement != null && selectedManagement!.onetimePrice > 0;
+
+  /// Applies the subscription promo discount to a management price in cents.
+  int _discountedMgmt(int fullCents) {
+    if (subDiscountPct != null) {
+      return (fullCents * (1 - subDiscountPct! / 100)).round();
+    }
+    if (subDiscountFixed != null) {
+      return (fullCents - subDiscountFixed!).clamp(0, fullCents);
+    }
+    return fullCents;
+  }
 
   // Due on launch = remaining setup balance + management fee (handover or first period)
   int get _dueOnLaunchCents {
     int total = _balanceCents;
     if (selectedManagement == null) return total;
     if (_isHandover) {
-      total += selectedManagement!.onetimePrice;
+      total += selectedManagement!.onetimePrice; // handover is one-time, not a subscription
     } else {
-      total += isAnnual ? selectedManagement!.annualPrice : selectedManagement!.monthlyPrice;
+      final full = isAnnual ? selectedManagement!.annualPrice : selectedManagement!.monthlyPrice;
+      total += _discountedMgmt(full);
     }
     return total;
   }
 
   String _dueOnLaunchLabel(int balanceCents, int totalCents) {
-    final total = _formatDollars((totalCents / 100).round());
+    final total = PriceFormatter.dollars((totalCents / 100).round());
     if (selectedManagement == null) {
       return 'Due on launch: \$$total';
     }
-    final balance = _formatDollars((balanceCents / 100).round());
+    final balance = PriceFormatter.dollars((balanceCents / 100).round());
     if (_isHandover) {
-      final fee = _formatDollars((selectedManagement!.onetimePrice / 100).round());
+      final fee = PriceFormatter.dollars((selectedManagement!.onetimePrice / 100).round());
       return 'Due on launch: \$$total (\$$balance + \$$fee handover)';
     }
     if (isAnnual) {
-      final fee = _formatDollars((selectedManagement!.annualPrice / 100).round());
+      final fee = PriceFormatter.dollars((_discountedMgmt(selectedManagement!.annualPrice) / 100).round());
       return 'Due on launch: \$$total (\$$balance + \$$fee 1st year)';
     }
-    final fee = _formatDollars((selectedManagement!.monthlyPrice / 100).round());
+    final fee = PriceFormatter.dollars((_discountedMgmt(selectedManagement!.monthlyPrice) / 100).round());
     return 'Due on launch: \$$total (\$$balance + \$$fee 1st month)';
   }
 
   @override
   Widget build(BuildContext context) {
-    final setupFormatted = _formatDollars((setupPrice / 100).round());
-    final depositFormatted = _formatDollars((_depositCents / 100).round());
+    final setupFormatted = PriceFormatter.dollars((setupPrice / 100).round());
+    final effectiveFormatted = PriceFormatter.dollars((_effectiveSetup / 100).round());
+    final promoFormatted = PriceFormatter.dollars((promoDiscountCents / 100).round());
+    final depositFormatted = PriceFormatter.dollars((_depositCents / 100).round());
     final balanceCents = _balanceCents;
     final dueOnLaunchCents = _dueOnLaunchCents;
 
@@ -94,7 +134,9 @@ class PriceSummaryBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Setup: \$$setupFormatted',
+                  promoDiscountCents > 0
+                      ? 'Setup: \$$effectiveFormatted'
+                      : 'Setup: \$$setupFormatted',
                   style: TextStyle(
                     color: EColors.textWhite,
                     fontSize: ESizes.fontSizeLg,
@@ -102,16 +144,34 @@ class PriceSummaryBar extends StatelessWidget {
                     letterSpacing: 0.5,
                   ),
                 ),
+                if (promoDiscountCents > 0)
+                  Text(
+                    '$appliedPromoCode: -\$$promoFormatted',
+                    style: const TextStyle(
+                      color: Color(0xFF4CAF50),
+                      fontSize: ESizes.fontSizeLabel,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 if (selectedManagement != null)
                   Text(
                     _isHandover
                         ? '+ ${selectedManagement!.name}: ${selectedManagement!.displayOnetime} (collected on delivery)'
                         : isAnnual
-                            ? '+ ${selectedManagement!.name}: ${selectedManagement!.displayAnnual}/yr'
-                            : '+ ${selectedManagement!.name}: ${selectedManagement!.displayMonthly}/mo',
+                            ? '+ ${selectedManagement!.name}: ${PriceFormatter.cents(_discountedMgmt(selectedManagement!.annualPrice))}/yr'
+                            : '+ ${selectedManagement!.name}: ${PriceFormatter.cents(_discountedMgmt(selectedManagement!.monthlyPrice))}/mo',
                     style: TextStyle(
                       color: EColors.textSecondary,
                       fontSize: ESizes.fontSizeLabel,
+                    ),
+                  ),
+                if (promoSubscriptionLabel != null)
+                  Text(
+                    '$appliedPromoCode: $promoSubscriptionLabel (subscription)',
+                    style: const TextStyle(
+                      color: Color(0xFF4CAF50),
+                      fontSize: ESizes.fontSizeLabel,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 const SizedBox(height: 4),
@@ -140,16 +200,6 @@ class PriceSummaryBar extends StatelessWidget {
     );
   }
 
-  static String _formatDollars(int dollars) {
-    final s = dollars.toString();
-    if (s.length <= 3) return s;
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
-    }
-    return buf.toString();
-  }
 }
 
 class _SavingsBadge extends StatelessWidget {

@@ -1,3 +1,5 @@
+import 'package:raspucat/app/utils/price_formatter.dart';
+
 class ManagementOptionModel {
   const ManagementOptionModel({
     required this.id,
@@ -17,26 +19,10 @@ class ManagementOptionModel {
   final int annualSavings;  // cents/year
   final int onetimePrice;   // cents one-time
 
-  String get displayMonthly => _formatCents(monthlyPrice);
-  String get displayAnnual => _formatCents(annualPrice);
-  String get displayOnetime => _formatCents(onetimePrice);
-  String get displayAnnualSavings => _formatCents(annualSavings);
-
-  static String _formatCents(int cents) {
-    final dollars = (cents / 100).round();
-    return '\$${_formatDollars(dollars)}';
-  }
-
-  static String _formatDollars(int dollars) {
-    final s = dollars.toString();
-    if (s.length <= 3) return s;
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
-    }
-    return buf.toString();
-  }
+  String get displayMonthly => PriceFormatter.cents(monthlyPrice);
+  String get displayAnnual => PriceFormatter.cents(annualPrice);
+  String get displayOnetime => PriceFormatter.cents(onetimePrice);
+  String get displayAnnualSavings => PriceFormatter.cents(annualSavings);
 
   factory ManagementOptionModel.fromJson(Map<String, dynamic> json) {
     return ManagementOptionModel(

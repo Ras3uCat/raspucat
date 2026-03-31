@@ -2,6 +2,7 @@ import 'package:raspucat/utils/constants/exports.dart';
 import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/app/modules/widgets/admin_quote_form.dart';
 import 'package:raspucat/app/modules/widgets/admin_form_widgets.dart';
+import 'package:raspucat/app/modules/widgets/admin_site_health_section.dart';
 
 class AdminQuoteRow extends StatelessWidget {
   const AdminQuoteRow({
@@ -41,20 +42,30 @@ class AdminQuoteRow extends StatelessWidget {
     return buf.toString();
   }
 
+  bool _hasUpdateAvailable(AdminController ctrl) {
+    final current = ctrl.currentTemplateVersion.value;
+    final installed = quote['template_version'] as String?;
+    return current.isNotEmpty &&
+        installed != null &&
+        installed.isNotEmpty &&
+        installed != current;
+  }
+
   bool get _canChargeBalance =>
       quote['status'] == 'deposit_paid' &&
       (quote['balance_cents'] as int? ?? 0) > 0;
 
   bool get _canStartSub =>
       quote['billing_cycle'] != 'onetime' &&
-      quote['subscription_started_at'] == null &&
+      quote['activated_at'] == null &&
       quote['stripe_payment_method_id'] != null;
 
   @override
   Widget build(BuildContext context) {
     final status = quote['status'] as String? ?? '';
     final (statusLabel, statusColor) = switch (status) {
-      'fully_paid' => ('Fully Paid', EColors.primary),
+      'active'      => ('Active', EColors.primary),
+      'fully_paid'  => ('Fully Paid', EColors.primary),
       'deposit_paid' => ('Deposit Paid', EColors.gold),
       _ => ('Pending', EColors.textSecondary),
     };
@@ -129,6 +140,13 @@ class AdminQuoteRow extends StatelessWidget {
                         ),
                       ),
                     ),
+                  if (_hasUpdateAvailable(ctrl)) ...[
+                    _UpdateAvailablePill(
+                      current: ctrl.currentTemplateVersion.value,
+                      installed: quote['template_version'] as String? ?? '',
+                    ),
+                    const SizedBox(width: ESizes.xs),
+                  ],
                   if (isStale) ...[
                     Tooltip(
                       message: 'Deposit paid over 7 days ago — consider charging the remaining balance or following up.',
@@ -166,6 +184,7 @@ class AdminQuoteRow extends StatelessWidget {
                     const _PlanChangePill(),
                     const SizedBox(width: ESizes.xs),
                   ],
+                  HealthBadgeDot(quote: quote),
                   if (pendingModuleCount > 0 || inProgressModuleCount > 0) ...[
                     _FeatureRequestedPill(
                       total: pendingModuleCount + inProgressModuleCount,
@@ -378,6 +397,36 @@ class _FeatureRequestedPill extends StatelessWidget {
           color: color,
           fontSize: ESizes.fontSizeLabel,
           fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _UpdateAvailablePill extends StatelessWidget {
+  const _UpdateAvailablePill({required this.current, required this.installed});
+  final String current;
+  final String installed;
+
+  @override
+  Widget build(BuildContext context) {
+    const color = Color(0xFFFBBF24); // amber
+    return Tooltip(
+      message: 'Template update available: $installed → $current',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 3),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: const Text(
+          'Update Available',
+          style: TextStyle(
+            color: color,
+            fontSize: ESizes.fontSizeLabel,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

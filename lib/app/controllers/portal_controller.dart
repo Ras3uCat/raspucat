@@ -28,8 +28,11 @@ class PortalController extends GetxController {
   final isBillingPortalLoading = false.obs;
   final billingPortalError = RxnString();
 
-  PortalQuote? get activeQuote =>
-      quotes.isEmpty ? null : quotes[activeQuoteIndex.value];
+  // Cancellation state
+  final isCancelLoading = false.obs;
+  final cancelError = RxnString();
+
+  PortalQuote? get activeQuote => quotes.isEmpty ? null : quotes[activeQuoteIndex.value];
 
   @override
   void onInit() {
@@ -61,8 +64,7 @@ class PortalController extends GetxController {
     try {
       quotes.value = await _repo.fetchMyQuotes();
       if (activeQuote != null) {
-        unreadMessageCount.value =
-            await _msgRepo.fetchUnreadCount(activeQuote!.id);
+        unreadMessageCount.value = await _msgRepo.fetchUnreadCount(activeQuote!.id);
       }
     } catch (_) {
       hasError.value = true;
@@ -127,10 +129,68 @@ class PortalController extends GetxController {
       final url = await _repo.fetchBillingPortalUrl(activeQuote!.id);
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } catch (_) {
-      billingPortalError.value =
-          'Could not open billing portal. Please try again.';
+      billingPortalError.value = 'Could not open billing portal. Please try again.';
     } finally {
       isBillingPortalLoading.value = false;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Discovery form
+  // ---------------------------------------------------------------------------
+
+  Future<void> saveDiscoveryDraft(Map<String, dynamic> data) async {
+    final quote = activeQuote;
+    if (quote == null) return;
+    try {
+      await Supabase.instance.client.functions.invoke(
+        'portal-save-discovery',
+        body: {'quote_id': quote.id, 'discovery_data': data},
+      );
+    } catch (_) {
+      // Silent — draft saves are best-effort
+    }
+  }
+
+  Future<bool> submitDiscovery(Map<String, dynamic> data) async {
+    final quote = activeQuote;
+    if (quote == null) return false;
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'portal-save-discovery',
+        body: {'quote_id': quote.id, 'discovery_data': data, 'submit': true},
+      );
+      final result = resp.data as Map<String, dynamic>?;
+      if (result?['ok'] == true) {
+        await _loadQuotes(); // Refresh so portal_stage and discoverySubmittedAt update
+        return true;
+      }
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Cancellation
+  // ---------------------------------------------------------------------------
+
+  Future<bool> cancelSubscription(String deliveryEmail) async {
+    if (isCancelLoading.value) return false;
+    cancelError.value = null;
+    isCancelLoading.value = true;
+    try {
+      final quote = activeQuote;
+      if (quote == null) return false;
+      await _repo.cancelSubscription(quote.id, deliveryEmail);
+      // Reload quotes so the UI reflects the new subscription_cancel_at
+      await _loadQuotes();
+      return true;
+    } catch (e) {
+      cancelError.value = 'Could not cancel subscription. Please try again.';
+      return false;
+    } finally {
+      isCancelLoading.value = false;
     }
   }
 }

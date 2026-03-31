@@ -1,4 +1,6 @@
 import 'package:raspucat/app/modules/screens/bingequest_legal_screen.dart';
+import 'package:raspucat/app/modules/screens/terms_screen.dart';
+import 'package:raspucat/app/modules/screens/privacy_screen.dart';
 import 'package:raspucat/app/modules/screens/admin_screen.dart';
 import 'package:raspucat/app/modules/screens/portal_screen.dart';
 import 'package:raspucat/app/modules/screens/portal_login_screen.dart';
@@ -10,6 +12,8 @@ class AppRoutes {
   static final pages = [
     GetPage(name: ERoutes.home, page: () => EResponsiveScreen()),
     GetPage(name: ERoutes.bingeQuestLegal, page: () => const BingeQuestLegalScreen()),
+    GetPage(name: ERoutes.terms, page: () => const TermsScreen()),
+    GetPage(name: ERoutes.privacy, page: () => const PrivacyScreen()),
     GetPage(name: ERoutes.admin, page: () => const AdminScreen()),
     GetPage(
       name: ERoutes.portal,

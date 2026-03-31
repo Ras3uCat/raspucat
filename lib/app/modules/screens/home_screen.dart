@@ -32,7 +32,33 @@ class HomeScreen extends StatelessWidget {
                 ).textTheme.titleLarge?.copyWith(color: EColors.textPrimary),
                 textAlign: TextAlign.center,
               ),
-            // NeonButton(onTap: () {}, child: Text("Contact Us")),
+              const SizedBox(height: ESizes.spaceBtwSections),
+              AnimatedOnView(
+                id: 'hero_cta',
+                controller: SectionAnimationController.instance,
+                startOffset: const Offset(0, 20),
+                child: Semantics(
+                  label: 'Explore work',
+                  child: NeonButton(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: ESizes.xl,
+                      vertical: ESizes.md,
+                    ),
+                    onTap: () => EScrollController.instance.scrollTo(
+                      MediaQuery.sizeOf(context).height * 2,
+                    ),
+                    child: Text(
+                      'EXPLORE WORK',
+                      style: TextStyle(
+                        color: EColors.primary,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 2.0,
+                        fontSize: ESizes.fontSizeSm,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
           ),
         ),

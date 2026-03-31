@@ -23,6 +23,10 @@ export 'package:raspucat/common/responsive/screens/tablet_layout.dart';
 export 'package:raspucat/app/modules/screens/home_screen.dart';
 export 'package:raspucat/app/modules/screens/not_found_screen.dart';
 export 'package:raspucat/app/modules/screens/plans_screen.dart';
+export 'package:raspucat/app/modules/screens/about_screen.dart';
+export 'package:raspucat/app/modules/screens/contact_screen.dart';
+export 'package:raspucat/app/modules/screens/terms_screen.dart';
+export 'package:raspucat/app/modules/screens/privacy_screen.dart';
 
 /// ------------------------------------------------------------------ ///
 /// CONTROLLERS
@@ -69,6 +73,9 @@ export 'package:raspucat/common/widgets/carousel/projects_carousel.dart';
 export 'package:raspucat/app/modules/widgets/project_screen.dart';
 export 'package:raspucat/common/widgets/dialogs/dialog.dart';
 export 'package:raspucat/common/widgets/footer/site_footer.dart';
+export 'package:raspucat/common/widgets/shimmer/skeleton_shimmer.dart';
+export 'package:raspucat/common/widgets/scroll/scroll_progress_bar.dart';
+export 'package:raspucat/app/modules/widgets/how_it_works_section.dart';
 
 /// ------------------------------------------------------------------ ///
 /// PAINTERS
@@ -77,6 +84,8 @@ export 'package:raspucat/common/widgets/footer/site_footer.dart';
 ///
 export 'package:raspucat/common/painters/triangle_painter.dart';
 export 'package:raspucat/common/painters/triangle_navigation_painter.dart';
+export 'package:raspucat/common/painters/hamburger_triangle_painter.dart';
+export 'package:raspucat/common/navbar/mobile_menu.dart';
 
 /// ------------------------------------------------------------------ ///
 /// APP THEMES
@@ -91,7 +100,7 @@ export 'package:raspucat/utils/theme/custom_theme/text_theme.dart';
 ///
 ///
 ///
-export 'package:raspucat/bindings.dart/general_bindings.dart';
+export 'package:raspucat/bindings/general_bindings.dart';
 
 /// ------------------------------------------------------------------ ///
 /// MODELS

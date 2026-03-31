@@ -17,7 +17,7 @@ class ResponsiveLayout extends StatelessWidget {
     /// --- optionally, add Scaffold with a SingleChildScrollView
     return LayoutBuilder(
       builder: (_, constraints) {
-if (constraints.maxWidth < ESizes.mobile) {
+        if (constraints.maxWidth < ESizes.mobile) {
           return mobile;
         } else if (constraints.maxWidth < ESizes.tablet) {
           return tablet;

@@ -12,12 +12,10 @@ class AdminController extends GetxController {
   final RxMap<String, dynamic> adminStats = <String, dynamic>{}.obs;
 
   // Per-quote action state: quoteId → { chargingBalance, startingSub, chargeMsg, subMsg }
-  final RxMap<String, Map<String, dynamic>> quoteState =
-      <String, Map<String, dynamic>>{}.obs;
+  final RxMap<String, Map<String, dynamic>> quoteState = <String, Map<String, dynamic>>{}.obs;
 
   // Quote detail cache: quoteId → full detail map
-  final RxMap<String, Map<String, dynamic>> quoteDetail =
-      <String, Map<String, dynamic>>{}.obs;
+  final RxMap<String, Map<String, dynamic>> quoteDetail = <String, Map<String, dynamic>>{}.obs;
   final RxSet<String> loadingDetail = <String>{}.obs;
 
   // Search & filter state
@@ -27,6 +25,19 @@ class AdminController extends GetxController {
 
   // Pipeline view toggle
   final RxBool showPipeline = false.obs;
+
+  // Current template version (from app_settings)
+  final RxString currentTemplateVersion = ''.obs;
+
+  // Delivery progress: quoteId → list of step rows
+  final RxMap<String, List<Map<String, dynamic>>> deliveryProgress =
+      <String, List<Map<String, dynamic>>>{}.obs;
+  final RxSet<String> loadingDelivery = <String>{}.obs;
+
+  // Site events: quoteId → last 5 site_events rows
+  final RxMap<String, List<Map<String, dynamic>>> siteEvents =
+      <String, List<Map<String, dynamic>>>{}.obs;
+  final RxSet<String> loadingSiteEvents = <String>{}.obs;
 
   // Pending module counts: quoteId → unacknowledged count
   final RxMap<String, int> pendingModuleCounts = <String, int>{}.obs;
@@ -48,8 +59,7 @@ class AdminController extends GetxController {
     super.onClose();
   }
 
-  int get staleCount =>
-      quoteState.values.where((s) => s['isStale'] == true).length;
+  int get staleCount => quoteState.values.where((s) => s['isStale'] == true).length;
 
   List<Map<String, dynamic>> get filteredQuotes {
     final query = searchQuery.value.toLowerCase().trim();
@@ -65,8 +75,7 @@ class AdminController extends GetxController {
       if (status != 'all' && (q['status'] as String? ?? '') != status) {
         return false;
       }
-      if (billing != 'all' &&
-          (q['billing_cycle'] as String? ?? '') != billing) {
+      if (billing != 'all' && (q['billing_cycle'] as String? ?? '') != billing) {
         return false;
       }
       return true;
@@ -94,12 +103,15 @@ class AdminController extends GetxController {
       _initQuoteState();
       isAuthenticated.value = true;
       _catalog.setToken(_adminToken);
-      await Future.wait([fetchQuotes(), fetchStats(), _catalog.fetchCatalog(), fetchPendingModuleCounts()]);
+      await Future.wait([
+        fetchQuotes(),
+        fetchStats(),
+        _catalog.fetchCatalog(),
+        fetchPendingModuleCounts(),
+        fetchCurrentTemplateVersion(),
+      ]);
       _pollTimer?.cancel();
-      _pollTimer = Timer.periodic(
-        const Duration(seconds: 60),
-        (_) => fetchPendingModuleCounts(),
-      );
+      _pollTimer = Timer.periodic(const Duration(seconds: 60), (_) => fetchPendingModuleCounts());
       return true;
     } catch (e) {
       // ignore: avoid_print
@@ -125,6 +137,11 @@ class AdminController extends GetxController {
     inProgressModuleCounts.clear();
     unreadMessageCounts.clear();
     newFileCounts.clear();
+    currentTemplateVersion.value = '';
+    deliveryProgress.clear();
+    loadingDelivery.clear();
+    siteEvents.clear();
+    loadingSiteEvents.clear();
     searchQuery.value = '';
     statusFilter.value = 'all';
     billingFilter.value = 'all';
@@ -163,39 +180,35 @@ class AdminController extends GetxController {
       final data = response.data as Map<String, dynamic>?;
       // Support updated format { unacknowledged_counts, in_progress_counts }
       // with fallback to old { counts } for backward compat
-      final unacknowledged = data?['unacknowledged_counts'] as Map<String, dynamic>?
-          ?? data?['counts'] as Map<String, dynamic>? ?? {};
+      final unacknowledged =
+          data?['unacknowledged_counts'] as Map<String, dynamic>? ??
+          data?['counts'] as Map<String, dynamic>? ??
+          {};
       final inProgress = data?['in_progress_counts'] as Map<String, dynamic>? ?? {};
       final unreadMsgs = data?['unread_message_counts'] as Map<String, dynamic>? ?? {};
-      pendingModuleCounts.assignAll(
-        unacknowledged.map((k, v) => MapEntry(k, (v as num).toInt())),
-      );
-      inProgressModuleCounts.assignAll(
-        inProgress.map((k, v) => MapEntry(k, (v as num).toInt())),
-      );
-      unreadMessageCounts.assignAll(
-        unreadMsgs.map((k, v) => MapEntry(k, (v as num).toInt())),
-      );
+      pendingModuleCounts.assignAll(unacknowledged.map((k, v) => MapEntry(k, (v as num).toInt())));
+      inProgressModuleCounts.assignAll(inProgress.map((k, v) => MapEntry(k, (v as num).toInt())));
+      unreadMessageCounts.assignAll(unreadMsgs.map((k, v) => MapEntry(k, (v as num).toInt())));
       final newFiles = data?['new_file_counts'] as Map<String, dynamic>? ?? {};
-      newFileCounts.assignAll(
-        newFiles.map((k, v) => MapEntry(k, (v as num).toInt())),
-      );
+      newFileCounts.assignAll(newFiles.map((k, v) => MapEntry(k, (v as num).toInt())));
     } catch (_) {
       // Non-critical — leave counts unchanged
     }
   }
 
-  Future<void> markModuleLive(String pendingModuleId, String quoteId) async {
+  Future<void> markModuleLive(String pendingModuleId, String quoteId, String moduleId) async {
     if (_adminToken.isEmpty) return;
     try {
       await Supabase.instance.client.functions.invoke(
-        'admin-mark-module-live',
-        body: {'adminToken': _adminToken, 'pendingModuleId': pendingModuleId},
+        'admin-mark-module-deployed',
+        body: {
+          'adminToken': _adminToken,
+          'quoteId': quoteId,
+          'moduleId': moduleId,
+          'action': 'deployed',
+        },
       );
-      await Future.wait([
-        fetchPendingModuleCounts(),
-        fetchQuoteDetail(quoteId),
-      ]);
+      await Future.wait([fetchPendingModuleCounts(), fetchQuoteDetail(quoteId)]);
     } catch (_) {
       // Silently fail
     }
@@ -215,21 +228,14 @@ class AdminController extends GetxController {
     }
   }
 
-  Future<void> acknowledgeModule(
-      String pendingModuleId, String quoteId) async {
+  Future<void> acknowledgeModule(String pendingModuleId, String quoteId) async {
     if (_adminToken.isEmpty) return;
     try {
       await Supabase.instance.client.functions.invoke(
         'admin-acknowledge-module',
-        body: {
-          'adminToken': _adminToken,
-          'pendingModuleId': pendingModuleId,
-        },
+        body: {'adminToken': _adminToken, 'pendingModuleId': pendingModuleId},
       );
-      await Future.wait([
-        fetchPendingModuleCounts(),
-        fetchQuoteDetail(quoteId),
-      ]);
+      await Future.wait([fetchPendingModuleCounts(), fetchQuoteDetail(quoteId)]);
     } catch (_) {
       // Silently fail
     }
@@ -254,12 +260,10 @@ class AdminController extends GetxController {
   void _initQuoteState() {
     for (final q in quotes) {
       final id = q['id'] as String;
-      quoteState.putIfAbsent(id, () => {
-        'chargingBalance': false,
-        'startingSub': false,
-        'chargeMsg': null,
-        'subMsg': null,
-      });
+      quoteState.putIfAbsent(
+        id,
+        () => {'chargingBalance': false, 'startingSub': false, 'chargeMsg': null, 'subMsg': null},
+      );
       final depositPaidAt = q['deposit_paid_at'] as String?;
       if (q['status'] == 'deposit_paid' && depositPaidAt != null) {
         final paidAt = DateTime.tryParse(depositPaidAt);
@@ -334,8 +338,7 @@ class AdminController extends GetxController {
         );
         final pendingData = pendingResp.data as Map<String, dynamic>?;
         detail['portal_stage'] = pendingData?['portal_stage'] ?? 'transmitting';
-        detail['pending_modules'] =
-            pendingData?['pending_modules'] as List<dynamic>? ?? [];
+        detail['pending_modules'] = pendingData?['pending_modules'] as List<dynamic>? ?? [];
       } catch (_) {
         detail['portal_stage'] = 'transmitting';
         detail['pending_modules'] = <dynamic>[];
@@ -417,6 +420,235 @@ class AdminController extends GetxController {
     Supabase.instance.client.functions
         .invoke('admin-mark-files-seen', body: {'adminToken': _adminToken, 'quoteId': quoteId})
         .catchError((_) {});
+  }
+
+  Future<void> fetchCurrentTemplateVersion() async {
+    if (_adminToken.isEmpty) return;
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'admin-settings',
+        body: {'adminToken': _adminToken, 'action': 'get', 'key': 'current_template_version'},
+      );
+      final data = resp.data as Map<String, dynamic>?;
+      currentTemplateVersion.value = data?['value'] as String? ?? '';
+    } catch (_) {}
+  }
+
+  Future<void> markTemplateUpdated(String quoteId) async {
+    if (_adminToken.isEmpty) return;
+    try {
+      await Supabase.instance.client.functions.invoke(
+        'admin-delivery-progress',
+        body: {'adminToken': _adminToken, 'quoteId': quoteId, 'action': 'mark_updated'},
+      );
+      await Future.wait([fetchQuoteDetail(quoteId), fetchQuotes(), fetchCurrentTemplateVersion()]);
+    } catch (_) {}
+  }
+
+  Future<void> fetchDeliveryProgress(String quoteId) async {
+    if (_adminToken.isEmpty) return;
+    loadingDelivery.add(quoteId);
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'admin-delivery-progress',
+        body: {'adminToken': _adminToken, 'quoteId': quoteId, 'action': 'list'},
+      );
+      final data = resp.data as Map<String, dynamic>?;
+      deliveryProgress[quoteId] = (data?['steps'] as List<dynamic>? ?? [])
+          .cast<Map<String, dynamic>>();
+      deliveryProgress.refresh();
+    } catch (_) {
+    } finally {
+      loadingDelivery.remove(quoteId);
+    }
+  }
+
+  Future<void> initDeliveryProgress(String quoteId, List<String> moduleIds) async {
+    if (_adminToken.isEmpty) return;
+    loadingDelivery.add(quoteId);
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'admin-delivery-progress',
+        body: {
+          'adminToken': _adminToken,
+          'quoteId': quoteId,
+          'action': 'init',
+          'moduleIds': moduleIds,
+        },
+      );
+      final data = resp.data as Map<String, dynamic>?;
+      deliveryProgress[quoteId] = (data?['steps'] as List<dynamic>? ?? [])
+          .cast<Map<String, dynamic>>();
+      deliveryProgress.refresh();
+    } catch (_) {
+    } finally {
+      loadingDelivery.remove(quoteId);
+    }
+  }
+
+  Future<void> toggleDeliveryStep(String quoteId, String step, bool checked) async {
+    if (_adminToken.isEmpty) return;
+    // Optimistic update
+    final current = List<Map<String, dynamic>>.from(deliveryProgress[quoteId] ?? []);
+    final idx = current.indexWhere((s) => s['step'] == step);
+    if (idx >= 0) {
+      current[idx] = Map.from(current[idx])
+        ..['checked'] = checked
+        ..['checked_at'] = checked ? DateTime.now().toIso8601String() : null
+        ..['checked_by'] = 'admin';
+      deliveryProgress[quoteId] = current;
+      deliveryProgress.refresh();
+    }
+    try {
+      await Supabase.instance.client.functions.invoke(
+        'admin-delivery-progress',
+        body: {
+          'adminToken': _adminToken,
+          'quoteId': quoteId,
+          'action': 'upsert',
+          'step': step,
+          'checked': checked,
+        },
+      );
+    } catch (_) {
+      // Revert on failure
+      await fetchDeliveryProgress(quoteId);
+    }
+  }
+
+  Future<void> saveSiteUrl(String quoteId, String siteUrl) async {
+    if (_adminToken.isEmpty) return;
+    _setQuoteState(quoteId, 'savingSiteUrl', true);
+    _setQuoteState(quoteId, 'siteUrlMsg', null);
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'admin-register-site',
+        body: {'adminToken': _adminToken, 'quoteId': quoteId, 'siteUrl': siteUrl},
+      );
+      final data = resp.data as Map<String, dynamic>?;
+      if (data?['error'] != null) {
+        _setQuoteState(quoteId, 'siteUrlMsg', '❌ ${data!['error']}');
+      } else {
+        _setQuoteState(quoteId, 'siteUrlMsg', '✅ Site registered');
+        await Future.wait([fetchQuotes(), fetchQuoteDetail(quoteId)]);
+      }
+    } catch (_) {
+      _setQuoteState(quoteId, 'siteUrlMsg', '❌ Something went wrong');
+    } finally {
+      _setQuoteState(quoteId, 'savingSiteUrl', false);
+    }
+  }
+
+  Future<void> sendHandoff(String quoteId) async {
+    _setQuoteState(quoteId, 'sendingHandoff', true);
+    _setQuoteState(quoteId, 'handoffMsg', null);
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'admin-send-handoff',
+        body: {'quoteId': quoteId, 'action': 'client_package', 'adminToken': _adminToken},
+      );
+      final data = response.data as Map<String, dynamic>?;
+      if (data?['error'] != null) {
+        _setQuoteState(quoteId, 'handoffMsg', '❌ ${data!['error']}');
+      } else if (data?['skipped'] == true) {
+        _setQuoteState(quoteId, 'handoffMsg', '✅ Already sent (idempotency)');
+      } else {
+        _setQuoteState(quoteId, 'handoffMsg', '✅ Handoff sent');
+        await fetchQuoteDetail(quoteId);
+      }
+    } catch (_) {
+      _setQuoteState(quoteId, 'handoffMsg', '❌ Something went wrong');
+    } finally {
+      _setQuoteState(quoteId, 'sendingHandoff', false);
+    }
+  }
+
+  Future<void> provisionEmail(String quoteId, String clientName, {String? slugOverride}) async {
+    _setQuoteState(quoteId, 'provisioningEmail', true);
+    _setQuoteState(quoteId, 'provisionEmailMsg', null);
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'admin-provision-client-email',
+        body: {
+          'quoteId': quoteId,
+          'clientName': clientName,
+          if (slugOverride != null) 'slugOverride': slugOverride,
+          'adminToken': _adminToken,
+        },
+      );
+      final data = response.data as Map<String, dynamic>?;
+      if (data?['error'] != null) {
+        _setQuoteState(quoteId, 'provisionEmailMsg', '❌ ${data!['error']}');
+      } else {
+        _setQuoteState(
+          quoteId,
+          'provisionEmailMsg',
+          '✅ Provisioned: ${data!['provisioned_email']}',
+        );
+        await fetchQuoteDetail(quoteId);
+      }
+    } catch (_) {
+      _setQuoteState(quoteId, 'provisionEmailMsg', '❌ Something went wrong');
+    } finally {
+      _setQuoteState(quoteId, 'provisioningEmail', false);
+    }
+  }
+
+  Future<void> deprovisionEmail(String quoteId) async {
+    _setQuoteState(quoteId, 'deprovisioningEmail', true);
+    _setQuoteState(quoteId, 'provisionEmailMsg', null);
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'admin-deprovision-client-email',
+        body: {'quoteId': quoteId, 'adminToken': _adminToken},
+      );
+      final data = response.data as Map<String, dynamic>?;
+      if (data?['error'] != null) {
+        _setQuoteState(quoteId, 'provisionEmailMsg', '❌ ${data!['error']}');
+      } else {
+        _setQuoteState(quoteId, 'provisionEmailMsg', '✅ Deprovisioned');
+        await fetchQuoteDetail(quoteId);
+      }
+    } catch (_) {
+      _setQuoteState(quoteId, 'provisionEmailMsg', '❌ Something went wrong');
+    } finally {
+      _setQuoteState(quoteId, 'deprovisioningEmail', false);
+    }
+  }
+
+  Future<void> fetchSiteEvents(String quoteId) async {
+    if (_adminToken.isEmpty) return;
+    loadingSiteEvents.add(quoteId);
+    try {
+      final resp = await Supabase.instance.client
+          .from('site_events')
+          .select('id, event_type, payload, created_at')
+          .eq('quote_id', quoteId)
+          .order('created_at', ascending: false)
+          .limit(5);
+      siteEvents[quoteId] = (resp as List<dynamic>).cast<Map<String, dynamic>>();
+      siteEvents.refresh();
+    } catch (_) {
+    } finally {
+      loadingSiteEvents.remove(quoteId);
+    }
+  }
+
+  Future<String> generateClientJson(String quoteId) async {
+    final response = await Supabase.instance.client.functions.invoke(
+      'admin-generate-client-json',
+      body: {'adminToken': _adminToken, 'quoteId': quoteId},
+    );
+    final data = response.data as Map<String, dynamic>?;
+    if (data?['error'] != null) throw Exception(data!['error'] as String);
+    return data?['clientJson'] as String? ?? '{}';
+  }
+
+  Future<void> saveDiscoveryData(String quoteId, Map<String, dynamic> data) async {
+    await Supabase.instance.client.functions.invoke(
+      'admin-save-discovery',
+      body: {'adminToken': _adminToken, 'quoteId': quoteId, 'discovery_data': data},
+    );
   }
 
   void _setQuoteState(String quoteId, String key, dynamic value) {

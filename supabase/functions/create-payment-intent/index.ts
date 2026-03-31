@@ -40,6 +40,7 @@ Deno.serve(async (req) => {
       managementOptionId,
       billingCycle,
       setupTotalCents,
+      promoCode,
     } = await req.json();
 
     // --- Validate required fields ---
@@ -50,10 +51,46 @@ Deno.serve(async (req) => {
       );
     }
 
-    // --- Calculate deposit ---
-    // Always 50% of setup fee. Handover $400 is collected by admin at delivery.
-    const depositCents = Math.floor(setupTotalCents / 2);
-    const balanceCents = setupTotalCents - depositCents;
+    // --- Re-validate promo code server-side via validate-promo-code ---
+    // Checks Raspucat promo_codes table first (supports setup-only, subscription-only, both),
+    // then falls back to raw Stripe promotion code lookup.
+    let discountAmtCents = 0;
+    const originalSetupTotalCents = setupTotalCents;
+    let subscriptionPromotionCodeId: string | null = null;
+
+    if (promoCode) {
+      try {
+        const validationResp = await fetch(
+          `${Deno.env.get('SUPABASE_URL')}/functions/v1/validate-promo-code`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            },
+            body: JSON.stringify({ code: promoCode, setupTotalCents }),
+          },
+        );
+        const validation = await validationResp.json();
+        if (validation.valid) {
+          // Only apply setup discount if the promo covers setup
+          if (validation.appliesTo === 'setup' || validation.appliesTo === 'both') {
+            discountAmtCents = validation.discountAmtCents ?? 0;
+          }
+          // Store subscription promo code ID if the promo covers subscription
+          if (validation.appliesTo === 'subscription' || validation.appliesTo === 'both') {
+            subscriptionPromotionCodeId = validation.promotionCodeId ?? null;
+          }
+        }
+      } catch (err) {
+        console.warn('Promo validation failed during payment intent creation:', err);
+      }
+    }
+
+    // --- Calculate deposit from discounted total ---
+    const effectiveSetupTotal = setupTotalCents - discountAmtCents;
+    const depositCents = Math.floor(effectiveSetupTotal / 2);
+    const balanceCents = effectiveSetupTotal - depositCents;
 
     // --- Find or create Stripe Customer ---
     const existingCustomers = await stripe.customers.list({ email: clientEmail, limit: 1 });
@@ -76,11 +113,15 @@ Deno.serve(async (req) => {
         module_ids: moduleIds ?? [],
         management_option_id: managementOptionId ?? null,
         billing_cycle: billingCycle ?? null,
-        setup_total_cents: setupTotalCents,
+        setup_total_cents: effectiveSetupTotal,
         deposit_cents: depositCents,
         balance_cents: balanceCents,
         stripe_customer_id: customer.id,
         status: 'pending',
+        promo_code: promoCode ?? null,
+        discount_amount_cents: discountAmtCents,
+        original_setup_total_cents: originalSetupTotalCents,
+        subscription_promotion_code_id: subscriptionPromotionCodeId,
       })
       .select('id')
       .single();
@@ -93,7 +134,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    logEvent(quote.id, 'quote_created', { plan_id: planId, setup_total_cents: setupTotalCents });
+    logEvent(quote.id, 'quote_created', {
+      plan_id: planId,
+      setup_total_cents: effectiveSetupTotal,
+      discount_amount_cents: discountAmtCents,
+    });
 
     // --- Create Stripe PaymentIntent ---
     // setup_future_usage: 'off_session' saves the payment method to the customer
@@ -114,6 +159,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         clientSecret: paymentIntent.client_secret,
         quoteId: quote.id,
+        discountAmountCents: discountAmtCents,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );

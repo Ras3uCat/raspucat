@@ -60,6 +60,7 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _emailCtrl;
   late final TextEditingController _businessCtrl;
+  late final TextEditingController _handoffFeeCtrl;
 
   String? _selectedPlanId;
   Set<String> _selectedModuleIds = {};
@@ -77,6 +78,10 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
     _nameCtrl = TextEditingController(text: q?['client_name'] as String? ?? '');
     _emailCtrl = TextEditingController(text: q?['client_email'] as String? ?? '');
     _businessCtrl = TextEditingController(text: q?['business_name'] as String? ?? '');
+    final feeCents = q?['handoff_fee_cents'] as int? ?? 0;
+    _handoffFeeCtrl = TextEditingController(
+      text: feeCents > 0 ? (feeCents / 100).round().toString() : '',
+    );
     if (q != null) {
       _selectedPlanId = q['plan_id'] as String?;
       final rawIds = q['module_ids'] as List<dynamic>? ?? [];
@@ -91,6 +96,7 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
     _businessCtrl.dispose();
+    _handoffFeeCtrl.dispose();
     super.dispose();
   }
 
@@ -133,6 +139,7 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
       return;
     }
     setState(() { _submitting = true; _error = null; });
+    final handoffFeeDollars = int.tryParse(_handoffFeeCtrl.text.trim()) ?? 0;
     final data = <String, dynamic>{
       'clientName': name,
       'clientEmail': email,
@@ -142,6 +149,7 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
       'managementOptionId': _selectedMgmtId,
       'billingCycle': _selectedBillingCycle,
       'setupTotalCents': setupTotal,
+      'handoffFeeCents': handoffFeeDollars * 100,
     };
     bool success;
     if (_isEdit) {
@@ -222,6 +230,12 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
                   ),
                   const SizedBox(height: 8),
                   AdminFormTextField(controller: _businessCtrl, hint: 'Business Name (optional)'),
+                  const SizedBox(height: 8),
+                  AdminFormTextField(
+                    controller: _handoffFeeCtrl,
+                    hint: 'Handoff fee \$ (0 = included)',
+                    keyboardType: TextInputType.number,
+                  ),
                   const SizedBox(height: ESizes.md),
                   AdminQuoteFormBody(
                     ctrl: widget.catalogCtrl,

@@ -106,13 +106,26 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Deactivate UptimeRobot monitor (fire-and-forget, non-fatal)
+    if (quote.uptimerobot_monitor_id) {
+      fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/admin-deactivate-monitor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quoteId, adminToken }),
+      }).catch((err) => console.error('admin-deactivate-monitor call failed:', err));
+    }
+
     // Cancel subscription in Stripe
     await stripe.subscriptions.cancel(quote.stripe_subscription_id);
 
-    // Clear subscription fields in DB (preserve status as fully_paid)
+    const now = new Date().toISOString();
+
+    // Mark quote as cancelled
     const { error: updateError } = await supabase
       .from('quotes')
       .update({
+        status: 'cancelled',
+        cancelled_at: now,
         stripe_subscription_id: null,
         subscription_started_at: null,
       })
@@ -128,21 +141,18 @@ Deno.serve(async (req) => {
 
     logEvent(quoteId, 'subscription_cancelled', { subscription_id: quote.stripe_subscription_id });
 
-    // Email client
-    await sendEmail(
-      quote.client_email,
-      'Your management subscription has been cancelled',
-      themedEmail(`
-        <p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58E3EF;margin:0 0 14px;text-transform:uppercase;">Subscription Update</p>
-        <h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#E8FEFF;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">Your subscription has been cancelled, ${quote.client_name}.</h1>
-        <p style="color:rgba(232,254,255,0.6);font-size:15px;line-height:1.8;margin:0 0 28px;">
-          Your management subscription for <strong style="color:#E8FEFF;">${quote.business_name}</strong> has been cancelled effective immediately. You will not be charged further.
-        </p>
-        <p style="color:rgba(232,254,255,0.6);font-size:15px;line-height:1.8;margin:0;">
-          If you have any questions or believe this was done in error, please reach out and we'll sort it out right away.
-        </p>
-      `),
-    );
+    // Trigger handoff emails via admin-send-handoff (fire-and-forget, non-blocking)
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const sendHandoff = (action: string) =>
+      fetch(`${supabaseUrl}/functions/v1/admin-send-handoff`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${serviceKey}` },
+        body: JSON.stringify({ quoteId, action }),
+      }).catch((err) => console.error(`admin-send-handoff (${action}) failed:`, err));
+
+    sendHandoff('admin_alert');
+    sendHandoff('client_package');
 
     return new Response(
       JSON.stringify({ success: true }),

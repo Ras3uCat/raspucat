@@ -1,25 +1,37 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
             "name": "raspucat",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--dart-define=SUPABASE_URL=${env:SUPABASE_URL}",
+                "--dart-define=SUPABASE_ANON_KEY=${env:SUPABASE_ANON_KEY}",
+                "--dart-define=STRIPE_PUBLISHABLE_KEY=${env:STRIPE_PUBLISHABLE_KEY}"
+            ]
         },
         {
             "name": "raspucat (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define=SUPABASE_URL=${env:SUPABASE_URL}",
+                "--dart-define=SUPABASE_ANON_KEY=${env:SUPABASE_ANON_KEY}",
+                "--dart-define=STRIPE_PUBLISHABLE_KEY=${env:STRIPE_PUBLISHABLE_KEY}"
+            ]
         },
         {
             "name": "raspucat (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--dart-define=SUPABASE_URL=${env:SUPABASE_URL}",
+                "--dart-define=SUPABASE_ANON_KEY=${env:SUPABASE_ANON_KEY}",
+                "--dart-define=STRIPE_PUBLISHABLE_KEY=${env:STRIPE_PUBLISHABLE_KEY}"
+            ]
         }
     ]
 }

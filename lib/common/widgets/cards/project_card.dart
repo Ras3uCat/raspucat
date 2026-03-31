@@ -254,6 +254,10 @@ class _ImageBlock extends StatelessWidget {
                       project.imagePaths.first,
                       fit: BoxFit.cover,
                       semanticLabel: project.title,
+                      frameBuilder: (_, child, frame, sync) {
+                        if (sync || frame != null) return child;
+                        return const SkeletonShimmer();
+                      },
                     )
                   : Container(
                       decoration: BoxDecoration(
