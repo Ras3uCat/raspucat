@@ -19,12 +19,9 @@ class SectionContainer extends StatelessWidget {
     final double paddingVertical = this.paddingVertical ?? ESizes.sectionMd;
     final double paddingHorizontal = this.paddingHorizontal ?? ESizes.sectionSm;
     return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: paddingVertical,
-        horizontal: paddingHorizontal,
-      ),
+      padding: EdgeInsets.symmetric(vertical: paddingVertical, horizontal: paddingHorizontal),
       width: width,
-      height: height,
+      constraints: BoxConstraints(minHeight: height),
       child: child,
     );
   }

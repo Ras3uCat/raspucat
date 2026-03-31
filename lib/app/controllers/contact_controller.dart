@@ -32,8 +32,7 @@ class ContactController extends GetxController {
     super.onClose();
   }
 
-  String? validateRequired(String? v) =>
-      (v == null || v.trim().isEmpty) ? 'Required' : null;
+  String? validateRequired(String? v) => (v == null || v.trim().isEmpty) ? 'Required' : null;
 
   String? validateEmail(String? v) {
     if (v == null || v.trim().isEmpty) return 'Required';
@@ -52,8 +51,10 @@ class ContactController extends GetxController {
         'message': messageCtrl.text.trim(),
       });
       isSubmitted.value = true;
-    } catch (_) {
-      errorMessage.value = 'Transmission failed. Please try again.';
+    } catch (e) {
+      errorMessage.value = 'Transmission failed: $e';
+      // ignore: avoid_print
+      print('[ContactController] submit error: $e');
     } finally {
       isSubmitting.value = false;
     }
