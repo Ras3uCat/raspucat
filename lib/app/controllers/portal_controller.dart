@@ -3,6 +3,7 @@ import 'package:raspucat/app/data/repositories/portal_files_repository.dart';
 import 'package:raspucat/app/data/repositories/portal_messages_repository.dart';
 import 'package:raspucat/app/data/repositories/portal_repository.dart';
 import 'package:raspucat/utils/constants/exports.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PortalController extends GetxController {
