@@ -32,7 +32,15 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Ras3uCat">
+  <meta name="description" content="Ras3uCat — Flutter & Mobile Developer. Building retro-futuristic apps with clean code and high-end design.">
+  <meta name="author" content="Ras3uCat">
+  <meta name="theme-color" content="#000612">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Ras3uCat — Flutter & Mobile Developer">
+  <meta property="og:description" content="Building retro-futuristic apps with clean code and high-end design.">
+  <meta property="og:image" content="icons/Icon-512.png">
+  <meta property="og:type" content="website">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -44,10 +52,61 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/png" href="favicon.png">
 
-  <title>Ras3uCat</title>
+  <title>Ras3uCat — Flutter & Mobile Developer</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+
+  <!-- Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    let _stripe = null;
+    let _elements = null;
+
+    function initStripePayment(publishableKey, clientSecret) {
+      _stripe = Stripe(publishableKey);
+      const appearance = {
+        theme: 'night',
+        variables: {
+          colorPrimary: '#58E3EF',
+          colorBackground: '#03091a',
+          colorText: '#ffffff',
+          colorDanger: '#ff4d4d',
+          borderRadius: '8px',
+          fontFamily: 'system-ui, sans-serif',
+        },
+      };
+      _elements = _stripe.elements({ clientSecret, appearance });
+      const paymentElement = _elements.create('payment');
+      paymentElement.mount('#stripe-payment-element');
+    }
+
+    async function confirmStripePayment() {
+      try {
+        const result = await _stripe.confirmPayment({
+          elements: _elements,
+          redirect: 'if_required',
+        });
+        return result.error?.message ?? '';
+      } catch (e) {
+        return e.message || 'An unexpected error occurred. Please try again.';
+      }
+    }
+
+    async function stripeConfirmCardPayment(publishableKey, clientSecret, paymentMethodId) {
+      try {
+        if (!_stripe) {
+          _stripe = Stripe(publishableKey);
+        }
+        const result = await _stripe.confirmCardPayment(clientSecret, {
+          payment_method: paymentMethodId,
+        });
+        return result.error?.message ?? '';
+      } catch (e) {
+        return e.message || 'Payment failed. Please try again.';
+      }
+    }
+  </script>
 </body>
 </html>
