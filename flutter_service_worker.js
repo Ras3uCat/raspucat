@@ -43,7 +43,7 @@ const RESOURCES = {"manifest.json": "b903179230055979c0f8f0b0020c0492",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "assets/fonts/MaterialIcons-Regular.otf": "c0d66e70caf29cc59c69b1a6104f6c32",
 "assets/AssetManifest.bin.json": "7adaee336f3f56d9ab0cae10654fcdb3",
-"flutter_bootstrap.js": "44011746b94a1eb11348a3a91185e910",
+"flutter_bootstrap.js": "4ad7477cfcf2854cc933d83adb1440ed",
 "favicon.png": "5d84811a8fc9ca44c5e91135d7500070",
 "favicon.svg": "20067aff097a215ae9a08a8f36126d99",
 "main.dart.js": "88b53b477f6c42807353e13f50d2b0b8"};
