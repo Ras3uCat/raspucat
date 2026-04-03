@@ -78,7 +78,13 @@
         },
       };
       _elements = _stripe.elements({ clientSecret, appearance });
-      const paymentElement = _elements.create('payment');
+      const paymentElement = _elements.create('payment', {
+        fields: {
+          billingDetails: {
+            address: { country: 'never', postalCode: 'never' },
+          },
+        },
+      });
       paymentElement.mount('#stripe-payment-element');
     }
 
