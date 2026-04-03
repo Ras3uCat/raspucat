@@ -141,78 +141,48 @@ class PriceSummaryBar extends StatelessWidget {
               if (savings != null) _SavingsBadge(label: savings),
             ],
           ),
-          const SizedBox(height: 6),
-          // ── Row 2: Details left | Due amounts right ───────────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Left — promo & management breakdown
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (promoDiscountCents > 0)
-                      Text(
-                        '$appliedPromoCode: -\$$promoFormatted',
-                        style: const TextStyle(
-                          color: Color(0xFF4CAF50),
-                          fontSize: ESizes.fontSizeLabel,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    if (selectedManagement != null)
-                      Text(
-                        _isHandover
-                            ? '+ ${selectedManagement!.name}: ${selectedManagement!.displayOnetime}'
-                            : isAnnual
-                            ? '+ ${selectedManagement!.name}: ${PriceFormatter.cents(_discountedMgmt(selectedManagement!.annualPrice))}/yr'
-                            : '+ ${selectedManagement!.name}: ${PriceFormatter.cents(_discountedMgmt(selectedManagement!.monthlyPrice))}/mo',
-                        style: TextStyle(
-                          color: EColors.textSecondary,
-                          fontSize: ESizes.fontSizeLabel,
-                        ),
-                      ),
-                    if (promoSubscriptionLabel != null)
-                      Text(
-                        '$appliedPromoCode: $promoSubscriptionLabel (subscription)',
-                        style: const TextStyle(
-                          color: Color(0xFF4CAF50),
-                          fontSize: ESizes.fontSizeLabel,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                  ],
-                ),
+          const SizedBox(height: 4),
+          if (promoDiscountCents > 0)
+            Text(
+              '$appliedPromoCode: -\$$promoFormatted',
+              style: const TextStyle(
+                color: Color(0xFF4CAF50),
+                fontSize: ESizes.fontSizeLabel,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(width: ESizes.sm),
-              // Right — payment schedule
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Due today: \$$depositFormatted (50%)',
-                      style: TextStyle(
-                        color: EColors.gold,
-                        fontSize: ESizes.fontSizeLabel,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      textAlign: TextAlign.end,
-                    ),
-                    if (dueOnLaunchCents > 0)
-                      Text(
-                        _dueOnLaunchLabel(balanceCents, dueOnLaunchCents),
-                        style: TextStyle(
-                          color: EColors.textSecondary,
-                          fontSize: ESizes.fontSizeLabel,
-                        ),
-                        textAlign: TextAlign.end,
-                      ),
-                  ],
-                ),
+            ),
+          if (selectedManagement != null)
+            Text(
+              _isHandover
+                  ? '+ ${selectedManagement!.name}: ${selectedManagement!.displayOnetime}'
+                  : isAnnual
+                  ? '+ ${selectedManagement!.name}: ${PriceFormatter.cents(_discountedMgmt(selectedManagement!.annualPrice))}/yr'
+                  : '+ ${selectedManagement!.name}: ${PriceFormatter.cents(_discountedMgmt(selectedManagement!.monthlyPrice))}/mo',
+              style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
+            ),
+          if (promoSubscriptionLabel != null)
+            Text(
+              '$appliedPromoCode: $promoSubscriptionLabel (subscription)',
+              style: const TextStyle(
+                color: Color(0xFF4CAF50),
+                fontSize: ESizes.fontSizeLabel,
+                fontWeight: FontWeight.w600,
               ),
-            ],
+            ),
+          const SizedBox(height: 4),
+          Text(
+            'Due today: \$$depositFormatted (50% deposit)',
+            style: TextStyle(
+              color: EColors.gold,
+              fontSize: ESizes.fontSizeLabel,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+          if (dueOnLaunchCents > 0)
+            Text(
+              _dueOnLaunchLabel(balanceCents, dueOnLaunchCents),
+              style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
+            ),
         ],
       ),
     );
