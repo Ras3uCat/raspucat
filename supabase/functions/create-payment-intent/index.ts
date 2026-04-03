@@ -43,8 +43,10 @@ Deno.serve(async (req) => {
       promoCode,
     } = await req.json();
 
+    const normalizedEmail = clientEmail?.trim().toLowerCase();
+
     // --- Validate required fields ---
-    if (!clientName || !clientEmail || !planId || !setupTotalCents) {
+    if (!clientName || !normalizedEmail || !planId || !setupTotalCents) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
@@ -93,12 +95,12 @@ Deno.serve(async (req) => {
     const balanceCents = effectiveSetupTotal - depositCents;
 
     // --- Find or create Stripe Customer ---
-    const existingCustomers = await stripe.customers.list({ email: clientEmail, limit: 1 });
+    const existingCustomers = await stripe.customers.list({ email: normalizedEmail, limit: 1 });
     const customer = existingCustomers.data.length > 0
       ? existingCustomers.data[0]
       : await stripe.customers.create({
           name: clientName,
-          email: clientEmail,
+          email: normalizedEmail,
           metadata: { businessName: businessName ?? '' },
         });
 
@@ -107,7 +109,7 @@ Deno.serve(async (req) => {
       .from('quotes')
       .insert({
         client_name: clientName,
-        client_email: clientEmail,
+        client_email: normalizedEmail,
         business_name: businessName ?? '',
         plan_id: planId,
         module_ids: moduleIds ?? [],

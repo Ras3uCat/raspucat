@@ -37,7 +37,7 @@ class _DetailsStepState extends State<DetailsStep> {
 
   void _save() {
     widget.state.clientName = _nameCtrl.text.trim();
-    widget.state.clientEmail = _emailCtrl.text.trim();
+    widget.state.clientEmail = _emailCtrl.text.trim().toLowerCase();
     widget.state.businessName = _bizCtrl.text.trim();
   }
 
@@ -55,12 +55,7 @@ class _DetailsStepState extends State<DetailsStep> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        ESizes.lg,
-        ESizes.md,
-        ESizes.lg,
-        ESizes.lg,
-      ),
+      padding: const EdgeInsets.fromLTRB(ESizes.lg, ESizes.md, ESizes.lg, ESizes.lg),
       child: Form(
         key: widget.formKey,
         child: Column(
@@ -98,73 +93,71 @@ class _DetailsStepState extends State<DetailsStep> {
                 final fee = isHandover
                     ? '${_fmt(mgmt.onetimePrice)} handover'
                     : isAnnual
-                        ? '${_fmt(discountMgmt(mgmt.annualPrice))} 1st year'
-                        : '${_fmt(discountMgmt(mgmt.monthlyPrice))} 1st month';
+                    ? '${_fmt(discountMgmt(mgmt.annualPrice))} 1st year'
+                    : '${_fmt(discountMgmt(mgmt.monthlyPrice))} 1st month';
                 return '${_fmt(dueOnLaunchCents)} ($balance + $fee)';
               }
+
               return Container(
-              padding: const EdgeInsets.all(ESizes.md),
-              decoration: BoxDecoration(
-                color: EColors.primary.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                border: Border.all(
-                  color: EColors.primary.withValues(alpha: 0.15),
+                padding: const EdgeInsets.all(ESizes.md),
+                decoration: BoxDecoration(
+                  color: EColors.primary.withValues(alpha: 0.04),
+                  borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+                  border: Border.all(color: EColors.primary.withValues(alpha: 0.15)),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Order Summary',
-                    style: TextStyle(
-                      color: EColors.textWhite,
-                      fontSize: ESizes.fontSizeSm,
-                      fontWeight: FontWeight.w600,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Order Summary',
+                      style: TextStyle(
+                        color: EColors.textWhite,
+                        fontSize: ESizes.fontSizeSm,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: ESizes.sm),
-                  _SummaryRow('Plan', state.plan.name),
-                  _SummaryRow(
-                    'Modules',
-                    '${state.selectedAddonCount + state.plan.lockedModuleIds.length} selected',
-                  ),
-                  if (mgmt != null)
+                    const SizedBox(height: ESizes.sm),
+                    _SummaryRow('Plan', state.plan.name),
                     _SummaryRow(
-                      'Management',
-                      isHandover
-                          ? '${mgmt.name} — ${mgmt.displayOnetime} (on delivery)'
-                          : isAnnual
-                              ? '${mgmt.name} — ${_fmt(discountMgmt(mgmt.annualPrice))}/yr'
-                              : '${mgmt.name} — ${_fmt(discountMgmt(mgmt.monthlyPrice))}/mo',
+                      'Modules',
+                      '${state.selectedAddonCount + state.plan.lockedModuleIds.length} selected',
                     ),
-                  const Divider(color: Color(0x1AFFFFFF), height: ESizes.md),
-                  _SummaryRow(
-                    'Setup total',
-                    _fmt(state.computedSetup.value),
-                    valueColor: promoDiscount > 0 ? EColors.textSecondary : EColors.textWhite,
-                  ),
-                  if (promoDiscount > 0) ...[
+                    if (mgmt != null)
+                      _SummaryRow(
+                        'Management',
+                        isHandover
+                            ? '${mgmt.name} — ${mgmt.displayOnetime} (on delivery)'
+                            : isAnnual
+                            ? '${mgmt.name} — ${_fmt(discountMgmt(mgmt.annualPrice))}/yr'
+                            : '${mgmt.name} — ${_fmt(discountMgmt(mgmt.monthlyPrice))}/mo',
+                      ),
+                    const Divider(color: Color(0x1AFFFFFF), height: ESizes.md),
                     _SummaryRow(
-                      'Promo ($appliedPromo)',
-                      '-${_fmt(promoDiscount)}',
-                      valueColor: const Color(0xFF4CAF50),
+                      'Setup total',
+                      _fmt(state.computedSetup.value),
+                      valueColor: promoDiscount > 0 ? EColors.textSecondary : EColors.textWhite,
                     ),
+                    if (promoDiscount > 0) ...[
+                      _SummaryRow(
+                        'Promo ($appliedPromo)',
+                        '-${_fmt(promoDiscount)}',
+                        valueColor: const Color(0xFF4CAF50),
+                      ),
+                      _SummaryRow(
+                        'Discounted total',
+                        _fmt(effectiveSetup),
+                        valueColor: EColors.textWhite,
+                      ),
+                    ],
                     _SummaryRow(
-                      'Discounted total',
-                      _fmt(effectiveSetup),
-                      valueColor: EColors.textWhite,
+                      'Due today (50% deposit)',
+                      _fmt(depositCents),
+                      valueColor: EColors.gold,
                     ),
+                    if (dueOnLaunchCents > 0) _SummaryRow('Due on launch', dueOnLaunchLabel()),
                   ],
-                  _SummaryRow(
-                    'Due today (50% deposit)',
-                    _fmt(depositCents),
-                    valueColor: EColors.gold,
-                  ),
-                  if (dueOnLaunchCents > 0)
-                    _SummaryRow('Due on launch', dueOnLaunchLabel()),
-                ],
-              ),
-            );
+                ),
+              );
             }),
             const SizedBox(height: ESizes.md),
             Text(
@@ -181,8 +174,7 @@ class _DetailsStepState extends State<DetailsStep> {
               label: 'Your name',
               hint: 'Jane Smith',
               onChanged: (_) => _save(),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
             ),
             const SizedBox(height: ESizes.sm + 4),
             _DetailsField(
@@ -193,8 +185,7 @@ class _DetailsStepState extends State<DetailsStep> {
               onChanged: (_) => _save(),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Email is required';
-                final ok = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                    .hasMatch(v.trim());
+                final ok = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(v.trim());
                 return ok ? null : 'Enter a valid email address';
               },
             ),
@@ -257,7 +248,10 @@ class _DetailsStepState extends State<DetailsStep> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                              borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.7), width: 1.5),
+                              borderSide: BorderSide(
+                                color: EColors.primary.withValues(alpha: 0.7),
+                                width: 1.5,
+                              ),
                             ),
                           ),
                         ),
@@ -265,7 +259,9 @@ class _DetailsStepState extends State<DetailsStep> {
                       const SizedBox(width: ESizes.sm),
                       if (applied.isEmpty)
                         NeonButton(
-                          onTap: loading ? null : () => widget.state.applyPromoCode(_promoCtrl.text),
+                          onTap: loading
+                              ? null
+                              : () => widget.state.applyPromoCode(_promoCtrl.text),
                           neonColor: EColors.primary,
                           padding: const EdgeInsets.symmetric(
                             horizontal: ESizes.md,
@@ -297,7 +293,10 @@ class _DetailsStepState extends State<DetailsStep> {
                           },
                           child: const Text(
                             'Remove',
-                            style: TextStyle(color: Color(0xFFFF4D4D), fontSize: ESizes.fontSizeLabel),
+                            style: TextStyle(
+                              color: Color(0xFFFF4D4D),
+                              fontSize: ESizes.fontSizeLabel,
+                            ),
                           ),
                         ),
                     ],
@@ -307,7 +306,10 @@ class _DetailsStepState extends State<DetailsStep> {
                       padding: const EdgeInsets.only(top: 6),
                       child: Text(
                         error,
-                        style: const TextStyle(color: Color(0xFFFF4D4D), fontSize: ESizes.fontSizeLabel),
+                        style: const TextStyle(
+                          color: Color(0xFFFF4D4D),
+                          fontSize: ESizes.fontSizeLabel,
+                        ),
                       ),
                     ),
                   if (applied.isNotEmpty && discount > 0)
@@ -363,10 +365,7 @@ class _SummaryRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: EColors.textSecondary,
-              fontSize: ESizes.fontSizeLabel,
-            ),
+            style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
           ),
           Text(
             value,
@@ -418,10 +417,7 @@ class _DetailsField extends StatelessWidget {
           keyboardType: keyboardType,
           onChanged: onChanged,
           validator: validator,
-          style: TextStyle(
-            color: EColors.textWhite,
-            fontSize: ESizes.fontSizeSm,
-          ),
+          style: TextStyle(color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
@@ -436,22 +432,15 @@ class _DetailsField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-              borderSide: BorderSide(
-                color: EColors.primary.withValues(alpha: 0.2),
-              ),
+              borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-              borderSide: BorderSide(
-                color: EColors.primary.withValues(alpha: 0.2),
-              ),
+              borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-              borderSide: BorderSide(
-                color: EColors.primary.withValues(alpha: 0.7),
-                width: 1.5,
-              ),
+              borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.7), width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
@@ -459,10 +448,7 @@ class _DetailsField extends StatelessWidget {
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-              borderSide: const BorderSide(
-                color: Color(0xFFFF4D4D),
-                width: 1.5,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFFF4D4D), width: 1.5),
             ),
             errorStyle: const TextStyle(color: Color(0xFFFF4D4D)),
           ),
