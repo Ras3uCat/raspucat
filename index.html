@@ -97,6 +97,13 @@
         const result = await _stripe.confirmPayment({
           elements: _elements,
           redirect: 'if_required',
+          confirmParams: {
+            payment_method_data: {
+              billing_details: {
+                address: { country: 'US' },
+              },
+            },
+          },
         });
         return result.error?.message ?? '';
       } catch (e) {
