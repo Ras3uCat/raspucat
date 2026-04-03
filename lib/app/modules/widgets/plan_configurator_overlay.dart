@@ -29,9 +29,7 @@ class PlanConfiguratorOverlay extends StatelessWidget {
               onTap: () => Get.back(),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(
-                  color: EColors.backgroundDark.withValues(alpha: 0.7),
-                ),
+                child: Container(color: EColors.backgroundDark.withValues(alpha: 0.7)),
               ),
             ),
           ),
@@ -47,23 +45,13 @@ class PlanConfiguratorOverlay extends StatelessWidget {
 // ─── Panel ────────────────────────────────────────────────────────────────────
 
 class _ConfiguratorPanel extends StatelessWidget {
-  const _ConfiguratorPanel({
-    required this.plan,
-    required this.state,
-    required this.ctrl,
-  });
+  const _ConfiguratorPanel({required this.plan, required this.state, required this.ctrl});
 
   final PlanModel plan;
   final ConfiguratorState state;
   final PlansController ctrl;
 
-  static const _stepTitles = [
-    'Modules',
-    'Management',
-    'Your Details',
-    'Payment',
-    'Confirmed!',
-  ];
+  static const _stepTitles = ['Modules', 'Management', 'Your Details', 'Payment', 'Confirmed!'];
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +59,7 @@ class _ConfiguratorPanel extends StatelessWidget {
     final double screenH = MediaQuery.sizeOf(context).height;
     final bool isMobile = EDeviceUtils.isMobileWidth(screenW);
     final panelW = isMobile ? screenW * 0.95 : (screenW * 0.6).clamp(400.0, 680.0);
-    final panelH = screenH * 0.85;
+    final panelH = isMobile ? screenH * 0.95 : screenH * 0.85;
     final accentColor = plan.isCustom ? EColors.accent : EColors.primary;
     final formKey = GlobalKey<FormState>();
 
@@ -83,11 +71,7 @@ class _ConfiguratorPanel extends StatelessWidget {
         color: EColors.backgroundDark.withValues(alpha: 0.96),
         border: Border.all(color: accentColor.withValues(alpha: 0.4), width: 1.2),
         boxShadow: [
-          BoxShadow(
-            color: accentColor.withValues(alpha: 0.15),
-            blurRadius: 40,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: accentColor.withValues(alpha: 0.15), blurRadius: 40, spreadRadius: 2),
         ],
       ),
       child: ClipRRect(
@@ -133,16 +117,9 @@ class _ConfiguratorPanel extends StatelessWidget {
               child: Obx(() {
                 switch (state.step.value) {
                   case 0:
-                    return ModulesStep(
-                      plan: plan,
-                      state: state,
-                      modules: ctrl.modules,
-                    );
+                    return ModulesStep(plan: plan, state: state, modules: ctrl.modules);
                   case 1:
-                    return ManagementStep(
-                      state: state,
-                      options: ctrl.managementOptions,
-                    );
+                    return ManagementStep(state: state, options: ctrl.managementOptions);
                   case 2:
                     return DetailsStep(state: state, formKey: formKey);
                   case 3:

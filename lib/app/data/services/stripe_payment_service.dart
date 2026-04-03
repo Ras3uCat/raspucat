@@ -12,7 +12,11 @@ external void _jsInitStripePayment(String publishableKey, String clientSecret);
 external JSPromise<JSString> _jsConfirmStripePayment();
 
 @JS('stripeConfirmCardPayment')
-external JSPromise<JSString> _jsConfirmCardPayment(String publishableKey, String clientSecret, String paymentMethodId);
+external JSPromise<JSString> _jsConfirmCardPayment(
+  String publishableKey,
+  String clientSecret,
+  String paymentMethodId,
+);
 
 class StripePaymentService {
   static bool _viewRegistered = false;
@@ -27,7 +31,8 @@ class StripePaymentService {
       (int viewId) => html.DivElement()
         ..id = 'stripe-payment-element'
         ..style.width = '100%'
-        ..style.height = '100%',
+        ..style.height = '100%'
+        ..style.overflow = 'hidden',
     );
   }
 
@@ -40,10 +45,18 @@ class StripePaymentService {
 
   /// Confirm a card payment client-side using a saved payment method ID.
   /// Handles 3DS inline if required. Returns null on success, or an error string.
-  static Future<String?> confirmCardPayment(String publishableKey, String clientSecret, String paymentMethodId) async {
+  static Future<String?> confirmCardPayment(
+    String publishableKey,
+    String clientSecret,
+    String paymentMethodId,
+  ) async {
     if (!kIsWeb) return 'Payment only available on web.';
     try {
-      final result = await _jsConfirmCardPayment(publishableKey, clientSecret, paymentMethodId).toDart;
+      final result = await _jsConfirmCardPayment(
+        publishableKey,
+        clientSecret,
+        paymentMethodId,
+      ).toDart;
       final error = result.toDart;
       return error.isEmpty ? null : error;
     } catch (e) {
