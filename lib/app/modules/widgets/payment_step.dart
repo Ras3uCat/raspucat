@@ -103,27 +103,6 @@ class _PaymentStepState extends State<PaymentStep> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(ESizes.lg, ESizes.xs, ESizes.lg, ESizes.sm),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.lock_outline,
-                  size: 12,
-                  color: EColors.textSecondary.withValues(alpha: 0.5),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Secured by Stripe — your card details never touch our servers.',
-                  style: TextStyle(
-                    color: EColors.textSecondary.withValues(alpha: 0.5),
-                    fontSize: ESizes.fontSizeLabel,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       );
     });
