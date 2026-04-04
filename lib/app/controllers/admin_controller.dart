@@ -516,6 +516,36 @@ class AdminController extends GetxController {
     }
   }
 
+  Future<void> _autoCheckDeliveryStep(String quoteId, String step) async {
+    if (_adminToken.isEmpty) return;
+    final now = DateTime.now().toIso8601String();
+    final current = List<Map<String, dynamic>>.from(deliveryProgress[quoteId] ?? []);
+    final idx = current.indexWhere((s) => s['step'] == step);
+    if (idx >= 0) {
+      current[idx] = Map.from(current[idx])
+        ..['checked'] = true
+        ..['checked_at'] = now
+        ..['checked_by'] = 'system';
+      deliveryProgress[quoteId] = current;
+      deliveryProgress.refresh();
+    }
+    try {
+      await Supabase.instance.client.functions.invoke(
+        'admin-delivery-progress',
+        body: {
+          'adminToken': _adminToken,
+          'quoteId': quoteId,
+          'action': 'upsert',
+          'step': step,
+          'checked': true,
+          'checked_by': 'system',
+        },
+      );
+    } catch (_) {
+      await fetchDeliveryProgress(quoteId);
+    }
+  }
+
   Future<void> saveSiteUrl(String quoteId, String siteUrl) async {
     if (_adminToken.isEmpty) return;
     _setQuoteState(quoteId, 'savingSiteUrl', true);
@@ -586,6 +616,7 @@ class AdminController extends GetxController {
           '✅ Provisioned: ${data!['provisioned_email']}',
         );
         await fetchQuoteDetail(quoteId);
+        await _autoCheckDeliveryStep(quoteId, 'email_provisioned');
       }
     } catch (_) {
       _setQuoteState(quoteId, 'provisionEmailMsg', '❌ Something went wrong');

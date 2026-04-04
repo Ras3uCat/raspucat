@@ -28,6 +28,7 @@ const json = (data: unknown, status = 200) =>
 // modules: undefined = always present; string[] = substring-matched against quote.module_ids
 const STEPS: Array<{ key: string; modules?: string[] }> = [
   { key: 'discovery_call_complete' },
+  { key: 'email_provisioned' },
   { key: 'supabase_account_created' },
   { key: 'client_json_generated' },
   { key: 'deliver_sh_complete' },
