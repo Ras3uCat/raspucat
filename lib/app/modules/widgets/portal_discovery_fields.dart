@@ -69,60 +69,6 @@ class DiscoveryLabeledField extends StatelessWidget {
   }
 }
 
-class DiscoveryHexField extends StatelessWidget {
-  const DiscoveryHexField(this.label, this.controller, this.dataKey, {required this.onChanged});
-  final String label;
-  final TextEditingController controller;
-  final String dataKey;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: ESizes.sm),
-      child: Row(
-        children: [
-          Expanded(
-            child: DiscoveryLabeledField(
-              label,
-              controller,
-              hint: 'e.g. 1A2B3C',
-              maxLength: 7,
-              onChanged: (v) {
-                final clean = v.replaceAll('#', '').toUpperCase();
-                if (controller.text != clean)
-                  controller.value = controller.value.copyWith(text: clean);
-                onChanged(clean);
-              },
-            ),
-          ),
-          const SizedBox(width: ESizes.sm),
-          ValueListenableBuilder(
-            valueListenable: controller,
-            builder: (_, __, ___) {
-              Color? c;
-              final h = controller.text.replaceAll('#', '');
-              if (h.length == 6)
-                try {
-                  c = Color(int.parse('FF$h', radix: 16));
-                } catch (_) {}
-              return Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: c ?? EColors.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: EColors.primary.withValues(alpha: 0.2)),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class DiscoveryRadioGroup extends StatelessWidget {
   const DiscoveryRadioGroup({
     required this.options,
@@ -167,46 +113,6 @@ class DiscoveryRadioGroup extends StatelessWidget {
           ),
         );
       }).toList(),
-    );
-  }
-}
-
-class DiscoveryTimezoneDropdown extends StatelessWidget {
-  const DiscoveryTimezoneDropdown({
-    required this.value,
-    required this.timezones,
-    required this.onChanged,
-  });
-  final String? value;
-  final List<String> timezones;
-  final ValueChanged<String?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: ESizes.md),
-      decoration: BoxDecoration(
-        color: EColors.primary.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
-        border: Border.all(color: EColors.primary.withValues(alpha: 0.15)),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: timezones.contains(value) ? value : null,
-          hint: Text(
-            'Select timezone',
-            style: TextStyle(
-              color: EColors.textSecondary.withValues(alpha: 0.3),
-              fontSize: ESizes.fontSizeSm,
-            ),
-          ),
-          dropdownColor: const Color(0xFF0D1117),
-          style: const TextStyle(color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
-          isExpanded: true,
-          items: timezones.map((tz) => DropdownMenuItem(value: tz, child: Text(tz))).toList(),
-          onChanged: onChanged,
-        ),
-      ),
     );
   }
 }

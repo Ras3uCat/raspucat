@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:raspucat/app/modules/widgets/_discovery_address_autocomplete.dart';
 import 'package:raspucat/app/controllers/portal_controller.dart';
 import 'package:raspucat/app/data/models/portal_quote_model.dart';
 import 'package:raspucat/app/modules/widgets/_portal_discovery_sections.dart';
@@ -80,17 +81,6 @@ class _State extends State<PortalDiscoveryForm> {
     ('minimal', 'Minimal'),
     ('hamburger', 'Hamburger menu'),
   ];
-  static const _timezones = [
-    'America/New_York',
-    'America/Chicago',
-    'America/Denver',
-    'America/Los_Angeles',
-    'America/Phoenix',
-    'America/Anchorage',
-    'Pacific/Honolulu',
-    'UTC',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -150,6 +140,20 @@ class _State extends State<PortalDiscoveryForm> {
     bb[k] = v;
     _data['brand_brief'] = bb;
     _draft();
+  }
+
+  void _onAddressSelected(NominatimResult r) {
+    _street.text = r.street;
+    _city.text = r.city;
+    _stateCtrl.text = r.state;
+    _zip.text = r.zip;
+    _country.text = r.country;
+    _set('STREET', r.street);
+    _set('CITY', r.city);
+    _set('STATE', r.state);
+    _set('ZIP', r.zip);
+    _set('COUNTRY', r.country);
+    if (r.timezone != null) _set('TIMEZONE', r.timezone!);
   }
 
   void _updateHours() {
@@ -263,12 +267,10 @@ class _State extends State<PortalDiscoveryForm> {
               stateCtrl: _stateCtrl,
               zipCtrl: _zip,
               countryCtrl: _country,
-              timezones: _timezones,
-              timezone: _data['TIMEZONE'] as String?,
               days: _days,
               hours: _hours,
               onSet: _set,
-              onTimezoneChanged: (v) => setState(() => _set('TIMEZONE', v)),
+              onAddressSelected: _onAddressSelected,
               onHoursChanged: () => setState(_updateHours),
             ),
             PortalDiscoveryOnlinePresenceSection(siteUrlCtrl: _siteUrl, onSet: _set),

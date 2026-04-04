@@ -1,6 +1,10 @@
 import 'package:raspucat/app/modules/widgets/portal_discovery_fields.dart';
 import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
+import '_discovery_color_picker_field.dart';
+import '_discovery_font_selector.dart';
+import '_discovery_address_autocomplete.dart';
+export '_portal_discovery_sections_b.dart';
 
 // Section widgets for the discovery form. Private to this view.
 
@@ -75,31 +79,31 @@ class PortalDiscoveryColorsSection extends StatelessWidget {
     'Enter your brand hex codes (without #)',
     child: Column(
       children: [
-        DiscoveryHexField(
+        DiscoveryColorPickerField(
           'Primary — buttons & links',
           primaryCtrl,
           'COLOR_PRIMARY',
           onChanged: (v) => onSet('COLOR_PRIMARY', v),
         ),
-        DiscoveryHexField(
+        DiscoveryColorPickerField(
           'Secondary — secondary UI',
           secondaryCtrl,
           'COLOR_SECONDARY',
           onChanged: (v) => onSet('COLOR_SECONDARY', v),
         ),
-        DiscoveryHexField(
+        DiscoveryColorPickerField(
           'Accent — highlights & hover',
           accentCtrl,
           'COLOR_ACCENT',
           onChanged: (v) => onSet('COLOR_ACCENT', v),
         ),
-        DiscoveryHexField(
+        DiscoveryColorPickerField(
           'Background — page surface',
           surfaceCtrl,
           'COLOR_SURFACE',
           onChanged: (v) => onSet('COLOR_SURFACE', v),
         ),
-        DiscoveryHexField(
+        DiscoveryColorPickerField(
           'Text — usually FFF or 111',
           onSurfaceCtrl,
           'COLOR_ON_SURFACE',
@@ -122,18 +126,18 @@ class PortalDiscoveryFontsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DiscoveryFormSection(
     '4. Fonts',
-    'Google Font names (e.g. "Inter", "Playfair Display")',
+    'Start typing to search Google Fonts',
     child: Column(
       children: [
-        DiscoveryLabeledField(
-          'Headline font',
-          primaryCtrl,
+        DiscoveryFontSelector(
+          label: 'Headline font',
+          controller: primaryCtrl,
           onChanged: (v) => onSet('FONT_PRIMARY', v),
         ),
         const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField(
-          'Body / UI font',
-          secondaryCtrl,
+        DiscoveryFontSelector(
+          label: 'Body / UI font',
+          controller: secondaryCtrl,
           onChanged: (v) => onSet('FONT_SECONDARY', v),
         ),
       ],
@@ -168,6 +172,7 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
         DiscoveryLabeledField(
           'Short display name (≤12 chars, e.g. "Acme")',
           shortNameCtrl,
+          hint: 'e.g. Acme, Brewed, Zara',
           maxLength: 12,
           onChanged: (v) => onSet('SHORT_NAME', v),
         ),
@@ -175,12 +180,14 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
         DiscoveryLabeledField(
           'Describe your brand in 3 words',
           threeWordsCtrl,
+          hint: 'e.g. Bold, Warm, Honest',
           onChanged: (v) => onBrandBrief('three_words', v),
         ),
         const SizedBox(height: ESizes.sm),
         DiscoveryLabeledField(
           'If your brand were a celebrity, who would it be and why?',
           celebrityCtrl,
+          hint: 'e.g. Oprah — approachable, inspiring, premium',
           maxLines: 2,
           onChanged: (v) => onBrandBrief('celebrity', v),
         ),
@@ -188,12 +195,14 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
         DiscoveryLabeledField(
           'Who is your primary customer?',
           targetCustCtrl,
+          hint: 'e.g. Women 30–45 who value organic skincare',
           onChanged: (v) => onBrandBrief('target_customer', v),
         ),
         const SizedBox(height: ESizes.sm),
         DiscoveryLabeledField(
           '1–2 websites you love the look of (optional)',
           inspoUrlsCtrl,
+          hint: 'e.g. apple.com, allbirds.com',
           onChanged: (v) => onBrandBrief('inspo_urls', v),
         ),
       ],
@@ -209,21 +218,17 @@ class PortalDiscoveryBusinessInfoSection extends StatelessWidget {
     required this.stateCtrl,
     required this.zipCtrl,
     required this.countryCtrl,
-    required this.timezones,
-    required this.timezone,
     required this.days,
     required this.hours,
     required this.onSet,
-    required this.onTimezoneChanged,
+    required this.onAddressSelected,
     required this.onHoursChanged,
   });
   final TextEditingController phoneCtrl, streetCtrl, cityCtrl, stateCtrl, zipCtrl, countryCtrl;
-  final List<String> timezones;
-  final String? timezone;
   final List<String> days;
   final Map<String, Map<String, dynamic>> hours;
   final _KV onSet;
-  final ValueChanged<String?> onTimezoneChanged;
+  final ValueChanged<NominatimResult> onAddressSelected;
   final VoidCallback onHoursChanged;
 
   @override
@@ -232,100 +237,58 @@ class PortalDiscoveryBusinessInfoSection extends StatelessWidget {
     null,
     child: Column(
       children: [
-        DiscoveryLabeledField('Phone number', phoneCtrl, onChanged: (v) => onSet('PHONE', v)),
+        DiscoveryLabeledField(
+          'Phone number',
+          phoneCtrl,
+          hint: 'e.g. (512) 555-0100',
+          onChanged: (v) => onSet('PHONE', v),
+        ),
         const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField('Street address', streetCtrl, onChanged: (v) => onSet('STREET', v)),
+        DiscoveryAddressAutocomplete(controller: streetCtrl, onAddressSelected: onAddressSelected),
         const SizedBox(height: ESizes.sm),
         Row(
           children: [
             Expanded(
-              child: DiscoveryLabeledField('City', cityCtrl, onChanged: (v) => onSet('CITY', v)),
+              child: DiscoveryLabeledField(
+                'City',
+                cityCtrl,
+                hint: 'e.g. Austin',
+                onChanged: (v) => onSet('CITY', v),
+              ),
             ),
             const SizedBox(width: ESizes.sm),
             SizedBox(
               width: 80,
-              child: DiscoveryLabeledField('State', stateCtrl, onChanged: (v) => onSet('STATE', v)),
+              child: DiscoveryLabeledField(
+                'State',
+                stateCtrl,
+                hint: 'e.g. TX',
+                onChanged: (v) => onSet('STATE', v),
+              ),
             ),
             const SizedBox(width: ESizes.sm),
             SizedBox(
               width: 90,
-              child: DiscoveryLabeledField('ZIP', zipCtrl, onChanged: (v) => onSet('ZIP', v)),
+              child: DiscoveryLabeledField(
+                'ZIP',
+                zipCtrl,
+                hint: 'e.g. 78701',
+                onChanged: (v) => onSet('ZIP', v),
+              ),
             ),
           ],
         ),
         const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField('Country', countryCtrl, onChanged: (v) => onSet('COUNTRY', v)),
-        const SizedBox(height: ESizes.md),
-        DiscoverySubLabel('Timezone'),
-        const SizedBox(height: ESizes.xs),
-        DiscoveryTimezoneDropdown(
-          value: timezone,
-          timezones: timezones,
-          onChanged: onTimezoneChanged,
+        DiscoveryLabeledField(
+          'Country',
+          countryCtrl,
+          hint: 'e.g. United States',
+          onChanged: (v) => onSet('COUNTRY', v),
         ),
         const SizedBox(height: ESizes.md),
         DiscoverySubLabel('Business Hours'),
         const SizedBox(height: ESizes.xs),
         DiscoveryHoursGrid(days: days, hours: hours, onChanged: onHoursChanged),
-      ],
-    ),
-  );
-}
-
-class PortalDiscoveryOnlinePresenceSection extends StatelessWidget {
-  const PortalDiscoveryOnlinePresenceSection({required this.siteUrlCtrl, required this.onSet});
-  final TextEditingController siteUrlCtrl;
-  final _KV onSet;
-
-  @override
-  Widget build(BuildContext context) => DiscoveryFormSection(
-    '7. Online Presence',
-    null,
-    child: DiscoveryLabeledField(
-      'Domain name (if you have one)',
-      siteUrlCtrl,
-      hint: 'e.g. myshop.com',
-      onChanged: (v) => onSet('SITE_URL', v),
-    ),
-  );
-}
-
-class PortalDiscoverySeoSection extends StatelessWidget {
-  const PortalDiscoverySeoSection({
-    required this.seoTitleCtrl,
-    required this.seoDescCtrl,
-    required this.ogImageCtrl,
-    required this.onSet,
-  });
-  final TextEditingController seoTitleCtrl, seoDescCtrl, ogImageCtrl;
-  final _KV onSet;
-
-  @override
-  Widget build(BuildContext context) => DiscoveryFormSection(
-    '8. SEO',
-    'How you appear in search results',
-    child: Column(
-      children: [
-        DiscoveryLabeledField(
-          'Search title',
-          seoTitleCtrl,
-          maxLength: 60,
-          onChanged: (v) => onSet('SEO_TITLE', v),
-        ),
-        const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField(
-          'Search description',
-          seoDescCtrl,
-          maxLines: 3,
-          maxLength: 160,
-          onChanged: (v) => onSet('SEO_DESCRIPTION', v),
-        ),
-        const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField(
-          'Social share image URL (optional)',
-          ogImageCtrl,
-          onChanged: (v) => onSet('OG_IMAGE', v),
-        ),
       ],
     ),
   );

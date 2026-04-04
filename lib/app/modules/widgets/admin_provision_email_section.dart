@@ -17,17 +17,16 @@ class AdminProvisionEmailSection extends StatefulWidget {
   final Map<String, dynamic> detail;
 
   @override
-  State<AdminProvisionEmailSection> createState() =>
-      _AdminProvisionEmailSectionState();
+  State<AdminProvisionEmailSection> createState() => _AdminProvisionEmailSectionState();
 }
 
-class _AdminProvisionEmailSectionState
-    extends State<AdminProvisionEmailSection> {
+class _AdminProvisionEmailSectionState extends State<AdminProvisionEmailSection> {
   late final TextEditingController _slugCtrl;
   bool _showDeprovisionConfirm = false;
 
-  String get _clientName =>
-      widget.detail['client_name'] as String? ?? '';
+  String get _clientName => widget.detail['client_name'] as String? ?? '';
+
+  String get _businessName => widget.detail['business_name'] as String? ?? '';
 
   String _deriveSlug(String name) {
     final slug = name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
@@ -38,9 +37,8 @@ class _AdminProvisionEmailSectionState
   void initState() {
     super.initState();
     final existing = widget.detail['client_slug'] as String?;
-    _slugCtrl = TextEditingController(
-      text: existing ?? _deriveSlug(_clientName),
-    );
+    final slugSource = _businessName.isNotEmpty ? _businessName : _clientName;
+    _slugCtrl = TextEditingController(text: existing ?? _deriveSlug(slugSource));
   }
 
   @override
@@ -64,14 +62,12 @@ class _AdminProvisionEmailSectionState
           msg: msg,
           deprovisioning: deprovisioning,
           showConfirm: _showDeprovisionConfirm,
-          onDeprovisionTap: () =>
-              setState(() => _showDeprovisionConfirm = true),
+          onDeprovisionTap: () => setState(() => _showDeprovisionConfirm = true),
           onDeprovisionConfirm: () {
             setState(() => _showDeprovisionConfirm = false);
             widget.ctrl.deprovisionEmail(widget.quoteId);
           },
-          onDeprovisionCancel: () =>
-              setState(() => _showDeprovisionConfirm = false),
+          onDeprovisionCancel: () => setState(() => _showDeprovisionConfirm = false),
         );
       }
 
@@ -82,9 +78,7 @@ class _AdminProvisionEmailSectionState
         onProvision: () => widget.ctrl.provisionEmail(
           widget.quoteId,
           _clientName,
-          slugOverride: _slugCtrl.text.trim().isEmpty
-              ? null
-              : _slugCtrl.text.trim(),
+          slugOverride: _slugCtrl.text.trim().isEmpty ? null : _slugCtrl.text.trim(),
         ),
       );
     });
@@ -151,9 +145,7 @@ class _ProvisionedView extends StatelessWidget {
               deprovisioning ? 'Deprovisioning…' : 'Deprovision (manual early)',
               style: TextStyle(
                 fontSize: ESizes.fontSizeLabel,
-                color: deprovisioning
-                    ? EColors.softGrey
-                    : const Color(0xFFFF6B6B),
+                color: deprovisioning ? EColors.softGrey : const Color(0xFFFF6B6B),
               ),
             ),
           ),
@@ -187,10 +179,7 @@ class _ProvisionedView extends StatelessWidget {
             padding: const EdgeInsets.only(top: 4),
             child: Text(
               msg!,
-              style: const TextStyle(
-                fontSize: ESizes.fontSizeLabel,
-                color: EColors.softGrey,
-              ),
+              style: const TextStyle(fontSize: ESizes.fontSizeLabel, color: EColors.softGrey),
             ),
           ),
       ],
@@ -228,10 +217,7 @@ class _UnprovisionedView extends StatelessWidget {
                 ),
                 decoration: InputDecoration(
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   hintText: 'slug',
                   hintStyle: const TextStyle(color: EColors.softGrey),
                   suffixText: '@raspucat.com',
@@ -241,15 +227,11 @@ class _UnprovisionedView extends StatelessWidget {
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6),
-                    borderSide: BorderSide(
-                      color: EColors.primary.withValues(alpha: 0.2),
-                    ),
+                    borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6),
-                    borderSide: BorderSide(
-                      color: EColors.primary.withValues(alpha: 0.6),
-                    ),
+                    borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.6)),
                   ),
                 ),
               ),
@@ -261,9 +243,7 @@ class _UnprovisionedView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: EColors.primary.withValues(
-                      alpha: provisioning ? 0.2 : 0.5,
-                    ),
+                    color: EColors.primary.withValues(alpha: provisioning ? 0.2 : 0.5),
                   ),
                   borderRadius: BorderRadius.circular(6),
                 ),
@@ -283,10 +263,7 @@ class _UnprovisionedView extends StatelessWidget {
             padding: const EdgeInsets.only(top: 4),
             child: Text(
               msg!,
-              style: const TextStyle(
-                fontSize: ESizes.fontSizeLabel,
-                color: EColors.softGrey,
-              ),
+              style: const TextStyle(fontSize: ESizes.fontSizeLabel, color: EColors.softGrey),
             ),
           ),
       ],

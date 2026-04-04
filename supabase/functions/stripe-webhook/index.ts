@@ -401,6 +401,7 @@ async function handleDepositPaid(paymentIntent: Stripe.PaymentIntent): Promise<v
       <p><strong>Modules:</strong> ${(quote.module_ids ?? []).join(', ') || 'None'}</p>
       <p><strong>Management:</strong> ${quote.management_option_id ?? 'None'} (${quote.billing_cycle ?? '—'})</p>
       <p><strong>Setup total:</strong> ${fmt(quote.setup_total_cents)}</p>
+      ${quote.promo_code && quote.discount_amount_cents > 0 ? `<p><strong>Promo code:</strong> ${quote.promo_code} (-${fmt(quote.discount_amount_cents)})</p>` : ''}
       <p><strong>Deposit paid:</strong> ${fmt(quote.deposit_cents)}</p>
       <p><strong>Due on launch:</strong> ${dueOnLaunchLabel}</p>
       <p><strong>Quote ID:</strong> ${quote.id}</p>
@@ -502,8 +503,18 @@ async function handleDepositPaid(paymentIntent: Stripe.PaymentIntent): Promise<v
     <table style="width:100%;border-collapse:collapse;">
       <tr>
         <td style="color:rgba(232,254,255,0.45);font-size:13px;padding-bottom:8px;">Setup total</td>
-        <td style="color:#E8FEFF;font-size:13px;font-weight:500;text-align:right;padding-bottom:8px;">${fmt(quote.setup_total_cents)}</td>
+        <td style="color:${quote.discount_amount_cents > 0 ? 'rgba(232,254,255,0.35)' : '#E8FEFF'};font-size:13px;font-weight:500;text-align:right;padding-bottom:8px;${quote.discount_amount_cents > 0 ? 'text-decoration:line-through;' : ''}">${fmt(quote.setup_total_cents)}</td>
       </tr>
+      ${quote.promo_code && quote.discount_amount_cents > 0 ? `
+      <tr>
+        <td style="color:#4CAF50;font-size:13px;padding-bottom:8px;">${quote.promo_code} discount</td>
+        <td style="color:#4CAF50;font-size:13px;font-weight:600;text-align:right;padding-bottom:8px;">-${fmt(quote.discount_amount_cents)}</td>
+      </tr>
+      <tr>
+        <td style="color:rgba(232,254,255,0.45);font-size:13px;padding-bottom:8px;">Discounted total</td>
+        <td style="color:#E8FEFF;font-size:13px;font-weight:500;text-align:right;padding-bottom:8px;">${fmt(quote.setup_total_cents - quote.discount_amount_cents)}</td>
+      </tr>
+      ` : ''}
       <tr>
         <td style="border-top:1px solid rgba(88,227,239,0.08);padding-top:10px;color:rgba(232,254,255,0.45);font-size:13px;">Deposit paid today</td>
         <td style="border-top:1px solid rgba(88,227,239,0.08);padding-top:10px;color:#FFB938;font-size:13px;font-weight:600;text-align:right;">${fmt(quote.deposit_cents)}</td>

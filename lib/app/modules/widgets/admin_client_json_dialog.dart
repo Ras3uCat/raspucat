@@ -1,27 +1,20 @@
+import 'dart:convert';
 import 'dart:html' as html;
 import 'package:flutter/services.dart';
 import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/utils/constants/exports.dart';
+import '_client_setup_script_builder.dart';
 
 class AdminClientJsonDialog extends StatefulWidget {
-  const AdminClientJsonDialog({
-    super.key,
-    required this.ctrl,
-    required this.quoteId,
-  });
+  const AdminClientJsonDialog({super.key, required this.ctrl, required this.quoteId});
 
   final AdminController ctrl;
   final String quoteId;
 
-  static Future<void> show(
-    BuildContext context,
-    AdminController ctrl,
-    String quoteId,
-  ) =>
+  static Future<void> show(BuildContext context, AdminController ctrl, String quoteId) =>
       showDialog<void>(
         context: context,
-        builder: (_) =>
-            AdminClientJsonDialog(ctrl: ctrl, quoteId: quoteId),
+        builder: (_) => AdminClientJsonDialog(ctrl: ctrl, quoteId: quoteId),
       );
 
   @override
@@ -34,21 +27,19 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
   bool _loading = true;
   bool _copied = false;
 
-  static const _manualFields = [
-    'SUPABASE_URL',
-    'SUPABASE_ANON_KEY',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'STRIPE_SECRET_KEY',
-    'STRIPE_WEBHOOK_SECRET',
-    'SMTP_HOST',
-    'SMTP_USER',
-    'SMTP_PASS',
-    'SITE_URL',
-    'BRAND_COLOR_PRIMARY',
-    'BRAND_COLOR_SECONDARY',
-    'BRAND_FONT',
-    'LOGO_URL',
-  ];
+  // Only shows fields actually present in the generated JSON with a "FILL_IN" value.
+  List<String> get _manualFields {
+    if (_json == null) return const [];
+    try {
+      final map = jsonDecode(_json!) as Map<String, dynamic>;
+      return map.entries
+          .where((e) => e.value is String && (e.value as String).startsWith('FILL_IN'))
+          .map((e) => e.key)
+          .toList();
+    } catch (_) {
+      return const [];
+    }
+  }
 
   @override
   void initState() {
@@ -59,9 +50,17 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
   Future<void> _generate() async {
     try {
       final result = await widget.ctrl.generateClientJson(widget.quoteId);
-      if (mounted) setState(() { _json = result; _loading = false; });
+      if (mounted)
+        setState(() {
+          _json = result;
+          _loading = false;
+        });
     } catch (e) {
-      if (mounted) setState(() { _error = e.toString(); _loading = false; });
+      if (mounted)
+        setState(() {
+          _error = e.toString();
+          _loading = false;
+        });
     }
   }
 
@@ -72,6 +71,18 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
     setState(() => _copied = true);
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) setState(() => _copied = false);
+  }
+
+  void _downloadSetupScript() {
+    if (_json == null) return;
+    final meta = parseClientMeta(_json!);
+    final script = buildClientSetupScript(meta.slug, meta.name, _json!);
+    final blob = html.Blob([script], 'text/x-shellscript');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute('download', '${meta.slug}-setup.sh')
+      ..click();
+    html.Url.revokeObjectUrl(url);
   }
 
   void _download() {
@@ -109,13 +120,9 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: ESizes.lg, vertical: ESizes.md),
+      padding: const EdgeInsets.symmetric(horizontal: ESizes.lg, vertical: ESizes.md),
       decoration: BoxDecoration(
-        border: Border(
-          bottom:
-              BorderSide(color: EColors.primary.withValues(alpha: 0.12)),
-        ),
+        border: Border(bottom: BorderSide(color: EColors.primary.withValues(alpha: 0.12))),
       ),
       child: Row(
         children: [
@@ -131,15 +138,31 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
           const Spacer(),
           if (_json != null) ...[
             GestureDetector(
+              onTap: _downloadSetupScript,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: EColors.secondary.withValues(alpha: 0.4)),
+                  borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+                ),
+                child: Text(
+                  'Setup Script',
+                  style: TextStyle(
+                    color: EColors.secondary,
+                    fontSize: ESizes.fontSizeLabel,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: ESizes.sm),
+            GestureDetector(
               onTap: _download,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: ESizes.md, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: 4),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                      color: EColors.primary.withValues(alpha: 0.3)),
-                  borderRadius:
-                      BorderRadius.circular(ESizes.borderRadiusSM),
+                  border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
                 ),
                 child: Text(
                   'Download',
@@ -156,16 +179,11 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
               onTap: _copy,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: ESizes.md, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: 4),
                 decoration: BoxDecoration(
-                  color: _copied
-                      ? EColors.primary.withValues(alpha: 0.15)
-                      : Colors.transparent,
-                  border: Border.all(
-                      color: EColors.primary.withValues(alpha: 0.3)),
-                  borderRadius:
-                      BorderRadius.circular(ESizes.borderRadiusSM),
+                  color: _copied ? EColors.primary.withValues(alpha: 0.15) : Colors.transparent,
+                  border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
                 ),
                 child: Text(
                   _copied ? '✓ Copied' : 'Copy',
@@ -181,8 +199,7 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
           ],
           GestureDetector(
             onTap: () => Navigator.of(context).pop(),
-            child: Icon(Icons.close,
-                color: EColors.textSecondary, size: 18),
+            child: Icon(Icons.close, color: EColors.textSecondary, size: 18),
           ),
         ],
       ),
@@ -193,9 +210,7 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
     if (_loading) {
       return const Padding(
         padding: EdgeInsets.all(ESizes.xl),
-        child: Center(
-          child: CircularProgressIndicator(strokeWidth: 1.5),
-        ),
+        child: Center(child: CircularProgressIndicator(strokeWidth: 1.5)),
       );
     }
     if (_error != null) {
@@ -203,8 +218,7 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
         padding: const EdgeInsets.all(ESizes.lg),
         child: Text(
           _error!,
-          style: const TextStyle(
-              color: Colors.redAccent, fontSize: ESizes.fontSizeSm),
+          style: const TextStyle(color: Colors.redAccent, fontSize: ESizes.fontSizeSm),
         ),
       );
     }
@@ -227,9 +241,7 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
       padding: const EdgeInsets.all(ESizes.md),
       decoration: BoxDecoration(
         color: EColors.primary.withValues(alpha: 0.03),
-        border: Border(
-          top: BorderSide(color: EColors.primary.withValues(alpha: 0.1)),
-        ),
+        border: Border(top: BorderSide(color: EColors.primary.withValues(alpha: 0.1))),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,14 +262,11 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
             children: _manualFields
                 .map(
                   (f) => Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.orange.withValues(alpha: 0.08),
-                      border: Border.all(
-                          color: Colors.orange.withValues(alpha: 0.25)),
-                      borderRadius:
-                          BorderRadius.circular(ESizes.borderRadiusSM),
+                      border: Border.all(color: Colors.orange.withValues(alpha: 0.25)),
+                      borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
                     ),
                     child: Text(
                       f,

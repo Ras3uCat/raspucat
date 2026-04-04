@@ -31,6 +31,7 @@ enum _Tab { details, discovery, delivery, files, messages }
 
 class _AdminDetailContentState extends State<AdminDetailContent> {
   _Tab _activeTab = _Tab.details;
+  bool _discoveryBadgeSeen = false;
 
   AdminController get ctrl => widget.ctrl;
   String get quoteId => widget.quoteId;
@@ -106,8 +107,11 @@ class _AdminDetailContentState extends State<AdminDetailContent> {
               _TabChip(
                 label: 'Discovery',
                 isActive: _activeTab == _Tab.discovery,
-                badge: detail['discovery_submitted_at'] != null ? 1 : 0,
-                onTap: () => setState(() => _activeTab = _Tab.discovery),
+                badge: !_discoveryBadgeSeen && detail['discovery_submitted_at'] != null ? 1 : 0,
+                onTap: () => setState(() {
+                  _activeTab = _Tab.discovery;
+                  _discoveryBadgeSeen = true;
+                }),
               ),
               _TabChip(
                 label: 'Delivery',

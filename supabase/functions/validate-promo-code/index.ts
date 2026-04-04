@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
   try {
     const { code, setupTotalCents } = await req.json();
 
-    if (!code || typeof setupTotalCents !== 'number') {
+    if (!code || typeof setupTotalCents !== 'number' || setupTotalCents <= 0) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
