@@ -16,10 +16,7 @@ class AboutScreen extends StatelessWidget {
             controller: ctrl,
             startOffset: const Offset(0, 25),
             child: FittedBox(
-              child: NeonText(
-                text: 'ABOUT',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
+              child: NeonText(text: 'ABOUT', style: Theme.of(context).textTheme.headlineLarge),
             ),
           ),
           const SizedBox(height: ESizes.sm),
@@ -29,10 +26,9 @@ class AboutScreen extends StatelessWidget {
             startOffset: const Offset(0, 40),
             child: Text(
               EText.aboutSubLabel.toUpperCase(),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: EColors.textSecondary,
-                    letterSpacing: 3.0,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: EColors.textSecondary, letterSpacing: 3.0),
               textAlign: TextAlign.center,
             ),
           ),
@@ -70,6 +66,36 @@ class AboutScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: ESizes.spaceBtwSections),
+          AnimatedOnView(
+            id: 'about_verse',
+            controller: ctrl,
+            startOffset: const Offset(0, 10),
+            child: Column(
+              children: [
+                Text(
+                  '"The heavens declare the glory of God;\nthe skies proclaim the work of his hands."',
+                  style: TextStyle(
+                    color: EColors.textSecondary.withValues(alpha: 0.5),
+                    fontSize: ESizes.fontSizeLabel,
+                    height: 1.8,
+                    fontStyle: FontStyle.italic,
+                    letterSpacing: 0.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: ESizes.xs),
+                Text(
+                  'PSALM 19:1',
+                  style: TextStyle(
+                    color: EColors.textSecondary.withValues(alpha: 0.3),
+                    fontSize: ESizes.fontSizeLabel,
+                    letterSpacing: 2.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -83,8 +109,7 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: ESizes.md, vertical: ESizes.sm),
+      padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
         color: EColors.primary.withValues(alpha: 0.05),

@@ -69,6 +69,16 @@ echo "→ Linking Supabase CLI..."
 cd execution/backend
 supabase link --project-ref "\$PROJECT_REF"
 
+# Report supabase_account_created to Raspucat
+RASPUCAT_API=\$(python3 -c "import json; d=json.load(open('../frontend/app/client.json')); print(d.get('RASPUCAT_API',''))" 2>/dev/null || echo "")
+RASPUCAT_QUOTE_ID=\$(python3 -c "import json; d=json.load(open('../frontend/app/client.json')); print(d.get('RASPUCAT_QUOTE_ID',''))" 2>/dev/null || echo "")
+if [[ -n "\$RASPUCAT_API" && -n "\$RASPUCAT_QUOTE_ID" && -n "\$RASPUCAT_TOKEN" ]]; then
+  curl -sf -X POST "\${RASPUCAT_API}/functions/v1/admin-delivery-progress" \\
+    -H "Content-Type: application/json" \\
+    -d "{\\"adminToken\\":\\"\$RASPUCAT_TOKEN\\",\\"quoteId\\":\\"\$RASPUCAT_QUOTE_ID\\",\\"action\\":\\"upsert\\",\\"step\\":\\"supabase_account_created\\",\\"checked\\":true,\\"checked_by\\":\\"system\\"}" \\
+    2>/dev/null && echo "✓ supabase_account_created reported" || true
+fi
+
 echo "→ Running deliver.sh..."
 cd ../frontend/app
 ./deliver.sh

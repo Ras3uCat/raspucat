@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
 
   const { data: quote, error } = await supabase
     .from('quotes')
-    .select('id, business_name, client_email, plan_id, module_ids, billing_cycle, discovery_data')
+    .select('id, business_name, client_email, plan_id, module_ids, billing_cycle, discovery_data, logo_url, og_image_url')
     .eq('id', quoteId)
     .single();
 
@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     // ── Branding (merged from discovery_data) ─────────────────────────────────
     PERSONALITY:   fill(d['PERSONALITY']),
     SHORT_NAME:    fill(d['SHORT_NAME']),
-    LOGO_URL:      'FILL_IN',
+    LOGO_URL:      (quote as Record<string, unknown>).logo_url as string ?? 'FILL_IN',
     COLOR_PRIMARY:    fill(d['COLOR_PRIMARY']),
     COLOR_SECONDARY:  fill(d['COLOR_SECONDARY']),
     COLOR_ACCENT:     fill(d['COLOR_ACCENT']),
@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
     SITE_URL:        fill(d['SITE_URL']),
     SEO_TITLE:       fill(d['SEO_TITLE']),
     SEO_DESCRIPTION: fill(d['SEO_DESCRIPTION']),
-    OG_IMAGE:        fill(d['OG_IMAGE']),
+    OG_IMAGE:        (quote as Record<string, unknown>).og_image_url as string ?? fill(d['OG_IMAGE']),
     // ── Business info ─────────────────────────────────────────────────────────
     PHONE:    fill(d['PHONE']),
     STREET:   fill(d['STREET']),

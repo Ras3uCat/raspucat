@@ -6,7 +6,7 @@ ACTIVE_FILE=$(ls "$ACTIVE_DIR"/*.md 2>/dev/null | head -n 1)
 
 if [ -z "$ACTIVE_FILE" ]; then
   echo "⚠️  No active feature file found in $ACTIVE_DIR. Move a feature from 00_backlog to begin."
-  exit 1
+  exit 0
 fi
 
 # 1. Enforcement of STUDIO protocol

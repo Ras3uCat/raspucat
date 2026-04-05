@@ -83,6 +83,7 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
       ..setAttribute('download', '${meta.slug}-setup.sh')
       ..click();
     html.Url.revokeObjectUrl(url);
+    widget.ctrl.autoCheckDeliveryStep(widget.quoteId, 'client_json_generated');
   }
 
   void _download() {
@@ -93,6 +94,7 @@ class _AdminClientJsonDialogState extends State<AdminClientJsonDialog> {
       ..setAttribute('download', 'client.json')
       ..click();
     html.Url.revokeObjectUrl(url);
+    widget.ctrl.autoCheckDeliveryStep(widget.quoteId, 'client_json_generated');
   }
 
   @override

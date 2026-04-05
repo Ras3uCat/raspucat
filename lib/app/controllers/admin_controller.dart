@@ -516,7 +516,7 @@ class AdminController extends GetxController {
     }
   }
 
-  Future<void> _autoCheckDeliveryStep(String quoteId, String step) async {
+  Future<void> autoCheckDeliveryStep(String quoteId, String step) async {
     if (_adminToken.isEmpty) return;
     final now = DateTime.now().toIso8601String();
     final current = List<Map<String, dynamic>>.from(deliveryProgress[quoteId] ?? []);
@@ -616,7 +616,7 @@ class AdminController extends GetxController {
           '✅ Provisioned: ${data!['provisioned_email']}',
         );
         await fetchQuoteDetail(quoteId);
-        await _autoCheckDeliveryStep(quoteId, 'email_provisioned');
+        await autoCheckDeliveryStep(quoteId, 'email_provisioned');
       }
     } catch (_) {
       _setQuoteState(quoteId, 'provisionEmailMsg', '❌ Something went wrong');
@@ -645,6 +645,30 @@ class AdminController extends GetxController {
     } finally {
       _setQuoteState(quoteId, 'deprovisioningEmail', false);
     }
+  }
+
+  Future<String> uploadAsset(
+    String quoteId,
+    String field, // 'logo' | 'og_image'
+    String fileBase64,
+    String mimeType,
+    String fileName,
+  ) async {
+    final resp = await Supabase.instance.client.functions.invoke(
+      'admin-upload-asset',
+      body: {
+        'adminToken': _adminToken,
+        'quoteId': quoteId,
+        'field': field,
+        'fileBase64': fileBase64,
+        'mimeType': mimeType,
+        'fileName': fileName,
+      },
+    );
+    final data = resp.data as Map<String, dynamic>?;
+    if (data?['error'] != null) throw Exception(data!['error']);
+    await fetchQuoteDetail(quoteId);
+    return data!['url'] as String;
   }
 
   Future<void> fetchSiteEvents(String quoteId) async {
