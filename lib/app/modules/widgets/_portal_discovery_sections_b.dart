@@ -108,6 +108,63 @@ class PortalDiscoveryOnlinePresenceSection extends StatelessWidget {
   );
 }
 
+class PortalDiscoverySocialSection extends StatelessWidget {
+  const PortalDiscoverySocialSection({
+    required this.fromEmailCtrl,
+    required this.instagramCtrl,
+    required this.facebookCtrl,
+    required this.tiktokCtrl,
+    required this.youtubeCtrl,
+    required this.onSet,
+  });
+  final TextEditingController fromEmailCtrl, instagramCtrl, facebookCtrl, tiktokCtrl, youtubeCtrl;
+  final _KV onSet;
+
+  @override
+  Widget build(BuildContext context) => DiscoveryFormSection(
+    '9. Social & Contact',
+    'Optional — helps us wire up links and contact forms on your site.',
+    child: Column(
+      children: [
+        DiscoveryLabeledField(
+          'Business reply-to email',
+          fromEmailCtrl,
+          hint: 'hello@yourbusiness.com',
+          onChanged: (v) => onSet('FROM_EMAIL', v),
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryLabeledField(
+          'Instagram',
+          instagramCtrl,
+          hint: 'https://instagram.com/yourbusiness',
+          onChanged: (v) => onSet('INSTAGRAM_URL', v),
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryLabeledField(
+          'Facebook',
+          facebookCtrl,
+          hint: 'https://facebook.com/yourbusiness',
+          onChanged: (v) => onSet('FACEBOOK_URL', v),
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryLabeledField(
+          'TikTok',
+          tiktokCtrl,
+          hint: 'https://tiktok.com/@yourbusiness',
+          onChanged: (v) => onSet('TIKTOK_URL', v),
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryLabeledField(
+          'YouTube',
+          youtubeCtrl,
+          hint: 'https://youtube.com/@yourbusiness',
+          onChanged: (v) => onSet('YOUTUBE_URL', v),
+        ),
+      ],
+    ),
+  );
+}
+
 class PortalDiscoverySeoSection extends StatelessWidget {
   const PortalDiscoverySeoSection({
     required this.seoTitleCtrl,

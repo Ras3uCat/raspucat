@@ -42,6 +42,11 @@ class _State extends State<PortalDiscoveryForm> {
   final _siteUrl = TextEditingController();
   final _seoTitle = TextEditingController();
   final _seoDesc = TextEditingController();
+  final _fromEmail = TextEditingController();
+  final _instagram = TextEditingController();
+  final _facebook = TextEditingController();
+  final _tiktok = TextEditingController();
+  final _youtube = TextEditingController();
   late final Map<String, Map<String, dynamic>> _hours;
 
   @override
@@ -76,6 +81,11 @@ class _State extends State<PortalDiscoveryForm> {
     _siteUrl.text = s('SITE_URL');
     _seoTitle.text = s('SEO_TITLE');
     _seoDesc.text = s('SEO_DESCRIPTION');
+    _fromEmail.text = s('FROM_EMAIL');
+    _instagram.text = s('INSTAGRAM_URL');
+    _facebook.text = s('FACEBOOK_URL');
+    _tiktok.text = s('TIKTOK_URL');
+    _youtube.text = s('YOUTUBE_URL');
     final sh = (_data['HOURS_JSON'] as Map<String, dynamic>?) ?? {};
     _hours = {
       for (final d in discoveryDays)
@@ -190,6 +200,11 @@ class _State extends State<PortalDiscoveryForm> {
       _siteUrl,
       _seoTitle,
       _seoDesc,
+      _fromEmail,
+      _instagram,
+      _facebook,
+      _tiktok,
+      _youtube,
     ]) {
       c.dispose();
     }
@@ -264,6 +279,14 @@ class _State extends State<PortalDiscoveryForm> {
               seoDescCtrl: _seoDesc,
               ogImageUrl: _data['OG_IMAGE'] as String?,
               onOgImageUpload: (b, m, f) => _uploadAsset('og_image', b, m, f),
+              onSet: _set,
+            ),
+            PortalDiscoverySocialSection(
+              fromEmailCtrl: _fromEmail,
+              instagramCtrl: _instagram,
+              facebookCtrl: _facebook,
+              tiktokCtrl: _tiktok,
+              youtubeCtrl: _youtube,
               onSet: _set,
             ),
             const SizedBox(height: ESizes.xl),

@@ -115,6 +115,11 @@ class DiscoverySummaryCard extends StatelessWidget {
           row('SEO title', data['SEO_TITLE'] as String?),
           row('3 words', bb['three_words'] as String?),
           urlRow('Inspo URLs', inspoUrls),
+          row('Reply-to email', data['FROM_EMAIL'] as String?),
+          row('Instagram', data['INSTAGRAM_URL'] as String?),
+          row('Facebook', data['FACEBOOK_URL'] as String?),
+          row('TikTok', data['TIKTOK_URL'] as String?),
+          row('YouTube', data['YOUTUBE_URL'] as String?),
         ],
       ),
     );
