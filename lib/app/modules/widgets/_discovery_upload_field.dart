@@ -47,20 +47,28 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
         _uploading = true;
         _error = null;
       });
-      final reader = html.FileReader();
-      reader.readAsArrayBuffer(file);
-      await reader.onLoad.first;
-      final bytes = (reader.result as ByteBuffer).asUint8List();
-      final url = await widget.onUpload(bytes, file.type, file.name);
-      if (!mounted) return;
-      setState(() {
-        _uploading = false;
-        if (url != null) {
-          _url = url;
-        } else {
-          _error = 'Upload failed — try again';
-        }
-      });
+      try {
+        final reader = html.FileReader();
+        reader.readAsArrayBuffer(file);
+        await reader.onLoad.first;
+        final bytes = (reader.result as ByteBuffer).asUint8List();
+        final url = await widget.onUpload(bytes, file.type, file.name);
+        if (!mounted) return;
+        setState(() {
+          _uploading = false;
+          if (url != null) {
+            _url = url;
+          } else {
+            _error = 'Upload failed — try again';
+          }
+        });
+      } catch (_) {
+        if (mounted)
+          setState(() {
+            _uploading = false;
+            _error = 'Upload failed — try again';
+          });
+      }
     });
   }
 
