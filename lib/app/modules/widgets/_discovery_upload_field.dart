@@ -88,51 +88,39 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
           ),
           const SizedBox(height: 6),
         ],
-        Row(
-          children: [
-            GestureDetector(
-              onTap: _uploading ? null : _pick,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
-                decoration: BoxDecoration(
-                  color: EColors.primary.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
-                  border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
-                ),
-                child: _uploading
-                    ? SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: EColors.primary.withValues(alpha: 0.7),
-                        ),
-                      )
-                    : Text(
-                        _url != null && _url!.isNotEmpty ? 'Replace' : 'Upload image',
-                        style: TextStyle(
-                          color: EColors.primary,
-                          fontSize: ESizes.fontSizeSm,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-              ),
+        GestureDetector(
+          onTap: _uploading ? null : _pick,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
+            decoration: BoxDecoration(
+              color: EColors.primary.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+              border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
             ),
-            if (_url == null || _url!.isEmpty) ...[
-              const SizedBox(width: ESizes.sm),
-              Expanded(
-                child: Text(
-                  widget.hint,
-                  style: TextStyle(
-                    color: EColors.textSecondary.withValues(alpha: 0.3),
-                    fontSize: ESizes.fontSizeSm,
+            child: _uploading
+                ? SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      color: EColors.primary.withValues(alpha: 0.7),
+                    ),
+                  )
+                : Text(
+                    _url != null && _url!.isNotEmpty ? 'Replace' : 'Upload image',
+                    style: TextStyle(
+                      color: EColors.primary,
+                      fontSize: ESizes.fontSizeSm,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ],
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          widget.hint,
+          style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: 11),
         ),
         if (_error != null) ...[
           const SizedBox(height: 4),
