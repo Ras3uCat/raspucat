@@ -62,11 +62,11 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
             _error = result?.replaceFirst('ERR:', '') ?? 'Upload failed — try again';
           }
         });
-      } catch (_) {
+      } catch (e) {
         if (mounted)
           setState(() {
             _uploading = false;
-            _error = 'Upload failed — try again';
+            _error = e.toString();
           });
       }
     });
