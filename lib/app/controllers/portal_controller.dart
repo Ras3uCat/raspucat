@@ -173,7 +173,8 @@ class PortalController extends GetxController {
     }
   }
 
-  Future<String?> uploadDiscoveryAsset(
+  // Returns the public URL on success, throws a descriptive string on failure.
+  Future<String> uploadDiscoveryAsset(
     String quoteId,
     String field,
     List<int> bytes,
@@ -192,18 +193,15 @@ class PortalController extends GetxController {
         },
       );
       final data = resp.data as Map<String, dynamic>?;
-      if (data == null) {
-        debugPrint('[upload] resp.data is null — status: ${resp.status}');
-        return null;
-      }
-      if (data['error'] != null) {
-        debugPrint('[upload] function error: ${data['error']}');
-        return null;
-      }
-      return data['url'] as String?;
+      if (data == null) throw 'No response (status ${resp.status})';
+      if (data['error'] != null) throw '${data['error']}';
+      final url = data['url'] as String?;
+      if (url == null) throw 'Missing url in response';
+      return url;
+    } on String {
+      rethrow;
     } catch (e) {
-      debugPrint('[upload] exception: $e');
-      return null;
+      throw e.toString();
     }
   }
 

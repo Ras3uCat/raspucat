@@ -110,9 +110,20 @@ class _State extends State<PortalDiscoveryForm> {
     String mimeType,
     String fileName,
   ) async {
-    final url = await _ctrl.uploadDiscoveryAsset(widget.quote.id, field, bytes, mimeType, fileName);
-    if (url != null) _set(field == 'logo' ? 'LOGO_URL' : 'OG_IMAGE', url);
-    return url;
+    try {
+      final url = await _ctrl.uploadDiscoveryAsset(
+        widget.quote.id,
+        field,
+        bytes,
+        mimeType,
+        fileName,
+      );
+      _set(field == 'logo' ? 'LOGO_URL' : 'OG_IMAGE', url);
+      return url;
+    } catch (e) {
+      // Return the error as a special sentinel so DiscoveryUploadField can show it.
+      return 'ERR:$e';
+    }
   }
 
   void _onAddressSelected(NominatimResult r) {

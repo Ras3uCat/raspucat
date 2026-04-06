@@ -52,14 +52,14 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
         reader.readAsArrayBuffer(file);
         await reader.onLoad.first;
         final bytes = (reader.result as ByteBuffer).asUint8List();
-        final url = await widget.onUpload(bytes, file.type, file.name);
+        final result = await widget.onUpload(bytes, file.type, file.name);
         if (!mounted) return;
         setState(() {
           _uploading = false;
-          if (url != null) {
-            _url = url;
+          if (result != null && !result.startsWith('ERR:')) {
+            _url = result;
           } else {
-            _error = 'Upload failed — try again';
+            _error = result?.replaceFirst('ERR:', '') ?? 'Upload failed — try again';
           }
         });
       } catch (_) {
