@@ -1,5 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
@@ -129,14 +130,20 @@ class _AssetRow extends StatelessWidget {
     return Row(
       children: [
         if (url != null)
-          Container(
-            width: 32,
-            height: 32,
-            margin: const EdgeInsets.only(right: ESizes.sm),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: EColors.primary.withValues(alpha: 0.2)),
-              image: DecorationImage(image: NetworkImage(url!), fit: BoxFit.cover),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () => launchUrl(Uri.parse(url!), mode: LaunchMode.externalApplication),
+              child: Container(
+                width: 32,
+                height: 32,
+                margin: const EdgeInsets.only(right: ESizes.sm),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: EColors.primary.withValues(alpha: 0.2)),
+                  image: DecorationImage(image: NetworkImage(url!), fit: BoxFit.cover),
+                ),
+              ),
             ),
           )
         else

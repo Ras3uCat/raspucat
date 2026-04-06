@@ -706,6 +706,8 @@ class AdminController extends GetxController {
     );
   }
 
+  void markDiscoverySeen(String quoteId) => _setQuoteState(quoteId, 'discoverySeen', true);
+
   void _setQuoteState(String quoteId, String key, dynamic value) {
     final current = Map<String, dynamic>.from(quoteState[quoteId] ?? {});
     current[key] = value;

@@ -32,7 +32,6 @@ enum _Tab { details, discovery, delivery, files, messages }
 
 class _AdminDetailContentState extends State<AdminDetailContent> {
   _Tab _activeTab = _Tab.details;
-  bool _discoveryBadgeSeen = false;
 
   AdminController get ctrl => widget.ctrl;
   String get quoteId => widget.quoteId;
@@ -108,11 +107,15 @@ class _AdminDetailContentState extends State<AdminDetailContent> {
               _TabChip(
                 label: 'Discovery',
                 isActive: _activeTab == _Tab.discovery,
-                badge: !_discoveryBadgeSeen && detail['discovery_submitted_at'] != null ? 1 : 0,
-                onTap: () => setState(() {
-                  _activeTab = _Tab.discovery;
-                  _discoveryBadgeSeen = true;
-                }),
+                badge:
+                    ctrl.quoteState[quoteId]?['discoverySeen'] != true &&
+                        detail['discovery_submitted_at'] != null
+                    ? 1
+                    : 0,
+                onTap: () {
+                  ctrl.markDiscoverySeen(quoteId);
+                  setState(() => _activeTab = _Tab.discovery);
+                },
               ),
               _TabChip(
                 label: 'Delivery',
@@ -531,7 +534,10 @@ class _SiteUrlInputState extends State<_SiteUrlInput> {
   @override
   void initState() {
     super.initState();
-    _tc = TextEditingController(text: widget.detail['site_url'] as String? ?? '');
+    final siteUrl = widget.detail['site_url'] as String? ?? '';
+    final discoveryUrl =
+        ((widget.detail['discovery_data'] as Map<String, dynamic>?)?['SITE_URL'] as String?) ?? '';
+    _tc = TextEditingController(text: siteUrl.isNotEmpty ? siteUrl : discoveryUrl);
   }
 
   @override
@@ -583,29 +589,32 @@ class _SiteUrlInputState extends State<_SiteUrlInput> {
                   child: CircularProgressIndicator(strokeWidth: 1.5),
                 );
               }
-              return GestureDetector(
-                onTap: () {
-                  final url = _tc.text.trim();
-                  if (!url.startsWith('https://')) {
-                    setState(() => _validationError = '❌ Must start with https://');
-                    return;
-                  }
-                  setState(() => _validationError = null);
-                  widget.ctrl.saveSiteUrl(widget.quoteId, url);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: ESizes.sm),
-                  decoration: BoxDecoration(
-                    color: EColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
-                    border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
-                  ),
-                  child: Text(
-                    msg != null && msg.startsWith('✅') ? 'Saved' : 'Save',
-                    style: const TextStyle(
-                      color: EColors.primary,
-                      fontSize: ESizes.fontSizeLabel,
-                      fontWeight: FontWeight.w600,
+              return MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () {
+                    final url = _tc.text.trim();
+                    if (!url.startsWith('https://')) {
+                      setState(() => _validationError = '❌ Must start with https://');
+                      return;
+                    }
+                    setState(() => _validationError = null);
+                    widget.ctrl.saveSiteUrl(widget.quoteId, url);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: ESizes.sm),
+                    decoration: BoxDecoration(
+                      color: EColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+                      border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      msg != null && msg.startsWith('✅') ? 'Saved' : 'Save',
+                      style: const TextStyle(
+                        color: EColors.primary,
+                        fontSize: ESizes.fontSizeLabel,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
