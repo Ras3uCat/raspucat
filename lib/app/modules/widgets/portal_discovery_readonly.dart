@@ -1,4 +1,5 @@
 import 'package:raspucat/utils/constants/exports.dart';
+import '_discovery_summary_card.dart';
 export '_discovery_summary_card.dart';
 
 // Layout helpers and read-only confirmation view for the discovery form.
