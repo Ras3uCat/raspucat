@@ -5,6 +5,7 @@ import 'package:raspucat/app/data/models/portal_quote_model.dart';
 import 'package:raspucat/app/modules/widgets/_portal_discovery_sections.dart';
 import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
+import '_discovery_form_constants.dart';
 
 class PortalDiscoveryForm extends StatefulWidget {
   const PortalDiscoveryForm({super.key, required this.quote});
@@ -41,46 +42,8 @@ class _State extends State<PortalDiscoveryForm> {
   final _siteUrl = TextEditingController();
   final _seoTitle = TextEditingController();
   final _seoDesc = TextEditingController();
-  final _ogImage = TextEditingController();
   late final Map<String, Map<String, dynamic>> _hours;
 
-  static const _days = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-  static const _personalities = [
-    ('luxury', 'Luxury & refined'),
-    ('bold', 'Bold & confident'),
-    ('warm', 'Warm & welcoming'),
-    ('minimal', 'Clean & minimal'),
-    ('corporate', 'Professional'),
-    ('edgy', 'Edgy & urban'),
-    ('playful', 'Playful & entertaining'),
-    ('artisan', 'Artisan & handcrafted'),
-    ('wellness', 'Wellness & holistic'),
-    ('tech', 'Tech & modern'),
-    ('retro', 'Retro & nostalgic'),
-    ('nature', 'Nature & eco'),
-    ('creative', 'Creative & expressive'),
-    ('nightlife', 'Nightlife & dining'),
-  ];
-  static const _heroVariants = [
-    ('fullbleed', 'Full bleed image'),
-    ('split', 'Image + text side by side'),
-    ('centered', 'Centered'),
-    ('video_bg', 'Video background'),
-  ];
-  static const _navStyles = [
-    ('sticky', 'Sticky top bar'),
-    ('overlay', 'Transparent overlay'),
-    ('minimal', 'Minimal'),
-    ('hamburger', 'Hamburger menu'),
-  ];
   @override
   void initState() {
     super.initState();
@@ -113,10 +76,9 @@ class _State extends State<PortalDiscoveryForm> {
     _siteUrl.text = s('SITE_URL');
     _seoTitle.text = s('SEO_TITLE');
     _seoDesc.text = s('SEO_DESCRIPTION');
-    _ogImage.text = s('OG_IMAGE');
     final sh = (_data['HOURS_JSON'] as Map<String, dynamic>?) ?? {};
     _hours = {
-      for (final d in _days)
+      for (final d in discoveryDays)
         d: {
           'open': (sh[d.toLowerCase()]?['open'] as String?) ?? '9:00 AM',
           'close': (sh[d.toLowerCase()]?['close'] as String?) ?? '5:00 PM',
@@ -142,6 +104,17 @@ class _State extends State<PortalDiscoveryForm> {
     _draft();
   }
 
+  Future<String?> _uploadAsset(
+    String field,
+    List<int> bytes,
+    String mimeType,
+    String fileName,
+  ) async {
+    final url = await _ctrl.uploadDiscoveryAsset(widget.quote.id, field, bytes, mimeType, fileName);
+    if (url != null) _set(field == 'logo' ? 'LOGO_URL' : 'OG_IMAGE', url);
+    return url;
+  }
+
   void _onAddressSelected(NominatimResult r) {
     _street.text = r.street;
     _city.text = r.city;
@@ -158,7 +131,7 @@ class _State extends State<PortalDiscoveryForm> {
 
   void _updateHours() {
     _data['HOURS_JSON'] = {
-      for (final d in _days)
+      for (final d in discoveryDays)
         d.toLowerCase(): {
           'open': _hours[d]!['open'],
           'close': _hours[d]!['close'],
@@ -206,7 +179,6 @@ class _State extends State<PortalDiscoveryForm> {
       _siteUrl,
       _seoTitle,
       _seoDesc,
-      _ogImage,
     ]) {
       c.dispose();
     }
@@ -226,13 +198,13 @@ class _State extends State<PortalDiscoveryForm> {
             DiscoveryIntro(businessName: widget.quote.businessName),
             const SizedBox(height: ESizes.xl),
             PortalDiscoveryPersonalitySection(
-              personalities: _personalities,
+              personalities: discoveryPersonalities,
               selected: _data['PERSONALITY'] as String?,
               onChanged: (v) => setState(() => _set('PERSONALITY', v)),
             ),
             PortalDiscoveryLayoutSection(
-              heroVariants: _heroVariants,
-              navStyles: _navStyles,
+              heroVariants: discoveryHeroVariants,
+              navStyles: discoveryNavStyles,
               heroVariant: _data['HERO_VARIANT'] as String?,
               navStyle: _data['NAV_STYLE'] as String?,
               onHeroChanged: (v) => setState(() => _set('HERO_VARIANT', v)),
@@ -253,6 +225,8 @@ class _State extends State<PortalDiscoveryForm> {
             ),
             PortalDiscoveryBrandBriefSection(
               shortNameCtrl: _shortName,
+              logoUrl: _data['LOGO_URL'] as String?,
+              onLogoUpload: (b, m, f) => _uploadAsset('logo', b, m, f),
               threeWordsCtrl: _threeWords,
               celebrityCtrl: _celebrity,
               targetCustCtrl: _targetCust,
@@ -267,7 +241,7 @@ class _State extends State<PortalDiscoveryForm> {
               stateCtrl: _stateCtrl,
               zipCtrl: _zip,
               countryCtrl: _country,
-              days: _days,
+              days: discoveryDays,
               hours: _hours,
               onSet: _set,
               onAddressSelected: _onAddressSelected,
@@ -277,7 +251,8 @@ class _State extends State<PortalDiscoveryForm> {
             PortalDiscoverySeoSection(
               seoTitleCtrl: _seoTitle,
               seoDescCtrl: _seoDesc,
-              ogImageCtrl: _ogImage,
+              ogImageUrl: _data['OG_IMAGE'] as String?,
+              onOgImageUpload: (b, m, f) => _uploadAsset('og_image', b, m, f),
               onSet: _set,
             ),
             const SizedBox(height: ESizes.xl),

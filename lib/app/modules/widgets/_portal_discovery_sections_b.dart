@@ -1,8 +1,94 @@
 import 'package:raspucat/app/modules/widgets/portal_discovery_fields.dart';
 import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
+import '_discovery_address_autocomplete.dart';
+import '_discovery_upload_field.dart';
 
 typedef _KV = void Function(String key, String value);
+
+class PortalDiscoveryBusinessInfoSection extends StatelessWidget {
+  const PortalDiscoveryBusinessInfoSection({
+    required this.phoneCtrl,
+    required this.streetCtrl,
+    required this.cityCtrl,
+    required this.stateCtrl,
+    required this.zipCtrl,
+    required this.countryCtrl,
+    required this.days,
+    required this.hours,
+    required this.onSet,
+    required this.onAddressSelected,
+    required this.onHoursChanged,
+  });
+  final TextEditingController phoneCtrl, streetCtrl, cityCtrl, stateCtrl, zipCtrl, countryCtrl;
+  final List<String> days;
+  final Map<String, Map<String, dynamic>> hours;
+  final _KV onSet;
+  final ValueChanged<NominatimResult> onAddressSelected;
+  final VoidCallback onHoursChanged;
+
+  @override
+  Widget build(BuildContext context) => DiscoveryFormSection(
+    '6. Business Info',
+    null,
+    child: Column(
+      children: [
+        DiscoveryLabeledField(
+          'Phone number',
+          phoneCtrl,
+          hint: 'e.g. (512) 555-0100',
+          onChanged: (v) => onSet('PHONE', v),
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryAddressAutocomplete(controller: streetCtrl, onAddressSelected: onAddressSelected),
+        const SizedBox(height: ESizes.sm),
+        Row(
+          children: [
+            Expanded(
+              child: DiscoveryLabeledField(
+                'City',
+                cityCtrl,
+                hint: 'e.g. Austin',
+                onChanged: (v) => onSet('CITY', v),
+              ),
+            ),
+            const SizedBox(width: ESizes.sm),
+            SizedBox(
+              width: 80,
+              child: DiscoveryLabeledField(
+                'State',
+                stateCtrl,
+                hint: 'e.g. TX',
+                onChanged: (v) => onSet('STATE', v),
+              ),
+            ),
+            const SizedBox(width: ESizes.sm),
+            SizedBox(
+              width: 90,
+              child: DiscoveryLabeledField(
+                'ZIP',
+                zipCtrl,
+                hint: 'e.g. 78701',
+                onChanged: (v) => onSet('ZIP', v),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryLabeledField(
+          'Country',
+          countryCtrl,
+          hint: 'e.g. United States',
+          onChanged: (v) => onSet('COUNTRY', v),
+        ),
+        const SizedBox(height: ESizes.md),
+        DiscoverySubLabel('Business Hours'),
+        const SizedBox(height: ESizes.xs),
+        DiscoveryHoursGrid(days: days, hours: hours, onChanged: onHoursChanged),
+      ],
+    ),
+  );
+}
 
 class PortalDiscoveryOnlinePresenceSection extends StatelessWidget {
   const PortalDiscoveryOnlinePresenceSection({required this.siteUrlCtrl, required this.onSet});
@@ -26,21 +112,26 @@ class PortalDiscoverySeoSection extends StatelessWidget {
   const PortalDiscoverySeoSection({
     required this.seoTitleCtrl,
     required this.seoDescCtrl,
-    required this.ogImageCtrl,
+    required this.ogImageUrl,
+    required this.onOgImageUpload,
     required this.onSet,
   });
-  final TextEditingController seoTitleCtrl, seoDescCtrl, ogImageCtrl;
+  final TextEditingController seoTitleCtrl, seoDescCtrl;
+  final String? ogImageUrl;
+  final Future<String?> Function(List<int>, String, String) onOgImageUpload;
   final _KV onSet;
 
   @override
   Widget build(BuildContext context) => DiscoveryFormSection(
-    '8. SEO',
-    'How you appear in search results',
+    '8. SEO & Search',
+    'How your site appears in Google and when shared on social media',
     child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DiscoveryLabeledField(
           'Search title',
           seoTitleCtrl,
+          hint: 'e.g. Austin\'s Best Barber Shop | Clean Cuts',
           maxLength: 60,
           onChanged: (v) => onSet('SEO_TITLE', v),
         ),
@@ -48,15 +139,19 @@ class PortalDiscoverySeoSection extends StatelessWidget {
         DiscoveryLabeledField(
           'Search description',
           seoDescCtrl,
+          hint: 'A short sentence about your business that appears under your link in Google.',
           maxLines: 3,
           maxLength: 160,
           onChanged: (v) => onSet('SEO_DESCRIPTION', v),
         ),
-        const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField(
-          'Social share image URL (optional)',
-          ogImageCtrl,
-          onChanged: (v) => onSet('OG_IMAGE', v),
+        const SizedBox(height: ESizes.md),
+        DiscoveryUploadField(
+          label: 'Social share image (optional)',
+          hint:
+              'The image that shows up when someone shares your link on Facebook, iMessage, or Instagram. Ideal size: 1200 × 630 px.',
+          currentUrl: ogImageUrl,
+          accept: 'image/png,image/jpeg,image/webp',
+          onUpload: onOgImageUpload,
         ),
       ],
     ),

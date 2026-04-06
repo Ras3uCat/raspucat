@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:raspucat/app/data/models/portal_quote_model.dart';
 import 'package:raspucat/app/data/repositories/portal_files_repository.dart';
 import 'package:raspucat/app/data/repositories/portal_messages_repository.dart';
@@ -169,6 +170,30 @@ class PortalController extends GetxController {
       return false;
     } catch (_) {
       return false;
+    }
+  }
+
+  Future<String?> uploadDiscoveryAsset(
+    String quoteId,
+    String field,
+    List<int> bytes,
+    String mimeType,
+    String fileName,
+  ) async {
+    try {
+      final resp = await Supabase.instance.client.functions.invoke(
+        'portal-upload-asset',
+        body: {
+          'quoteId': quoteId,
+          'field': field,
+          'fileBase64': base64Encode(bytes),
+          'mimeType': mimeType,
+          'fileName': fileName,
+        },
+      );
+      return (resp.data as Map<String, dynamic>?)?['url'] as String?;
+    } catch (_) {
+      return null;
     }
   }
 

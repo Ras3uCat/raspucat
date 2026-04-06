@@ -3,7 +3,7 @@ import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import '_discovery_color_picker_field.dart';
 import '_discovery_font_selector.dart';
-import '_discovery_address_autocomplete.dart';
+import '_discovery_upload_field.dart';
 export '_portal_discovery_sections_b.dart';
 
 // Section widgets for the discovery form. Private to this view.
@@ -148,6 +148,8 @@ class PortalDiscoveryFontsSection extends StatelessWidget {
 class PortalDiscoveryBrandBriefSection extends StatelessWidget {
   const PortalDiscoveryBrandBriefSection({
     required this.shortNameCtrl,
+    required this.logoUrl,
+    required this.onLogoUpload,
     required this.threeWordsCtrl,
     required this.celebrityCtrl,
     required this.targetCustCtrl,
@@ -160,6 +162,8 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
       celebrityCtrl,
       targetCustCtrl,
       inspoUrlsCtrl;
+  final String? logoUrl;
+  final Future<String?> Function(List<int>, String, String) onLogoUpload;
   final _KV onSet;
   final _KV onBrandBrief;
 
@@ -175,6 +179,14 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
           hint: 'e.g. Acme, Brewed, Zara',
           maxLength: 12,
           onChanged: (v) => onSet('SHORT_NAME', v),
+        ),
+        const SizedBox(height: ESizes.sm),
+        DiscoveryUploadField(
+          label: 'Logo',
+          hint: 'PNG, JPG or SVG — used for your favicon and app icon',
+          currentUrl: logoUrl,
+          accept: 'image/png,image/jpeg,image/svg+xml,image/webp',
+          onUpload: onLogoUpload,
         ),
         const SizedBox(height: ESizes.sm),
         DiscoveryLabeledField(
@@ -205,90 +217,6 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
           hint: 'e.g. apple.com, allbirds.com',
           onChanged: (v) => onBrandBrief('inspo_urls', v),
         ),
-      ],
-    ),
-  );
-}
-
-class PortalDiscoveryBusinessInfoSection extends StatelessWidget {
-  const PortalDiscoveryBusinessInfoSection({
-    required this.phoneCtrl,
-    required this.streetCtrl,
-    required this.cityCtrl,
-    required this.stateCtrl,
-    required this.zipCtrl,
-    required this.countryCtrl,
-    required this.days,
-    required this.hours,
-    required this.onSet,
-    required this.onAddressSelected,
-    required this.onHoursChanged,
-  });
-  final TextEditingController phoneCtrl, streetCtrl, cityCtrl, stateCtrl, zipCtrl, countryCtrl;
-  final List<String> days;
-  final Map<String, Map<String, dynamic>> hours;
-  final _KV onSet;
-  final ValueChanged<NominatimResult> onAddressSelected;
-  final VoidCallback onHoursChanged;
-
-  @override
-  Widget build(BuildContext context) => DiscoveryFormSection(
-    '6. Business Info',
-    null,
-    child: Column(
-      children: [
-        DiscoveryLabeledField(
-          'Phone number',
-          phoneCtrl,
-          hint: 'e.g. (512) 555-0100',
-          onChanged: (v) => onSet('PHONE', v),
-        ),
-        const SizedBox(height: ESizes.sm),
-        DiscoveryAddressAutocomplete(controller: streetCtrl, onAddressSelected: onAddressSelected),
-        const SizedBox(height: ESizes.sm),
-        Row(
-          children: [
-            Expanded(
-              child: DiscoveryLabeledField(
-                'City',
-                cityCtrl,
-                hint: 'e.g. Austin',
-                onChanged: (v) => onSet('CITY', v),
-              ),
-            ),
-            const SizedBox(width: ESizes.sm),
-            SizedBox(
-              width: 80,
-              child: DiscoveryLabeledField(
-                'State',
-                stateCtrl,
-                hint: 'e.g. TX',
-                onChanged: (v) => onSet('STATE', v),
-              ),
-            ),
-            const SizedBox(width: ESizes.sm),
-            SizedBox(
-              width: 90,
-              child: DiscoveryLabeledField(
-                'ZIP',
-                zipCtrl,
-                hint: 'e.g. 78701',
-                onChanged: (v) => onSet('ZIP', v),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: ESizes.sm),
-        DiscoveryLabeledField(
-          'Country',
-          countryCtrl,
-          hint: 'e.g. United States',
-          onChanged: (v) => onSet('COUNTRY', v),
-        ),
-        const SizedBox(height: ESizes.md),
-        DiscoverySubLabel('Business Hours'),
-        const SizedBox(height: ESizes.xs),
-        DiscoveryHoursGrid(days: days, hours: hours, onChanged: onHoursChanged),
       ],
     ),
   );
