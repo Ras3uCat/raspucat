@@ -73,12 +73,14 @@ Deno.serve(async (req) => {
       .from('admin-assets')
       .getPublicUrl(storagePath);
 
+    // Patch discovery_data JSONB and the dedicated column used by the admin details tab
     const dataKey = field === 'logo' ? 'LOGO_URL' : 'OG_IMAGE';
+    const quoteColumn = field === 'logo' ? 'logo_url' : 'og_image_url';
     const updated = { ...(quote.discovery_data ?? {}), [dataKey]: publicUrl };
 
     const { error: dbError } = await supabase
       .from('quotes')
-      .update({ discovery_data: updated })
+      .update({ discovery_data: updated, [quoteColumn]: publicUrl })
       .eq('id', quoteId);
 
     if (dbError) return json({ error: dbError.message }, 500);
