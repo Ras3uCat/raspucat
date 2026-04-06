@@ -14,6 +14,16 @@ Paint _stroke(double alpha, {double width = 1.0}) => Paint()
   ..strokeWidth = width
   ..strokeCap = StrokeCap.round;
 
+// Filled upward-pointing triangle — used as logo mark in nav painters.
+void _logoTriangle(Canvas c, double cx, double cy, double alpha) {
+  final path = Path()
+    ..moveTo(cx, cy - 5)
+    ..lineTo(cx + 6, cy + 4)
+    ..lineTo(cx - 6, cy + 4)
+    ..close();
+  c.drawPath(path, _fill(alpha));
+}
+
 void _textLines(
   Canvas c,
   Size s, {
@@ -180,13 +190,7 @@ class StickyNavPainter extends CustomPainter {
   void paint(Canvas c, Size s) {
     final a = active ? 1.0 : 0.25;
     c.drawRect(Rect.fromLTWH(0, 0, s.width, s.height), _fill(0.3 * a));
-    c.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(8, s.height / 2 - 3, 18, 6),
-        const Radius.circular(1.5),
-      ),
-      _fill(0.9 * a),
-    );
+    _logoTriangle(c, 17, s.height / 2, 0.9 * a);
     for (int i = 0; i < 3; i++) {
       c.drawCircle(Offset(s.width - 10 - i * 14.0, s.height / 2), 2.5, _fill(0.7 * a));
     }
@@ -206,7 +210,7 @@ class OverlayNavPainter extends CustomPainter {
     c.drawRect(Rect.fromLTWH(0, 0, s.width, s.height), _fill(0.12 * a));
     _hatch(c, s, a);
     c.drawRect(Rect.fromLTWH(0, 0, s.width, s.height), _stroke(0.5 * a, width: 1.0));
-    c.drawCircle(Offset(14, s.height / 2), 4, _fill(0.85 * a));
+    _logoTriangle(c, 17, s.height / 2, 0.85 * a);
     for (int i = 0; i < 3; i++) {
       c.drawCircle(Offset(s.width - 10 - i * 14.0, s.height / 2), 2.5, _fill(0.65 * a));
     }
@@ -229,13 +233,7 @@ class MinimalNavPainter extends CustomPainter {
       Offset(s.width, s.height - 1),
       _stroke(0.5 * a, width: 1.0),
     );
-    c.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH((s.width - 18) / 2, s.height / 2 - 3, 18, 6),
-        const Radius.circular(1.5),
-      ),
-      _fill(0.8 * a),
-    );
+    _logoTriangle(c, s.width / 2, s.height / 2, 0.8 * a);
   }
 
   @override
@@ -250,13 +248,7 @@ class HamburgerNavPainter extends CustomPainter {
   void paint(Canvas c, Size s) {
     final a = active ? 1.0 : 0.25;
     c.drawRect(Rect.fromLTWH(0, 0, s.width, s.height), _fill(0.3 * a));
-    c.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(8, s.height / 2 - 3, 18, 6),
-        const Radius.circular(1.5),
-      ),
-      _fill(0.9 * a),
-    );
+    _logoTriangle(c, 17, s.height / 2, 0.9 * a);
     final p = _stroke(0.9 * a, width: 2.0);
     final rx = s.width - 18.0;
     final cy = s.height / 2;
