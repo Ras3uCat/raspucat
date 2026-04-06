@@ -26,12 +26,12 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    // Verify user session
+    // Verify user session — get email from JWT (same pattern as portal-save-discovery)
     const authHeader = req.headers.get('Authorization') ?? '';
-    const { data: { user }, error: authErr } = await supabase.auth.getUser(
-      authHeader.replace('Bearer ', ''),
-    );
-    if (authErr || !user) return json({ error: 'Unauthorized.' }, 401);
+    if (!authHeader.startsWith('Bearer ')) return json({ error: 'Unauthorized.' }, 401);
+    const { data: { user }, error: authErr } = await supabase.auth.getUser(authHeader.slice(7));
+    if (authErr || !user?.email) return json({ error: 'Unauthorized.' }, 401);
+    const authEmail = user.email.toLowerCase();
 
     const body = await req.json() as Record<string, unknown>;
     const quoteId  = body.quoteId  as string | undefined;
@@ -47,15 +47,15 @@ Deno.serve(async (req) => {
       return json({ error: 'field must be logo or og_image.' }, 400);
     }
 
-    // Verify the quote belongs to this user
+    // Verify the quote belongs to this user (match by client_email)
     const { data: quote, error: quoteErr } = await supabase
       .from('quotes')
-      .select('id, discovery_data')
+      .select('id, client_email, discovery_data')
       .eq('id', quoteId)
-      .eq('user_id', user.id)
       .single();
 
     if (quoteErr || !quote) return json({ error: 'Quote not found.' }, 404);
+    if (quote.client_email.toLowerCase() !== authEmail) return json({ error: 'Unauthorized.' }, 401);
 
     // Decode and upload
     const binary = atob(b64);
