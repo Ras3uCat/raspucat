@@ -237,21 +237,24 @@ class _UnprovisionedView extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            GestureDetector(
-              onTap: provisioning ? null : onProvision,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: EColors.primary.withValues(alpha: provisioning ? 0.2 : 0.5),
+            MouseRegion(
+              cursor: provisioning ? MouseCursor.defer : SystemMouseCursors.click,
+              child: GestureDetector(
+                onTap: provisioning ? null : onProvision,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: EColors.primary.withValues(alpha: provisioning ? 0.2 : 0.5),
+                    ),
+                    borderRadius: BorderRadius.circular(6),
                   ),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  provisioning ? 'Provisioning…' : 'Provision',
-                  style: TextStyle(
-                    fontSize: ESizes.fontSizeLabel,
-                    color: provisioning ? EColors.softGrey : EColors.primary,
+                  child: Text(
+                    provisioning ? 'Provisioning…' : 'Provision',
+                    style: TextStyle(
+                      fontSize: ESizes.fontSizeLabel,
+                      color: provisioning ? EColors.softGrey : EColors.primary,
+                    ),
                   ),
                 ),
               ),

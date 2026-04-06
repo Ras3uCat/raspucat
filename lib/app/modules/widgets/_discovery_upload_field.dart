@@ -99,33 +99,36 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
           ),
           const SizedBox(height: 6),
         ],
-        GestureDetector(
-          onTap: _uploading ? null : _pick,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
-            decoration: BoxDecoration(
-              color: EColors.primary.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
-              border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
+        MouseRegion(
+          cursor: _uploading ? MouseCursor.defer : SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: _uploading ? null : _pick,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
+              decoration: BoxDecoration(
+                color: EColors.primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+                border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
+              ),
+              child: _uploading
+                  ? SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: EColors.primary.withValues(alpha: 0.7),
+                      ),
+                    )
+                  : Text(
+                      _url != null && _url!.isNotEmpty ? 'Replace' : 'Upload image',
+                      style: TextStyle(
+                        color: EColors.primary,
+                        fontSize: ESizes.fontSizeSm,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
             ),
-            child: _uploading
-                ? SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      color: EColors.primary.withValues(alpha: 0.7),
-                    ),
-                  )
-                : Text(
-                    _url != null && _url!.isNotEmpty ? 'Replace' : 'Upload image',
-                    style: TextStyle(
-                      color: EColors.primary,
-                      fontSize: ESizes.fontSizeSm,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
           ),
         ),
         const SizedBox(height: 4),

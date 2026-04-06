@@ -1,4 +1,4 @@
-import 'dart:convert';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/utils/constants/exports.dart';
@@ -47,10 +47,9 @@ class _AdminAssetUploadSectionState extends State<AdminAssetUploadSection> {
 
     try {
       final reader = html.FileReader();
-      reader.readAsArrayBuffer(file);
+      reader.readAsDataUrl(file);
       await reader.onLoad.first;
-      final bytes = reader.result as List<int>;
-      final b64 = base64Encode(bytes);
+      final b64 = (reader.result as String).split(',').last;
 
       await widget.ctrl.uploadAsset(widget.quoteId, field, b64, file.type, file.name);
 
@@ -186,31 +185,36 @@ class _AssetRow extends StatelessWidget {
             ],
           ),
         ),
-        GestureDetector(
-          onTap: uploading ? null : onUpload,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
-            decoration: BoxDecoration(
-              border: Border.all(color: EColors.primary.withValues(alpha: uploading ? 0.15 : 0.3)),
-              borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+        MouseRegion(
+          cursor: uploading ? MouseCursor.defer : SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: uploading ? null : onUpload,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: EColors.primary.withValues(alpha: uploading ? 0.15 : 0.3),
+                ),
+                borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+              ),
+              child: uploading
+                  ? SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.5,
+                        color: EColors.primary.withValues(alpha: 0.5),
+                      ),
+                    )
+                  : Text(
+                      url != null ? 'Replace' : 'Upload',
+                      style: TextStyle(
+                        color: EColors.primary.withValues(alpha: 0.8),
+                        fontSize: ESizes.fontSizeLabel,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
-            child: uploading
-                ? SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      color: EColors.primary.withValues(alpha: 0.5),
-                    ),
-                  )
-                : Text(
-                    url != null ? 'Replace' : 'Upload',
-                    style: TextStyle(
-                      color: EColors.primary.withValues(alpha: 0.8),
-                      fontSize: ESizes.fontSizeLabel,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:raspucat/utils/constants/exports.dart';
+export '_discovery_summary_card.dart';
 
 // Layout helpers and read-only confirmation view for the discovery form.
 
@@ -206,66 +207,6 @@ class DiscoveryReadOnlyView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class DiscoverySummaryCard extends StatelessWidget {
-  const DiscoverySummaryCard({required this.data});
-  final Map<String, dynamic> data;
-
-  @override
-  Widget build(BuildContext context) {
-    Widget row(String k, String? v) => v == null || v.isEmpty
-        ? const SizedBox.shrink()
-        : Padding(
-            padding: const EdgeInsets.only(bottom: ESizes.sm),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: 160,
-                  child: Text(
-                    k,
-                    style: TextStyle(
-                      color: EColors.textSecondary.withValues(alpha: 0.4),
-                      fontSize: ESizes.fontSizeLabel,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    v,
-                    style: const TextStyle(color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
-                  ),
-                ),
-              ],
-            ),
-          );
-
-    final bb = (data['brand_brief'] as Map<String, dynamic>?) ?? {};
-    return Container(
-      padding: const EdgeInsets.all(ESizes.lg),
-      decoration: BoxDecoration(
-        color: EColors.primary.withValues(alpha: 0.04),
-        borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-        border: Border.all(color: EColors.primary.withValues(alpha: 0.12)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          row('Personality', data['PERSONALITY'] as String?),
-          row('Hero variant', data['HERO_VARIANT'] as String?),
-          row('Nav style', data['NAV_STYLE'] as String?),
-          row('Short name', data['SHORT_NAME'] as String?),
-          row('Primary color', data['COLOR_PRIMARY'] as String?),
-          row('Font', data['FONT_PRIMARY'] as String?),
-          row('Phone', data['PHONE'] as String?),
-          row('City', data['CITY'] as String?),
-          row('SEO title', data['SEO_TITLE'] as String?),
-          row('3 words', bb['three_words'] as String?),
-        ],
       ),
     );
   }
