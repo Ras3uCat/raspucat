@@ -180,7 +180,7 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
       targetCustCtrl,
       inspoUrlsCtrl;
   final String? logoUrl;
-  final Future<String?> Function(List<int>, String, String) onLogoUpload;
+  final Future<String?> Function(String, String, String) onLogoUpload;
   final _KV onSet;
   final _KV onBrandBrief;
 

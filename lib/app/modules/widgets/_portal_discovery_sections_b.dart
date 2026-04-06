@@ -118,7 +118,7 @@ class PortalDiscoverySeoSection extends StatelessWidget {
   });
   final TextEditingController seoTitleCtrl, seoDescCtrl;
   final String? ogImageUrl;
-  final Future<String?> Function(List<int>, String, String) onOgImageUpload;
+  final Future<String?> Function(String, String, String) onOgImageUpload;
   final _KV onSet;
 
   @override
