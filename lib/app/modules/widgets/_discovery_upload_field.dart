@@ -1,5 +1,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'dart:typed_data';
 import 'package:raspucat/utils/constants/exports.dart';
 
 // File upload field for discovery form assets (logo, social share image).
@@ -49,7 +50,7 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
       final reader = html.FileReader();
       reader.readAsArrayBuffer(file);
       await reader.onLoad.first;
-      final bytes = (reader.result as html.ByteBuffer).asUint8List();
+      final bytes = (reader.result as ByteBuffer).asUint8List();
       final url = await widget.onUpload(bytes, file.type, file.name);
       if (!mounted) return;
       setState(() {
