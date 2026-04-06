@@ -191,8 +191,18 @@ class PortalController extends GetxController {
           'fileName': fileName,
         },
       );
-      return (resp.data as Map<String, dynamic>?)?['url'] as String?;
-    } catch (_) {
+      final data = resp.data as Map<String, dynamic>?;
+      if (data == null) {
+        debugPrint('[upload] resp.data is null — status: ${resp.status}');
+        return null;
+      }
+      if (data['error'] != null) {
+        debugPrint('[upload] function error: ${data['error']}');
+        return null;
+      }
+      return data['url'] as String?;
+    } catch (e) {
+      debugPrint('[upload] exception: $e');
       return null;
     }
   }
