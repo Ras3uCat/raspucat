@@ -1,2 +1,1 @@
-[functions.portal-upload-asset]
 verify_jwt = false
