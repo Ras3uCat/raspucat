@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:raspucat/app/data/models/portal_quote_model.dart';
 import 'package:raspucat/app/data/repositories/portal_files_repository.dart';
 import 'package:raspucat/app/data/repositories/portal_messages_repository.dart';
@@ -177,7 +176,7 @@ class PortalController extends GetxController {
   Future<String> uploadDiscoveryAsset(
     String quoteId,
     String field,
-    List<int> bytes,
+    String base64,
     String mimeType,
     String fileName,
   ) async {
@@ -187,7 +186,7 @@ class PortalController extends GetxController {
         body: {
           'quoteId': quoteId,
           'field': field,
-          'fileBase64': base64Encode(bytes),
+          'fileBase64': base64,
           'mimeType': mimeType,
           'fileName': fileName,
         },

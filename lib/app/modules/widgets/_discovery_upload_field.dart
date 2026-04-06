@@ -1,10 +1,9 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
-import 'dart:typed_data';
 import 'package:raspucat/utils/constants/exports.dart';
 
 // File upload field for discovery form assets (logo, social share image).
-// Calls [onUpload] with raw bytes + metadata; parent handles the actual upload.
+// Calls [onUpload] with base64-encoded file data; parent handles the actual upload.
 
 class DiscoveryUploadField extends StatefulWidget {
   const DiscoveryUploadField({
@@ -20,7 +19,7 @@ class DiscoveryUploadField extends StatefulWidget {
   final String hint;
   final String? currentUrl;
   final String accept; // e.g. 'image/png,image/jpeg,image/svg+xml'
-  final Future<String?> Function(List<int> bytes, String mimeType, String fileName) onUpload;
+  final Future<String?> Function(String base64, String mimeType, String fileName) onUpload;
 
   @override
   State<DiscoveryUploadField> createState() => _DiscoveryUploadFieldState();
@@ -49,10 +48,13 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
       });
       try {
         final reader = html.FileReader();
-        reader.readAsArrayBuffer(file);
+        reader.readAsDataUrl(file);
         await reader.onLoad.first;
-        final bytes = (reader.result as ByteBuffer).asUint8List();
-        final result = await widget.onUpload(bytes, file.type, file.name);
+        // result is "data:<mimeType>;base64,<data>" — split off the prefix
+        final dataUrl = reader.result as String;
+        final base64 = dataUrl.split(',').last;
+        final mimeType = file.type.isNotEmpty ? file.type : 'application/octet-stream';
+        final result = await widget.onUpload(base64, mimeType, file.name);
         if (!mounted) return;
         setState(() {
           _uploading = false;

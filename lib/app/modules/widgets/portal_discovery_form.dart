@@ -106,7 +106,7 @@ class _State extends State<PortalDiscoveryForm> {
 
   Future<String?> _uploadAsset(
     String field,
-    List<int> bytes,
+    String base64,
     String mimeType,
     String fileName,
   ) async {
@@ -114,7 +114,7 @@ class _State extends State<PortalDiscoveryForm> {
       final url = await _ctrl.uploadDiscoveryAsset(
         widget.quote.id,
         field,
-        bytes,
+        base64,
         mimeType,
         fileName,
       );
