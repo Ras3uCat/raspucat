@@ -113,15 +113,24 @@ class CenteredPainter extends CustomPainter {
       RRect.fromRectAndRadius(Rect.fromLTWH(bx, s.height * 0.3, bw, 10), const Radius.circular(2)),
       _fill(0.55 * a),
     );
-    _textLines(
-      c,
-      s,
-      x: s.width * 0.25,
-      y: s.height * 0.55,
-      w: s.width * 0.5,
-      count: 2,
-      gap: 6,
-      alpha: 0.4 * a,
+    // Two centered lines — full width then shorter, both centered
+    final p = _fill(0.4 * a);
+    final lw1 = s.width * 0.5;
+    final lw2 = s.width * 0.32;
+    final ly = s.height * 0.55;
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH((s.width - lw1) / 2, ly, lw1, 1.5),
+        const Radius.circular(1),
+      ),
+      p,
+    );
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH((s.width - lw2) / 2, ly + 6, lw2, 1.5),
+        const Radius.circular(1),
+      ),
+      p,
     );
   }
 
@@ -146,14 +155,14 @@ class VideoBgPainter extends CustomPainter {
       ..lineTo(cx - 3, cy + 4.5)
       ..close();
     c.drawPath(path, _fill(0.7 * a));
-    _textLines(
-      c,
-      s,
-      x: s.width * 0.28,
-      y: s.height * 0.7,
-      w: s.width * 0.44,
-      count: 1,
-      alpha: 0.6 * a,
+    // Centered line under play button
+    final lw = s.width * 0.44;
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH((s.width - lw) / 2, s.height * 0.72, lw, 1.5),
+        const Radius.circular(1),
+      ),
+      _fill(0.6 * a),
     );
   }
 
@@ -171,7 +180,13 @@ class StickyNavPainter extends CustomPainter {
   void paint(Canvas c, Size s) {
     final a = active ? 1.0 : 0.25;
     c.drawRect(Rect.fromLTWH(0, 0, s.width, s.height), _fill(0.3 * a));
-    c.drawCircle(Offset(14, s.height / 2), 4, _fill(0.9 * a));
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(8, s.height / 2 - 3, 18, 6),
+        const Radius.circular(1.5),
+      ),
+      _fill(0.9 * a),
+    );
     for (int i = 0; i < 3; i++) {
       c.drawCircle(Offset(s.width - 10 - i * 14.0, s.height / 2), 2.5, _fill(0.7 * a));
     }
@@ -214,7 +229,13 @@ class MinimalNavPainter extends CustomPainter {
       Offset(s.width, s.height - 1),
       _stroke(0.5 * a, width: 1.0),
     );
-    c.drawCircle(Offset(s.width / 2, s.height / 2), 4, _fill(0.8 * a));
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH((s.width - 18) / 2, s.height / 2 - 3, 18, 6),
+        const Radius.circular(1.5),
+      ),
+      _fill(0.8 * a),
+    );
   }
 
   @override
@@ -229,7 +250,13 @@ class HamburgerNavPainter extends CustomPainter {
   void paint(Canvas c, Size s) {
     final a = active ? 1.0 : 0.25;
     c.drawRect(Rect.fromLTWH(0, 0, s.width, s.height), _fill(0.3 * a));
-    c.drawCircle(Offset(14, s.height / 2), 4, _fill(0.9 * a));
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(8, s.height / 2 - 3, 18, 6),
+        const Radius.circular(1.5),
+      ),
+      _fill(0.9 * a),
+    );
     final p = _stroke(0.9 * a, width: 2.0);
     final rx = s.width - 18.0;
     final cy = s.height / 2;
