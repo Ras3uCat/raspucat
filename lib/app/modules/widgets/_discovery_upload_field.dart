@@ -49,7 +49,7 @@ class _DiscoveryUploadFieldState extends State<DiscoveryUploadField> {
       final reader = html.FileReader();
       reader.readAsArrayBuffer(file);
       await reader.onLoad.first;
-      final bytes = (reader.result as List<int>);
+      final bytes = (reader.result as html.ByteBuffer).asUint8List();
       final url = await widget.onUpload(bytes, file.type, file.name);
       if (!mounted) return;
       setState(() {
