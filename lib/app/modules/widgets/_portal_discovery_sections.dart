@@ -3,6 +3,7 @@ import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import '_discovery_color_picker_field.dart';
 import '_discovery_font_selector.dart';
+import '_discovery_layout_previews.dart';
 import '_discovery_upload_field.dart';
 export '_portal_discovery_sections_b.dart';
 
@@ -23,7 +24,7 @@ class PortalDiscoveryPersonalitySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DiscoveryFormSection(
     '1. Personality',
-    'What should customers feel when they land on your site?',
+    'What is the overall vibe and aura of your brand?',
     child: DiscoveryRadioGroup(options: personalities, selected: selected, onChanged: onChanged),
   );
 }
@@ -47,15 +48,31 @@ class PortalDiscoveryLayoutSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DiscoveryFormSection(
     '2. Layout',
-    'How should your hero section look?',
+    'How should your site look at first glance?',
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DiscoverySubLabel('Hero style'),
-        DiscoveryRadioGroup(options: heroVariants, selected: heroVariant, onChanged: onHeroChanged),
+        const SizedBox(height: ESizes.xs),
+        DiscoveryLayoutPicker(
+          options: heroVariants,
+          selected: heroVariant,
+          onChanged: onHeroChanged,
+          painterFor: heroVariantPainter,
+          cardWidth: 92,
+          cardHeight: 62,
+        ),
         const SizedBox(height: ESizes.md),
         DiscoverySubLabel('Navigation style'),
-        DiscoveryRadioGroup(options: navStyles, selected: navStyle, onChanged: onNavChanged),
+        const SizedBox(height: ESizes.xs),
+        DiscoveryLayoutPicker(
+          options: navStyles,
+          selected: navStyle,
+          onChanged: onNavChanged,
+          painterFor: navStylePainter,
+          cardWidth: 92,
+          cardHeight: 40,
+        ),
       ],
     ),
   );

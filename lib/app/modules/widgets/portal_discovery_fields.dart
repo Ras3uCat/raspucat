@@ -158,12 +158,10 @@ class DiscoveryHoursGrid extends StatelessWidget {
               ),
               if (!isClosed) ...[
                 const SizedBox(width: ESizes.sm),
-                Expanded(
-                  child: _TimeInput(h['open'] as String, (v) {
-                    h['open'] = v;
-                    onChanged();
-                  }),
-                ),
+                _TimePicker(h['open'] as String, (v) {
+                  h['open'] = v;
+                  onChanged();
+                }),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: ESizes.xs),
                   child: Text(
@@ -171,12 +169,10 @@ class DiscoveryHoursGrid extends StatelessWidget {
                     style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.4)),
                   ),
                 ),
-                Expanded(
-                  child: _TimeInput(h['close'] as String, (v) {
-                    h['close'] = v;
-                    onChanged();
-                  }),
-                ),
+                _TimePicker(h['close'] as String, (v) {
+                  h['close'] = v;
+                  onChanged();
+                }),
               ],
             ],
           ),
@@ -186,35 +182,113 @@ class DiscoveryHoursGrid extends StatelessWidget {
   }
 }
 
-class _TimeInput extends StatelessWidget {
-  const _TimeInput(this.value, this.onChanged);
+class _TimePicker extends StatelessWidget {
+  const _TimePicker(this.value, this.onChanged);
   final String value;
   final ValueChanged<String> onChanged;
 
+  static const _bg = Color(0xFF0D0D1A);
+
+  TimeOfDay _parse(String v) {
+    try {
+      final parts = v.trim().split(' ');
+      final tp = parts[0].split(':');
+      int hour = int.parse(tp[0]);
+      final minute = int.parse(tp[1]);
+      final isPm = parts.length > 1 && parts[1].toUpperCase() == 'PM';
+      if (hour == 12) {
+        hour = isPm ? 12 : 0;
+      } else if (isPm) {
+        hour += 12;
+      }
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (_) {
+      return const TimeOfDay(hour: 9, minute: 0);
+    }
+  }
+
+  String _format(TimeOfDay t) {
+    final hour = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
+    final minute = t.minute.toString().padLeft(2, '0');
+    final period = t.period == DayPeriod.am ? 'AM' : 'PM';
+    return '$hour:$minute $period';
+  }
+
+  Future<void> _pick(BuildContext context) async {
+    final result = await showTimePicker(
+      context: context,
+      initialTime: _parse(value),
+      builder: (ctx, child) => Theme(
+        data: ThemeData.dark().copyWith(
+          colorScheme: ColorScheme.dark(
+            primary: EColors.primary,
+            onPrimary: _bg,
+            surface: _bg,
+            onSurface: Colors.white,
+            surfaceContainerHigh: _bg,
+          ),
+          timePickerTheme: TimePickerThemeData(
+            backgroundColor: _bg,
+            dialBackgroundColor: EColors.primary.withValues(alpha: 0.07),
+            dialHandColor: EColors.primary,
+            dialTextColor: WidgetStateColor.resolveWith(
+              (s) => s.contains(WidgetState.selected) ? _bg : Colors.white70,
+            ),
+            hourMinuteColor: WidgetStateColor.resolveWith(
+              (s) => s.contains(WidgetState.selected)
+                  ? EColors.primary.withValues(alpha: 0.18)
+                  : EColors.primary.withValues(alpha: 0.05),
+            ),
+            hourMinuteTextColor: WidgetStateColor.resolveWith(
+              (s) => s.contains(WidgetState.selected) ? EColors.primary : Colors.white70,
+            ),
+            dayPeriodColor: WidgetStateColor.resolveWith(
+              (s) => s.contains(WidgetState.selected)
+                  ? EColors.primary.withValues(alpha: 0.18)
+                  : Colors.transparent,
+            ),
+            dayPeriodTextColor: WidgetStateColor.resolveWith(
+              (s) => s.contains(WidgetState.selected) ? EColors.primary : Colors.white54,
+            ),
+            dayPeriodBorderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
+            entryModeIconColor: EColors.primary,
+            helpTextStyle: TextStyle(
+              color: EColors.primary.withValues(alpha: 0.6),
+              fontSize: 11,
+              letterSpacing: 1.5,
+              fontWeight: FontWeight.w600,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+              side: BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
+            ),
+            hourMinuteShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+            ),
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(foregroundColor: EColors.primary),
+          ),
+        ),
+        child: child!,
+      ),
+    );
+    if (result != null) onChanged(_format(result));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: TextEditingController(text: value),
-      style: const TextStyle(color: EColors.textWhite, fontSize: 12),
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: EColors.primary.withValues(alpha: 0.04),
-        border: OutlineInputBorder(
+    return GestureDetector(
+      onTap: () => _pick(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: EColors.primary.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
+          border: Border.all(color: EColors.primary.withValues(alpha: 0.15)),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.4)),
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        isDense: true,
+        child: Text(value, style: const TextStyle(color: EColors.textWhite, fontSize: 12)),
       ),
-      onChanged: onChanged,
     );
   }
 }
