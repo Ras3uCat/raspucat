@@ -205,7 +205,14 @@ Deno.serve(async (req) => {
     BRAND_THREE_WORDS: fill(bb['three_words']),
     BRAND_CELEBRITY: fill(bb['celebrity']),
     BRAND_TARGET_CUSTOMER: fill(bb['target_customer']),
-    BRAND_INSPO_URLS: fillIf(bb['inspo_urls'], (v) => Array.isArray(v) && (v as unknown[]).length > 0, []),
+    BRAND_INSPO_URLS: (() => {
+      const raw = bb['inspo_urls'];
+      if (Array.isArray(raw) && raw.length > 0) return raw;
+      if (typeof raw === 'string' && raw.trim().length > 0) {
+        return raw.split(/[\n,]+/).map((u: string) => u.trim()).filter((u: string) => u.length > 0);
+      }
+      return [];
+    })(),
     // ── Business info ─────────────────────────────────────────────────────────
     PHONE: fill(d['PHONE']),
     STREET: fill(d['STREET']),
