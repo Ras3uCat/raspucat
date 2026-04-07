@@ -68,10 +68,15 @@ class _AdminDeliverySectionState extends State<AdminDeliverySection> {
     const phases = ['Setup', 'Deploy', 'Post-Deploy', 'QA', 'Handover'];
     final widgets = <Widget>[];
     for (final phase in phases) {
-      final phaseRows = rows.where((r) {
-        final def = deliveryStepByKey[r['step'] as String? ?? ''];
-        return def?.phase == phase;
-      }).toList();
+      final phaseRows =
+          rows.where((r) {
+            final def = deliveryStepByKey[r['step'] as String? ?? ''];
+            return def?.phase == phase;
+          }).toList()..sort((a, b) {
+            final ai = deliverySteps.indexWhere((d) => d.key == a['step']);
+            final bi = deliverySteps.indexWhere((d) => d.key == b['step']);
+            return ai.compareTo(bi);
+          });
       if (phaseRows.isEmpty) continue;
       widgets.add(PhaseLabel(phase));
       widgets.add(const SizedBox(height: 6));

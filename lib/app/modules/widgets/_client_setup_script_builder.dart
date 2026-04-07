@@ -79,12 +79,17 @@ if [[ -n "\$RASPUCAT_API" && -n "\$RASPUCAT_QUOTE_ID" && -n "\$RASPUCAT_TOKEN" ]
     2>/dev/null && echo "✓ supabase_account_created reported" || true
 fi
 
-echo "→ Running deliver.sh..."
-cd ../frontend/app
-./deliver.sh
-
 echo ""
-echo "✓ Done — check Raspucat admin for delivery progress"
+echo "┌──────────────────────────────────────────────────────────────┐"
+echo "│  NEXT STEPS                                                  │"
+echo "│                                                              │"
+echo "│  1. Open the client project in Claude Code                   │"
+echo "│  2. Run /inspo to generate the Brand Alignment Report        │"
+echo "│  3. Fill in remaining client.json fields from the report     │"
+echo "│  4. Run ./deliver.sh to build and deploy                     │"
+echo "└──────────────────────────────────────────────────────────────┘"
+echo ""
+echo "✓ Scaffold complete — check Raspucat admin for delivery progress"
 ''';
 }
 

@@ -21,6 +21,11 @@ const deliverySteps = [
     phase: 'Setup',
     isAuto: true,
   ),
+  DeliveryStepDef(
+    key: 'brand_alignment_complete',
+    label: 'Brand alignment report generated (/inspo)',
+    phase: 'Setup',
+  ),
   // Deploy
   DeliveryStepDef(
     key: 'deliver_sh_complete',
