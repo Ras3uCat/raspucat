@@ -17,9 +17,16 @@ class _AdminLoginGateState extends State<AdminLoginGate> {
 
   Future<void> _submit() async {
     if (_loading) return;
-    setState(() { _loading = true; _error = null; });
-    final ok = await widget.ctrl.login(_textCtrl.text);
-    if (mounted) setState(() { _loading = false; if (!ok) _error = 'Incorrect password.'; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    final error = await widget.ctrl.login(_textCtrl.text);
+    if (mounted)
+      setState(() {
+        _loading = false;
+        _error = error;
+      });
   }
 
   @override
@@ -38,12 +45,7 @@ class _AdminLoginGateState extends State<AdminLoginGate> {
           color: EColors.backgroundDark,
           borderRadius: BorderRadius.circular(ESizes.borderRadiusXl),
           border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
-          boxShadow: [
-            BoxShadow(
-              color: EColors.primary.withValues(alpha: 0.1),
-              blurRadius: 40,
-            ),
-          ],
+          boxShadow: [BoxShadow(color: EColors.primary.withValues(alpha: 0.1), blurRadius: 40)],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -53,10 +55,7 @@ class _AdminLoginGateState extends State<AdminLoginGate> {
               text: 'Mission Control',
               neonColor: EColors.primary,
               isHeadline: false,
-              style: const TextStyle(
-                fontSize: ESizes.fontSizeLg,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: ESizes.fontSizeLg, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: ESizes.md),
             TextField(
@@ -66,9 +65,7 @@ class _AdminLoginGateState extends State<AdminLoginGate> {
               style: const TextStyle(color: EColors.textWhite),
               decoration: InputDecoration(
                 hintText: 'Password',
-                hintStyle: TextStyle(
-                  color: EColors.textSecondary.withValues(alpha: 0.4),
-                ),
+                hintStyle: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.4)),
                 filled: true,
                 fillColor: EColors.primary.withValues(alpha: 0.05),
                 border: OutlineInputBorder(
@@ -103,10 +100,7 @@ class _AdminLoginGateState extends State<AdminLoginGate> {
                   ? const SizedBox(
                       height: 18,
                       width: 18,
-                      child: CircularProgressIndicator(
-                        color: EColors.primary,
-                        strokeWidth: 2,
-                      ),
+                      child: CircularProgressIndicator(color: EColors.primary, strokeWidth: 2),
                     )
                   : const Text(
                       'Enter',

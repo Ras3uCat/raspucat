@@ -84,8 +84,8 @@ class AdminController extends GetxController {
 
   AdminCatalogController get _catalog => Get.find<AdminCatalogController>();
 
-  Future<bool> login(String password) async {
-    if (password.trim().isEmpty) return false;
+  Future<String?> login(String password) async {
+    if (password.trim().isEmpty) return 'Enter your password.';
     _adminToken = password.trim();
     isLoadingQuotes.value = true;
     try {
@@ -96,7 +96,7 @@ class AdminController extends GetxController {
       final data = response.data as Map<String, dynamic>?;
       if (data?['error'] == 'Unauthorized.') {
         _adminToken = '';
-        return false;
+        return 'Incorrect password.';
       }
       final list = data?['quotes'] as List<dynamic>? ?? [];
       quotes.assignAll(list.cast<Map<String, dynamic>>());
@@ -112,12 +112,12 @@ class AdminController extends GetxController {
       ]);
       _pollTimer?.cancel();
       _pollTimer = Timer.periodic(const Duration(seconds: 60), (_) => fetchPendingModuleCounts());
-      return true;
+      return null;
     } catch (e) {
       // ignore: avoid_print
       print('[AdminController.login] error: $e');
       _adminToken = '';
-      return false;
+      return 'Connection error — please try again.';
     } finally {
       isLoadingQuotes.value = false;
     }

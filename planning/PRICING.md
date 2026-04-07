@@ -77,6 +77,7 @@ These are the individual modules available in the configurator. Prices shown are
 | Google Reviews Auto-Sync | $350 |
 | Custom Menu/Pricing Module | $450 |
 | Gated Video/Course Content | $1,500+ |
+| Events & Ticketing *(public event pages, Stripe-powered ticket sales)* | $800 |
 
 ---
 

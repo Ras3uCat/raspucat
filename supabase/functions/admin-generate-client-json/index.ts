@@ -12,7 +12,7 @@ const json = (data: unknown, status = 200) =>
   });
 
 // Module IDs that require Stripe credentials
-const STRIPE_MODULE_IDS = new Set(['stripe', 'booking_shop', 'stripe_connect', 'loyalty_referrals', 'events']);
+const STRIPE_MODULE_IDS = new Set(['stripe', 'booking_shop', 'stripe_connect', 'loyalty_referrals', 'events', 'gated_content']);
 
 // Raspucat module_id → modular_project expansions
 const MODULE_MAP: Record<string, { modules?: string[]; flags?: Record<string, unknown> }> = {
@@ -22,7 +22,7 @@ const MODULE_MAP: Record<string, { modules?: string[]; flags?: Record<string, un
   stripe_connect: { flags: { STRIPE_MODE: 'connect_multi_staff' } },
   pwa_notifications: { flags: { PWA_NOTIFICATIONS_ENABLED: true } },
   sms_reminders: { flags: { SMS_ENABLED: true } },
-  loyalty_referrals: { modules: ['referrals'], flags: { LOYALTY_ENABLED: true } },
+  loyalty_referrals: { modules: ['referrals', 'loyalty'], flags: { LOYALTY_ENABLED: true } },
   google_reviews: { flags: { GOOGLE_REVIEWS_ENABLED: true } },
   native_apps: { flags: { BUNDLE_ID: 'FILL_IN', APPLE_TEAM_ID: 'FILL_IN' } },
   events: { modules: ['events'] },
@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     .replace(/^-+|-+$/g, '');
 
   const moduleIds: string[] = quote.module_ids ?? [];
-  const modules: string[] = [];
+  const modules: string[] = ['home', 'contact', 'auth', 'faq', 'testimonials', 'crm', 'newsletter'];
   const flags: Record<string, unknown> = { STRIPE_MODE: 'standard' };
 
   for (const id of moduleIds) {
@@ -150,6 +150,16 @@ Deno.serve(async (req) => {
     } : {}),
     // ── Email ─────────────────────────────────────────────────────────────────
     RESEND_KEY: 'FILL_IN',
+    // ── Conditional integration credentials ───────────────────────────────────
+    ...(moduleIds.some(id => ['ai_chatbot_lite', 'ai_chatbot_full'].includes(id)) ? {
+      ANTHROPIC_API_KEY: 'FILL_IN',
+    } : {}),
+    ...(moduleIds.includes('google_reviews') ? {
+      GOOGLE_PLACES_ID: 'FILL_IN',
+    } : {}),
+    ...(moduleIds.includes('pwa_notifications') ? {
+      VAPID_PUBLIC_KEY: 'FILL_IN',
+    } : {}),
     // ── Site + SEO ────────────────────────────────────────────────────────────
     SITE_URL: fill(d['SITE_URL']),
     // ── Feature flags — all present, true only when ordered ───────────────────
