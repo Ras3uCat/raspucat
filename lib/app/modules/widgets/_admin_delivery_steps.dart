@@ -29,6 +29,12 @@ const deliverySteps = [
     isAuto: true,
   ),
   DeliveryStepDef(
+    key: 'resend_key_set',
+    label: 'RESEND_KEY set in Supabase secrets',
+    phase: 'Deploy',
+    isAuto: true,
+  ),
+  DeliveryStepDef(
     key: 'stripe_webhooks_registered',
     label: 'Stripe webhooks registered',
     phase: 'Deploy',
