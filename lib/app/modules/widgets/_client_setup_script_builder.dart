@@ -54,20 +54,27 @@ echo ""
 PROJECT_REF=\$(echo "\$SUPABASE_URL" | sed 's|https://||' | sed 's|\\.supabase\\.co.*||')
 
 echo "→ Patching client.json..."
-python3 - << PYEOF
-import json
+SUPABASE_URL="\$SUPABASE_URL" SUPABASE_ANON_KEY="\$SUPABASE_ANON_KEY" RASPUCAT_ADMIN_TOKEN="\$RASPUCAT_TOKEN" python3 - << 'PYEOF'
+import json, os
 with open('execution/frontend/app/client.json', 'r') as f:
     d = json.load(f)
-d['SUPABASE_URL'] = '\$SUPABASE_URL'
-d['SUPABASE_ANON_KEY'] = '\$SUPABASE_ANON_KEY'
-d['RASPUCAT_ADMIN_TOKEN'] = '\$RASPUCAT_TOKEN'
+d['SUPABASE_URL'] = os.environ['SUPABASE_URL']
+d['SUPABASE_ANON_KEY'] = os.environ['SUPABASE_ANON_KEY']
+d['RASPUCAT_ADMIN_TOKEN'] = os.environ['RASPUCAT_ADMIN_TOKEN']
 with open('execution/frontend/app/client.json', 'w') as f:
     json.dump(d, f, indent=2)
+    f.write('\\n')
 PYEOF
+echo "✓ client.json saved — credentials stored at execution/frontend/app/client.json"
 
 echo "→ Linking Supabase CLI..."
 cd execution/backend
-supabase link --project-ref "\$PROJECT_REF"
+if supabase link --project-ref "\$PROJECT_REF"; then
+  echo "✓ Supabase linked"
+else
+  echo "⚠  supabase link failed — run manually: supabase link --project-ref \$PROJECT_REF"
+  echo "   (client.json was already patched above)"
+fi
 
 # Report supabase_account_created to Raspucat
 RASPUCAT_API=\$(python3 -c "import json; d=json.load(open('../frontend/app/client.json')); print(d.get('RASPUCAT_API',''))" 2>/dev/null || echo "")
