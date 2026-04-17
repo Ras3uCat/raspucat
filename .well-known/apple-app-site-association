@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["2RL4QS285Q.com.ras3ucat.bingeQuest"],
+        "components": [
+          { "/": "/bingequest/*" }
+        ]
+      }
+    ]
+  }
+}

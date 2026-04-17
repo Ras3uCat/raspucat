@@ -40,13 +40,18 @@ const RESOURCES = {"assets/assets/images/projects/red_dot_entertainment_hero.gif
 "canvaskit/canvaskit.js": "728b2d477d9b8c14593d4f9b82b484f3",
 "canvaskit/skwasm.js": "ea559890a088fe28b4ddf70e17e60052",
 "flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
-"flutter_bootstrap.js": "0b2d6a566982878da4159b14d8178308",
-"main.dart.js": "055176fd60d72897e576dd19272996eb",
+"flutter_bootstrap.js": "f47e6b0431d397e75bd2bc62b8b1596a",
+"main.dart.js": "47eba14f208f3a6f6f04c17b7bc839c4",
 "version.json": "cb8dd4a21077fcd2d4121ed0128e6ecf",
 "icons/Icon-maskable-512.png": "da8f93103ae5f66e3d166b1767802678",
 "icons/Icon-maskable-192.png": "980913cbf3e887c423c356b7d23428aa",
 "icons/Icon-512.png": "f83dca481def1fce2006a6d1eb243f8e",
 "icons/Icon-192.png": "67c3c79c88cbde325b4a44796f45a27f",
+".well-known/apple-app-site-association": "f0fecc8e4349be32e13b0d11ae788e8c",
+".well-known/assetlinks.json": "b54fd7ee3b8792c7c19a121c3ca256eb",
+"bingequest/content/index.html": "5f6aacc4f3f21ecf54c0aee4b2e206d0",
+"bingequest/playlist/index.html": "c0edeee13c02606daeb03bdfdbed43af",
+"bingequest/profile/index.html": "f928022699a4561b34b100061f1fe118",
 "legal/bingequest/index.html": "a8ce488dca20527f6f4d90b273b5c4b5"};
 // The application shell files that are downloaded before a service worker can
 // start.

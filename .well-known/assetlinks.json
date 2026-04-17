@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.ras3ucat.binge_quest",
+    "sha256_cert_fingerprints": ["F0:54:D1:21:F5:82:4E:73:0D:0E:A3:5B:DA:0C:B8:97:CA:3C:D1:40:B7:DC:41:11:41:A6:37:75:20:E6:90:DA"]
+  }
+}]
