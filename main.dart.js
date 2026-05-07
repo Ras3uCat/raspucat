@@ -119691,7 +119691,7 @@ s=p.c
 s.toString
 s=A.ax(s,B.bD,t.w).w
 p.a.toString
-r=s.a.b*3
+r=s.a.b*3*0.6
 if(r<=0)return
 s=p.w
 s===$&&A.d()
@@ -119703,13 +119703,14 @@ m(){var s=this.w
 s===$&&A.d()
 s.K(0,this.ga0M())
 this.ak()},
-t(a){var s,r,q,p=this,o=null,n=A.ax(a,B.bD,t.w).w.a
-if(n.a<700)return new A.aA8(p.a.c,o)
-s=p.a.c
-r=p.d
-q=B.k.e7(r*4)
-p.a.toString
-return new A.av(o,n.b*4,A.d1(B.aI,A.e([new A.aE1(s,r,B.r.bN(q,0,3),p.e,o)],t.p),B.U,B.az,o),p.r)}}
+t(a){var s,r,q,p,o=this,n=null,m=A.ax(a,B.bD,t.w).w.a
+if(m.a<700)return new A.aA8(o.a.c,n)
+s=m.b
+r=o.a.c
+q=o.d
+p=B.k.e7(q*4)
+o.a.toString
+return new A.av(n,s+s*3*0.6,A.d1(B.aI,A.e([new A.aE1(r,q,B.r.bN(p,0,3),o.e,n)],t.p),B.U,B.az,n),o.r)}}
 A.bpB.prototype={
 $1(a){var s,r=this.a,q=$.ak.S$.x.h(0,r.r)
 q=q==null?null:q.ga2()
