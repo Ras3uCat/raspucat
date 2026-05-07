@@ -1,3 +1,5 @@
+enum ProjectType { web, app }
+
 class ProjectModel {
   final String title;
   final String description;
@@ -5,6 +7,9 @@ class ProjectModel {
   final List<String> technologies;
   final String? githubUrl;
   final String? liveUrl;
+  final String? appStoreUrl;
+  final String? playStoreUrl;
+  final ProjectType type;
 
   ProjectModel({
     required this.title,
@@ -13,6 +18,9 @@ class ProjectModel {
     required this.technologies,
     this.githubUrl,
     this.liveUrl,
+    this.appStoreUrl,
+    this.playStoreUrl,
+    this.type = ProjectType.web,
   });
 
   String get primaryImage => imagePaths.isNotEmpty ? imagePaths.first : '';

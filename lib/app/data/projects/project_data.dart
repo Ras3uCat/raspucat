@@ -37,11 +37,26 @@ class EData {
       liveUrl: 'https://reddotentertainment.com',
       imagePaths: [
         'assets/images/projects/red_dot_entertainment_hero.gif',
-        'assets/images/projects/red_dot_entertainment_booking.gif',
-        'assets/images/projects/red_dot_entertainment.png',
         'assets/images/projects/red_dot_entertainment_book_session.png',
-        'assets/images/projects/red_dot_entertainment_services.png',
         'assets/images/projects/red_dot_entertainment_beats.png',
+        'assets/images/projects/red_dot_entertainment_hero.png',
+      ],
+    ),
+    ProjectModel(
+      title: 'BingeQuest',
+      description:
+          'Cross-platform watchlist app for movies and TV shows with Queue Health scoring, mood-based filtering, AI-powered recommendations, and streaming service tracking.',
+      technologies: ['Flutter', 'GetX', 'Supabase', 'Firebase'],
+      liveUrl: 'https://bingequest.app',
+      playStoreUrl: 'https://play.google.com/store/apps/details?id=com.ras3ucat.binge_quest',
+      appStoreUrl: 'https://apps.apple.com/eg/app/bingequest/id6759207637',
+      type: ProjectType.app,
+      imagePaths: [
+        'assets/images/projects/bingequest_play_2.png',
+        'assets/images/projects/bingequest_play_3.png',
+        'assets/images/projects/bingequest_ios_2.png',
+        'assets/images/projects/bingequest_ios_3.png',
+        'assets/images/projects/bingequest_ios_4.png',
       ],
     ),
     ProjectModel(

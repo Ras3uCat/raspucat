@@ -17,16 +17,15 @@ class _EDialogState extends State<EDialog> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 220),
-    );
-    _scale = Tween<double>(begin: 0.93, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic),
-    );
-    _opacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 220));
+    _scale = Tween<double>(
+      begin: 0.93,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+    _opacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     _ctrl.forward();
   }
 
@@ -51,14 +50,8 @@ class _EDialogState extends State<EDialog> with SingleTickerProviderStateMixin {
     final margin = isMobile
         ? EdgeInsets.symmetric(horizontal: width * 0.1, vertical: height * 0.1)
         : isTablet
-            ? EdgeInsets.symmetric(
-                horizontal: width * 0.2,
-                vertical: height * 0.1,
-              )
-            : EdgeInsets.symmetric(
-                horizontal: width * 0.3,
-                vertical: height * 0.1,
-              );
+        ? EdgeInsets.symmetric(horizontal: width * 0.2, vertical: height * 0.1)
+        : EdgeInsets.symmetric(horizontal: width * 0.3, vertical: height * 0.1);
 
     return ScaleTransition(
       scale: _scale,
@@ -68,10 +61,7 @@ class _EDialogState extends State<EDialog> with SingleTickerProviderStateMixin {
           margin: margin,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(ESizes.borderRadiusXl),
-            border: Border.all(
-              color: EColors.primary.withValues(alpha: 0.5),
-              width: 1.5,
-            ),
+            border: Border.all(color: EColors.primary.withValues(alpha: 0.5), width: 1.5),
             boxShadow: [
               BoxShadow(
                 color: EColors.primary.withValues(alpha: 0.08),
@@ -89,19 +79,17 @@ class _EDialogState extends State<EDialog> with SingleTickerProviderStateMixin {
                 Positioned.fill(
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                    child: Container(
-                      color: EColors.backgroundDark.withValues(alpha: 0.78),
-                    ),
+                    child: Container(color: EColors.backgroundDark.withValues(alpha: 0.78)),
                   ),
                 ),
                 // Content
                 AlertDialog(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: ESizes.md,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: ESizes.md),
                   insetPadding: EdgeInsets.zero,
                   backgroundColor: Colors.transparent,
-                  content: SizedBox(width: width, child: widget.child),
+                  content: SingleChildScrollView(
+                    child: SizedBox(width: width, child: widget.child),
+                  ),
                 ),
                 // Close button — needs its own Material since it's outside AlertDialog's scope
                 Positioned(

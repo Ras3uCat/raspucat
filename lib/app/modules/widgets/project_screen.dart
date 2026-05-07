@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:raspucat/utils/constants/exports.dart';
+import 'package:raspucat/common/widgets/cards/phone_mockup.dart';
+import '_project_details.dart';
 
 class ProjectScreen extends StatefulWidget {
   final ProjectModel project;
@@ -9,8 +11,7 @@ class ProjectScreen extends StatefulWidget {
   State<ProjectScreen> createState() => _ProjectScreenState();
 }
 
-class _ProjectScreenState extends State<ProjectScreen>
-    with SingleTickerProviderStateMixin {
+class _ProjectScreenState extends State<ProjectScreen> with SingleTickerProviderStateMixin {
   final CarouselSliderController _carouselController = CarouselSliderController();
   late final AnimationController _enterCtrl;
   late final Animation<double> _carouselAnim;
@@ -24,10 +25,7 @@ class _ProjectScreenState extends State<ProjectScreen>
   @override
   void initState() {
     super.initState();
-    _enterCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
+    _enterCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
     _carouselAnim = CurvedAnimation(
       parent: _enterCtrl,
       curve: const Interval(0.1, 0.65, curve: Curves.easeOut),
@@ -68,9 +66,7 @@ class _ProjectScreenState extends State<ProjectScreen>
           isHeadline: true,
           neonColor: EColors.textPrimary.withValues(alpha: 0.5),
           text: visibleTitle.isEmpty ? '\u200B' : visibleTitle,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: EColors.textPrimary,
-          ),
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: EColors.textPrimary),
         ),
 
         SizedBox(height: ESizes.spaceBtwSections),
@@ -92,7 +88,7 @@ class _ProjectScreenState extends State<ProjectScreen>
         // Description, tech, buttons — fades in after carousel
         AnimatedBuilder(
           animation: _detailsAnim,
-          child: _ProjectDetails(project: project),
+          child: ProjectDetails(project: project),
           builder: (_, child) => Transform.translate(
             offset: Offset(0, 20 * (1 - _detailsAnim.value)),
             child: Opacity(opacity: _detailsAnim.value, child: child),
@@ -104,22 +100,53 @@ class _ProjectScreenState extends State<ProjectScreen>
     );
   }
 
+  void _openImageViewer(BuildContext context, String imagePath) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.92),
+      builder: (_) => Dialog.fullscreen(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: InteractiveViewer(
+                minScale: 0.5,
+                maxScale: 4.0,
+                child: Center(child: Image.asset(imagePath)),
+              ),
+            ),
+            Positioned(
+              top: ESizes.lg,
+              right: ESizes.lg,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: const EdgeInsets.all(ESizes.sm),
+                  decoration: BoxDecoration(
+                    color: EColors.backgroundDark.withValues(alpha: 0.8),
+                    borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+                    border: Border.all(color: EColors.primary.withValues(alpha: 0.4)),
+                  ),
+                  child: Icon(Icons.close, color: EColors.primary, size: ESizes.iconMd),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildImageCarousel(BuildContext context) {
     return Container(
       height: ESizes.imageSizeXl,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-        border: Border.all(
-          color: EColors.primary.withValues(alpha: 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: EColors.primary.withValues(alpha: 0.3), width: 1),
         boxShadow: [
-          BoxShadow(
-            color: EColors.primary.withValues(alpha: 0.08),
-            blurRadius: 8,
-            spreadRadius: 2,
-          ),
+          BoxShadow(color: EColors.primary.withValues(alpha: 0.08), blurRadius: 8, spreadRadius: 2),
         ],
       ),
       child: ClipRRect(
@@ -135,49 +162,59 @@ class _ProjectScreenState extends State<ProjectScreen>
                 enableInfiniteScroll: project.imagePaths.length > 1,
                 autoPlay: false,
               ),
-              itemBuilder: (context, index, _) => Stack(
-                children: [
-                  Image.asset(
-                    project.imagePaths[index],
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.cover,
-                    semanticLabel: '${project.title} screenshot',
-                  ),
-                  Container(
-                    color: EColors.primary.withValues(alpha: 0.08),
-                  ),
-                  if (project.imagePaths.length > 1)
-                    Positioned(
-                      top: ESizes.md,
-                      right: ESizes.md,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: ESizes.sm,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: EColors.backgroundDark.withValues(alpha: 0.85),
-                          borderRadius: BorderRadius.circular(
-                            ESizes.borderRadiusMd,
-                          ),
-                          border: Border.all(
-                            color: EColors.primary.withValues(alpha: 0.5),
-                            width: 1,
+              itemBuilder: (context, index, _) => GestureDetector(
+                onTap: () => _openImageViewer(context, project.imagePaths[index]),
+                child: Stack(
+                  children: [
+                    if (project.type == ProjectType.app)
+                      Center(
+                        child: AspectRatio(
+                          aspectRatio: 9 / 19.5,
+                          child: PhoneMockup(
+                            child: Image.asset(
+                              project.imagePaths[index],
+                              fit: BoxFit.cover,
+                              semanticLabel: '${project.title} screenshot',
+                            ),
                           ),
                         ),
-                        child: Text(
-                          '${index + 1} / ${project.imagePaths.length}',
-                          style: TextStyle(
-                            color: EColors.primary,
-                            fontSize: ESizes.fontSizeLabel,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.0,
+                      )
+                    else
+                      Image.asset(
+                        project.imagePaths[index],
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        semanticLabel: '${project.title} screenshot',
+                      ),
+                    Container(color: EColors.primary.withValues(alpha: 0.08)),
+                    if (project.imagePaths.length > 1)
+                      Positioned(
+                        top: ESizes.md,
+                        right: ESizes.md,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: EColors.backgroundDark.withValues(alpha: 0.85),
+                            borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+                            border: Border.all(
+                              color: EColors.primary.withValues(alpha: 0.5),
+                              width: 1,
+                            ),
+                          ),
+                          child: Text(
+                            '${index + 1} / ${project.imagePaths.length}',
+                            style: TextStyle(
+                              color: EColors.primary,
+                              fontSize: ESizes.fontSizeLabel,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 1.0,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
             if (project.imagePaths.length > 1) ...[
@@ -237,144 +274,8 @@ class _ProjectScreenState extends State<ProjectScreen>
         border: Border.all(color: EColors.primary.withValues(alpha: 0.3)),
       ),
       child: Center(
-        child: Icon(
-          Icons.code,
-          size: 80,
-          color: EColors.primary.withValues(alpha: 0.6),
-        ),
+        child: Icon(Icons.code, size: 80, color: EColors.primary.withValues(alpha: 0.6)),
       ),
-    );
-  }
-}
-
-// ─── Details block ────────────────────────────────────────────────────────────
-
-class _ProjectDetails extends StatelessWidget {
-  const _ProjectDetails({required this.project});
-
-  final ProjectModel project;
-
-  static const _backendTechs = {
-    'Firebase', 'Stripe', 'Supabase',
-    'Firebase Auth', 'Supabase Auth', 'Node', 'PostgreSQL',
-  };
-
-  Color _tagColor(String tech) =>
-      _backendTechs.contains(tech) ? EColors.accent : EColors.primary;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (project.description.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: ESizes.lg),
-            child: Text(
-              project.description,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: EColors.textPrimary.withValues(alpha: 0.8),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          SizedBox(height: ESizes.spaceBtwSections),
-        ],
-        if (project.technologies.isNotEmpty) ...[
-          Wrap(
-            spacing: ESizes.sm,
-            runSpacing: ESizes.sm,
-            alignment: WrapAlignment.center,
-            children: project.technologies.map((tech) {
-              final color = _tagColor(tech);
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                  border: Border.all(
-                    color: color.withValues(alpha: 0.5),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  tech,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-          SizedBox(height: ESizes.spaceBtwSections),
-        ],
-        if (project.githubUrl != null || project.liveUrl != null)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (project.githubUrl != null) ...[
-                NeonButton(
-                  neonColor: EColors.primary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: ESizes.lg,
-                    vertical: ESizes.md,
-                  ),
-                  onTap: () => EDeviceUtils.launchUrl(project.githubUrl!),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        FontAwesomeIcons.github,
-                        color: EColors.primary,
-                        size: ESizes.iconSm,
-                      ),
-                      const SizedBox(width: ESizes.sm),
-                      Text(
-                        'SOURCE CODE',
-                        style: TextStyle(
-                          color: EColors.primary,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.0,
-                          fontSize: ESizes.fontSizeSm,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: ESizes.md),
-              ],
-              if (project.liveUrl != null)
-                NeonButton(
-                  neonColor: EColors.accent,
-                  hoverColor: EColors.primary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: ESizes.lg,
-                    vertical: ESizes.md,
-                  ),
-                  onTap: () => EDeviceUtils.launchUrl(project.liveUrl!),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.open_in_new,
-                        color: EColors.accent,
-                        size: ESizes.iconSm,
-                      ),
-                      const SizedBox(width: ESizes.sm),
-                      Text(
-                        'VIEW LIVE',
-                        style: TextStyle(
-                          color: EColors.accent,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.0,
-                          fontSize: ESizes.fontSizeSm,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-      ],
     );
   }
 }
