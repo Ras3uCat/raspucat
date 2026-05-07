@@ -1,3 +1,4 @@
+import 'package:raspucat/common/widgets/cursor_overlay.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
 /// --- REUSABLE NEON BUTTON WIDGET --- ///
@@ -43,9 +44,13 @@ class _NeonButtonState extends State<NeonButton> {
         height: widget.height,
         child: InkWell(
           borderRadius: BorderRadius.circular(widget.borderRadius),
-          onHover: disabled ? null : (value) {
-            setState(() => _isHovered = value);
-          },
+          onHover: disabled
+              ? null
+              : (value) {
+                  setState(() => _isHovered = value);
+                  // Priority 2: signal cursor overlay to expand ring on hover.
+                  if (kIsWeb) CursorState.isInteractive.value = value;
+                },
           hoverColor: Colors.transparent,
           highlightColor: EColors.primary.withValues(alpha: 0.1),
           splashColor: EColors.primary,
@@ -67,7 +72,8 @@ class _NeonButtonState extends State<NeonButton> {
               color: EColors.backgroundDark.withValues(alpha: 0.8),
               border: Border.all(
                 color: _isHovered
-                    ? widget.hoverColor?.withValues(alpha: 0.7) ?? widget.neonColor.withValues(alpha: 0.8)
+                    ? widget.hoverColor?.withValues(alpha: 0.7) ??
+                          widget.neonColor.withValues(alpha: 0.8)
                     : widget.neonColor.withValues(alpha: 0.8),
                 width: 2,
               ),

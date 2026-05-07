@@ -1,3 +1,4 @@
+import 'package:raspucat/common/widgets/tilt_card.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import 'package:raspucat/utils/popups/loaders.dart';
 
@@ -51,17 +52,17 @@ class _ProjectsCarouselState extends State<ProjectsCarousel> {
                 final project = widget.controller.projects[index];
                 final isSelected = currentPage == index;
 
-                /// --- PROJECT CARD --- ///
-                return ProjectCard(
-                  project: project,
-                  index: index,
-                  hoveredCardIndex: _hoveredCardIndex,
-                  isSelected: isSelected,
-                  onTap: () {
-                    ELoaders.customDialog(
-                      child: ProjectScreen(project: project),
-                    );
-                  },
+                // Priority 4: TiltCard wraps each project card.
+                return TiltCard(
+                  child: ProjectCard(
+                    project: project,
+                    index: index,
+                    hoveredCardIndex: _hoveredCardIndex,
+                    isSelected: isSelected,
+                    onTap: () {
+                      ELoaders.customDialog(child: ProjectScreen(project: project));
+                    },
+                  ),
                 );
               },
             ),
@@ -76,7 +77,6 @@ class _ProjectsCarouselState extends State<ProjectsCarousel> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(widget.controller.projects.length, (index) {
               final isActive = widget.controller.currentPage.value == index;
-              final project = widget.controller.projects[index];
               final isHovered = widget.controller.hoveredIndex.value == index;
 
               return MouseRegion(

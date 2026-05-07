@@ -8,6 +8,7 @@ class AboutScreen extends StatelessWidget {
     final ctrl = SectionAnimationController.instance;
 
     return SectionContainer(
+      minHeightFactor: 0.5,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

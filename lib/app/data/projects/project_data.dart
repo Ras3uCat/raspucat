@@ -18,8 +18,7 @@ class EData {
     ),
     ProjectModel(
       title: 'Dashing Beard Co',
-      description:
-          'Frontend development for a product-based business with custom animations.',
+      description: 'Frontend development for a product-based business with custom animations.',
       technologies: ['HTML', 'SCSS', 'JavaScript'],
       githubUrl: 'https://github.com/rmr32/Dashing_Beard_Co',
       liveUrl: 'https://dashingbeardco.com',
@@ -40,6 +39,9 @@ class EData {
         'assets/images/projects/red_dot_entertainment_hero.gif',
         'assets/images/projects/red_dot_entertainment_booking.gif',
         'assets/images/projects/red_dot_entertainment.png',
+        'assets/images/projects/red_dot_entertainment_book_session.png',
+        'assets/images/projects/red_dot_entertainment_services.png',
+        'assets/images/projects/red_dot_entertainment_beats.png',
       ],
     ),
     ProjectModel(

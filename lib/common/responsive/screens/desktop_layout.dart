@@ -1,15 +1,17 @@
 import 'package:raspucat/app/modules/screens/projects_screen.dart';
+import 'package:raspucat/common/widgets/animations/scroll_x_text.dart';
+import 'package:raspucat/common/widgets/cursor_overlay.dart';
+import 'package:raspucat/common/widgets/marquee_section.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
-// Section order: Home(0) About(1) Projects(2) [Plans(3)] HowItWorks(3/4) Contact(4/5)
+// Section order: Home(0) Marquee About(1) Projects(2) [Plans(3)] WhatWeBuild
+//   HowItWorksPanels Stats Contact Footer
 // Plans is conditionally included based on EEnv.showPlans (?preview=plans URL param).
-List<Widget> get screens => [
+List<Widget> get _staticScreens => [
   HomeScreen(),
   const AboutScreen(),
   ProjectsScreen(),
   if (EEnv.showPlans) PlansScreen(),
-  const HowItWorksSection(),
-  const ContactScreen(),
 ];
 
 class DesktopLayout extends StatelessWidget {
@@ -19,45 +21,82 @@ class DesktopLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /// --- CONTROLLERS --- ///
     final scrollController = EScrollController.instance;
+    final viewportH = MediaQuery.sizeOf(context).height;
 
-    /// --- METHOD 1 --- ///
-    //     return Scaffold(
-    //       backgroundColor: EColors.backgroundDark,
-    //       body: Stack(
-    //         children: [
-    //           SingleChildScrollView(
-    //             controller: scrollController.scrollController,
-    //             child: Column(children: [HomeScreen(), ProjectsScreen()]),
-    //           ),
-    //           BackgroundTriangles(),
-    //         ],
-    //       ),
-    //     );
-    //   }
-    // }
-
-    /// --- METHOD 2 --- ///
-    return Scaffold(
-      backgroundColor: EColors.backgroundDark,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            controller: scrollController.scrollController,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height * screens.length + ESizes.footerHeight,
+    return CursorOverlay(
+      child: Scaffold(
+        backgroundColor: EColors.backgroundDark,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              controller: scrollController.scrollController,
+              // Stack sizes to the Column's natural height — no fixed SizedBox needed.
               child: Stack(
                 children: [
-                  BackgroundTriangles(),
-                  Column(children: [...screens, const SiteFooter()]),
+                  Column(
+                    children: [
+                      // Home hero
+                      ..._staticScreens.take(1),
+
+                      // Priority 5: Marquee between hero and projects.
+                      const MarqueeSection(),
+
+                      // Remaining static screens (About, Projects, Plans?)
+                      ..._staticScreens.skip(1),
+
+                      // Priority 9: ScrollXText above stats.
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: ESizes.xl,
+                          vertical: ESizes.md,
+                        ),
+                        child: ScrollXText(text: 'SELECTED WORK'),
+                      ),
+
+                      // Priority 10: stats strip.
+                      const StatsStrip(),
+
+                      // Priority 6: What We Build (StickySwapSection, 4 items).
+                      const WhatWeBuildSection(),
+
+                      // Priority 7: HowItWorksPanels (4 panels).
+                      const HowItWorksPanels(),
+
+                      const ContactScreen(),
+                      const SiteFooter(),
+                    ],
+                  ),
+
+                  // Priority 8: parallax on BackgroundTriangles — rendered on top so
+                  // GestureDetectors are reachable. HitTestBehavior.translucent on each
+                  // TriangleWidget passes scroll events through to the content below.
+                  // Constrained to viewportH and fades out after ~2 viewports.
+                  Obx(() {
+                    final offset = scrollController.scrollOffset.value;
+                    final fadeStart = viewportH * 1.8;
+                    final opacity = (1.0 - (offset - fadeStart) / (viewportH * 0.5)).clamp(
+                      0.0,
+                      1.0,
+                    );
+                    return IgnorePointer(
+                      ignoring: opacity == 0.0,
+                      child: Opacity(
+                        opacity: opacity,
+                        child: Transform.translate(
+                          offset: Offset(0, offset * 0.3),
+                          child: SizedBox(height: viewportH, child: BackgroundTriangles()),
+                        ),
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
-          ),
-          const ENavBar(),
-          const ScrollProgressBar(),
-        ],
+            const ENavBar(),
+            const ScrollProgressBar(),
+          ],
+        ),
       ),
     );
   }

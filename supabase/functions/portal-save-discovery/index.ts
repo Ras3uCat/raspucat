@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
 
     if (submit) {
       const appUrl = Deno.env.get('APP_URL') ?? 'https://raspucat.com';
-      const adminEmail = Deno.env.get('ADMIN_EMAIL') ?? 'admin@raspucat.com';
+      const adminEmail = Deno.env.get('ADMIN_EMAIL') ?? 'meow@raspucat.com';
 
       // Client confirmation
       await sendEmail(

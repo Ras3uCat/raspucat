@@ -4,12 +4,14 @@ class SectionContainer extends StatelessWidget {
   final Widget child;
   final double? paddingVertical;
   final double? paddingHorizontal;
+  final double minHeightFactor;
 
   const SectionContainer({
     super.key,
     required this.child,
     this.paddingVertical,
     this.paddingHorizontal,
+    this.minHeightFactor = 1.0,
   });
 
   @override
@@ -21,7 +23,7 @@ class SectionContainer extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: paddingVertical, horizontal: paddingHorizontal),
       width: width,
-      constraints: BoxConstraints(minHeight: height),
+      constraints: BoxConstraints(minHeight: height * minHeightFactor),
       child: child,
     );
   }
