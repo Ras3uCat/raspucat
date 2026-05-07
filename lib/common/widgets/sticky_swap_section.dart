@@ -23,6 +23,8 @@ class StickySwapSection extends StatefulWidget {
   State<StickySwapSection> createState() => _StickySwapSectionState();
 }
 
+const _kItemScrollFactor = 0.6;
+
 class _StickySwapSectionState extends State<StickySwapSection> {
   double _scrollProgress = 0.0;
   double _scrolledIn = 0.0;
@@ -54,7 +56,7 @@ class _StickySwapSectionState extends State<StickySwapSection> {
   void _onScroll() {
     if (_sectionAbsoluteY < 0) return;
     final viewportH = MediaQuery.sizeOf(context).height;
-    final runway = viewportH * (widget.items.length - 1);
+    final runway = viewportH * (widget.items.length - 1) * _kItemScrollFactor;
     if (runway <= 0) return;
     final scrolledIn = (_sc.offset - _sectionAbsoluteY).clamp(0.0, runway);
     final raw = scrolledIn / runway;
@@ -77,7 +79,8 @@ class _StickySwapSectionState extends State<StickySwapSection> {
       return _MobileSwapList(items: widget.items);
     }
     final viewportH = size.height;
-    final totalHeight = viewportH * widget.items.length;
+    final runway = viewportH * (widget.items.length - 1) * _kItemScrollFactor;
+    final totalHeight = viewportH + runway;
 
     return SizedBox(
       key: _key,
