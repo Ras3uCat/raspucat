@@ -79,7 +79,6 @@ export 'package:raspucat/app/modules/widgets/how_it_works_section.dart';
 export 'package:raspucat/app/modules/widgets/how_it_works_panels.dart';
 export 'package:raspucat/app/modules/widgets/what_we_build_section.dart';
 export 'package:raspucat/app/modules/widgets/what_we_build_orbital_section.dart';
-export 'package:raspucat/app/modules/widgets/how_it_works_orbital_section.dart';
 export 'package:raspucat/app/modules/widgets/stats_strip.dart';
 
 /// ------------------------------------------------------------------ ///

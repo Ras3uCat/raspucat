@@ -50,10 +50,7 @@ class DesktopLayout extends StatelessWidget {
                       // Priority 6: What We Build — orbital overview.
                       const WhatWeBuildOrbitalSection(),
 
-                      // How It Works — orbital process map (mirrors WhatWeBuild orbital layout).
-                      const HowItWorksOrbitalSection(),
-
-                      // Priority 7: HowItWorksPanels (4 panels).
+                      // Priority 7: HowItWorksPanels (6 panels).
                       const HowItWorksPanels(),
 
                       const ContactScreen(),
