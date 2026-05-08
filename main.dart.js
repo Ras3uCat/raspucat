@@ -70524,8 +70524,8 @@ m=l==null?m.$ti.i("aX.T").a(l):l
 return A.fu(A.fu(A.fZ(A.ad(A.e([A.bi(A.bwz(s,new A.ahI(p,o,n,r,"time_picker",m,q,f.gDL(),f.a.Q,f.gaou(),j),f.f),1),k.d],t.p),B.O,B.p,B.t,0,B.A),B.dO,j,B.a5,g,j,j,j,h),j,B.H,j,j,"time_picker_scroll_view_vertical",B.au),j,B.H,j,j,"time_picker_scroll_view_horizontal",B.bq)},
 $S:384}
 A.ahI.prototype={
-Z(){var s=null,r=t._d,q=A.LD(B.uJ,r),p=$.an()
-return new A.ahO(new A.RU(B.fd,q,p,t.qD),new A.Uo(s,A.LD(B.uJ,r),p,t.Bv),new A.aaB(s,p),new A.aaB(s,p),new A.Oq(!1,p),s,A.r(t.yb,t.M),s,!0,s)}}
+Z(){var s=null,r=t._d,q=A.LD(B.uI,r),p=$.an()
+return new A.ahO(new A.RU(B.fd,q,p,t.qD),new A.Uo(s,A.LD(B.uI,r),p,t.Bv),new A.aaB(s,p),new A.aaB(s,p),new A.Oq(!1,p),s,A.r(t.yb,t.M),s,!0,s)}}
 A.ahO.prototype={
 goD(){var s,r,q,p=this,o=p.z
 if(o===$){s=p.a.as
@@ -75028,8 +75028,8 @@ s=r.X
 r.df=s==null?null:s.gCg()
 a.a=!1},
 uK(a,b,c){var s,r,q,p,o=this
-o.hq=A.bDC(o.hq,B.uK)
-o.fG=A.bDC(o.fG,B.uK)
+o.hq=A.bDC(o.hq,B.uJ)
+o.fG=A.bDC(o.fG,B.uJ)
 s=o.hq
 r=s!=null&&!s.gag(s)
 s=o.fG
@@ -113469,7 +113469,7 @@ r=A.K4(A.a7u(B.X,A.LH(!0,B.f,A.Y(a).ok.d,"ABOUT"),B.u,B.dl),s,"about_heading",B.
 q=A.Y(a).ok.r
 q=q==null?o:q.qS(B.y,3)
 p=t.p
-return new A.Uu(A.ad(A.e([r,B.a3,A.K4(A.B("Signal acquired. Systems online.".toUpperCase(),o,o,o,o,o,o,o,q,B.aI,o,o,o),s,"about_subtitle",B.oc),B.aY,A.K4(A.ac(o,A.B("Flutter developer. Full-stack. Precision interfaces, payment-connected backends, and real-time systems \u2014 the full sequence from brief to launch. Past builds include booking platforms, interactive frontends, and production mobile apps deployed to iOS and Android. One point of contact. No overhead.",o,o,o,o,o,o,o,A.V(o,o,B.y,o,o,o,o,o,o,o,o,16,o,o,o,o,1.8,!0,o,o,o,o,o,o,o,o),B.aI,o,o,o),B.u,o,B.Jc,o,o,o,o,o,o,o,o),s,"about_bio",B.fQ),B.aY,A.K4(A.Jw(B.lg,B.V1,8,16),s,"about_chips",B.A2),B.aY,A.K4(A.ad(A.e([A.B('"The heavens declare the glory of God;\nthe skies proclaim the work of his hands."',o,o,o,o,o,o,o,A.V(o,o,B.y.p(0.5),o,o,o,o,o,o,o,o,12,B.d8,o,o,o,1.8,!0,o,0.5,o,o,o,o,o,o),B.aI,o,o,o),B.ab,A.B("PSALM 19:1",o,o,o,o,o,o,o,A.V(o,o,B.y.p(0.3),o,o,o,o,o,o,o,o,12,o,o,o,o,o,!0,o,2.5,o,o,o,o,o,o),o,o,o,o)],p),B.B,B.p,B.t,0,B.A),s,"about_verse",B.a_m)],p),B.B,B.bb,B.t,0,B.A),o,o,0.5,o)}}
+return new A.Uu(A.ad(A.e([r,B.a3,A.K4(A.B("Signal acquired. Systems online.".toUpperCase(),o,o,o,o,o,o,o,q,B.aI,o,o,o),s,"about_subtitle",B.oc),B.aY,A.K4(A.ac(o,A.B("Flutter developer. Full-stack. Precision interfaces, payment-connected backends, and real-time systems \u2014 the full sequence from brief to launch. Past builds include booking platforms, interactive frontends, and production mobile apps deployed to iOS and Android. One point of contact. No overhead.",o,o,o,o,o,o,o,A.V(o,o,B.y,o,o,o,o,o,o,o,o,16,o,o,o,o,1.8,!0,o,o,o,o,o,o,o,o),B.aI,o,o,o),B.u,o,B.Jc,o,o,o,o,o,o,o,o),s,"about_bio",B.fQ),B.aY,A.K4(A.Jw(B.lg,B.V1,8,16),s,"about_chips",B.A2),B.aY,A.K4(A.ad(A.e([A.B('"The heavens declare the glory of God;\nthe skies proclaim the work of his hands."',o,o,o,o,o,o,o,A.V(o,o,B.y.p(0.5),o,o,o,o,o,o,o,o,12,B.d8,o,o,o,1.8,!0,o,0.5,o,o,o,o,o,o),B.aI,o,o,o),B.ab,A.B("PSALM 19:1",o,o,o,o,o,o,o,A.V(o,o,B.y.p(0.3),o,o,o,o,o,o,o,o,12,o,o,o,o,o,!0,o,2.5,o,o,o,o,o,o),o,o,o,o)],p),B.B,B.p,B.t,0,B.A),s,"about_verse",B.a_m)],p),B.B,B.bb,B.t,0,B.A),56,o,0.5,o)}}
 A.a2U.prototype={
 t(a){var s=null,r=A.a8(8),q=B.f.p(0.05),p=A.aS(B.f.p(0.2),1)
 return A.ac(s,A.B(this.c,s,s,s,s,s,s,s,B.a9C,s,s,s,s),B.u,s,s,new A.a9(q,s,p,r,s,s,B.E),s,s,s,B.b2,s,s,s)}}
@@ -113965,7 +113965,7 @@ r=r.cj(0,o,t.KE)
 q=A.K4(A.LH(!0,B.f,A.Y(a).ok.d,"Projects".toUpperCase()),s,"projects_heading",B.kk)
 p=A.Y(a).ok.r
 p=p==null?o:p.qS(B.y,3)
-return new A.Uu(A.ad(A.e([q,B.af,A.K4(A.B("Explore our latest projects".toUpperCase(),o,o,o,o,o,o,o,p,B.aI,o,o,o),s,"projects_subtitle",B.a_s),B.aY,A.K4(new A.a9U(r,o),s,"projects_carousel",B.a_n)],t.p),B.B,B.bb,B.a9,0,B.A),o,0,1,o)}}
+return new A.Uu(A.ad(A.e([q,B.af,A.K4(A.B("Explore our latest projects".toUpperCase(),o,o,o,o,o,o,o,p,B.aI,o,o,o),s,"projects_subtitle",B.a_s),B.aY,A.K4(new A.a9U(r,o),s,"projects_carousel",B.a_n)],t.p),B.B,B.bb,B.a9,0,B.A),56,0,1,o)}}
 A.a2d.prototype={
 t(a){return B.Ux}}
 A.a4U.prototype={
@@ -119728,7 +119728,7 @@ s.K(0,this.ga0K())
 this.ak()},
 t(a){var s,r,q,p,o=this,n=null,m="// HOW IT WORKS",l=A.aw(a,B.bE,t.w).w.a
 if(l.a<700){o.a.toString
-return new A.aAe(B.uI,m,n)}s=l.b
+return new A.aAe(B.uK,m,n)}s=l.b
 o.a.toString
 r=o.d
 q=B.k.e7(r*6)
@@ -119736,7 +119736,7 @@ o.a.toString
 q=B.r.bW(q,0,5)
 p=o.e
 o.a.toString
-return new A.ax(n,s+s*5*0.6,A.d2(B.aR,A.e([new A.aE7(B.uI,r,q,p,m,n)],t.p),B.U,B.az,n),o.r)}}
+return new A.ax(n,s+s*5*0.6,A.d2(B.aR,A.e([new A.aE7(B.uK,r,q,p,m,n)],t.p),B.U,B.az,n),o.r)}}
 A.bpL.prototype={
 $1(a){var s,r=this.a,q=$.am.S$.x.h(0,r.r)
 q=q==null?null:q.ga1()
@@ -161556,10 +161556,10 @@ B.SR=new A.bs(62657,"MaterialIcons",null,!1)
 B.a51=new A.Ju("Marketing Sites","Blazing-fast Flutter web \u2014 conversion-optimised landing pages with animated sections, SEO-ready semantics, and retro-futuristic flair.",B.SR,B.f)
 B.a52=new A.Ju("Client Portals","Real-time portals where your clients track progress, upload files, send messages, and confirm milestones \u2014 all without emailing you.",B.u8,B.am)
 B.SM=new A.bs(62447,"MaterialIcons",null,!1)
-B.a59=new A.Ju("E-Commerce","Stripe-powered storefronts with product catalogues, secure checkout, webhook-driven order flows, and live inventory management.",B.SM,B.aq)
+B.a58=new A.Ju("E-Commerce","Stripe-powered storefronts with product catalogues, secure checkout, webhook-driven order flows, and live inventory management.",B.SM,B.aq)
 B.ud=new A.bs(984659,"MaterialIcons",null,!1)
 B.a53=new A.Ju("SaaS Apps","Full-stack SaaS: Supabase auth and RLS, subscription billing, role-based access, and modular feature flags \u2014 shipped fast.",B.ud,B.f)
-B.uC=A.e(s([B.a51,B.a52,B.a59,B.a53]),t.bY)
+B.uC=A.e(s([B.a51,B.a52,B.a58,B.a53]),t.bY)
 B.GE=new A.c8(0,0)
 B.GI=new A.c8(1,0)
 B.GJ=new A.c8(2,0)
@@ -161720,17 +161720,6 @@ B.a5P=new A.OG(2,"dotted")
 B.a5R=new A.OG(3,"dashed")
 B.a5T=new A.OG(4,"wavy")
 B.Wl=A.e(s([B.a5M,B.Gg,B.a5P,B.a5R,B.a5T]),A.aD("D<OG>"))
-B.SJ=new A.bs(62283,"MaterialIcons",null,!1)
-B.a56=new A.Ju("Discover","We audit your goals, audience, and competitors. You walk away with a prioritised feature list and a fixed quote \u2014 no discovery fees, no vague estimates.",B.SJ,B.f)
-B.SF=new A.bs(62031,"MaterialIcons",null,!1)
-B.a5a=new A.Ju("Design","Brand-aligned UI in Flutter. Every screen is prototyped and approved before a line of production code is written.",B.SF,B.am)
-B.T2=new A.bs(984701,"MaterialIcons",null,!1)
-B.a58=new A.Ju("Build","Clean architecture \u2014 GetX state, Supabase backend, Stripe payments. Track every commit in your client portal in real time.",B.T2,B.aq)
-B.a54=new A.Ju("Deploy","Final balance charged only after your sign-off. Your domain, your brand, your code \u2014 live and verified.",B.ud,B.f)
-B.a57=new A.Ju("Expand","Buy new modules \u2014 booking, AI chatbot, loyalty programs \u2014 straight from the portal. No new contracts. No waiting in a queue.",B.jT,B.am)
-B.SK=new A.bs(62318,"MaterialIcons",null,!1)
-B.a55=new A.Ju("Operate","Monthly management covers hosting, updates, and support. The handover package transfers everything \u2014 code, credentials, docs.",B.SK,B.aq)
-B.uI=A.e(s([B.a56,B.a5a,B.a58,B.a54,B.a57,B.a55]),t.bY)
 B.KF=new A.a_9(0,"auto")
 B.KG=new A.a_9(1,"full")
 B.KH=new A.a_9(2,"chromium")
@@ -161763,7 +161752,7 @@ B.aeP=new A.Sq(B.Hh,B.Hg)
 B.Wx=A.e(s([B.aeN,B.aeQ,B.aeO,B.aeP]),A.aD("D<Sq>"))
 B.fd=new A.Qh(0,"hour")
 B.iL=new A.Qh(1,"minute")
-B.uJ=A.e(s([B.fd,B.iL]),A.aD("D<Qh>"))
+B.uI=A.e(s([B.fd,B.iL]),A.aD("D<Qh>"))
 B.k3=A.e(s(["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]),t.s)
 B.WB=A.e(s(["click","scroll"]),t.s)
 B.a_W=new A.m(-40,60)
@@ -161778,7 +161767,7 @@ B.WT=A.e(s([]),t.QP)
 B.ek=A.e(s([]),t.UO)
 B.WL=A.e(s([]),t.V)
 B.WP=A.e(s([]),A.aD("D<cs1>"))
-B.uK=A.e(s([]),A.aD("D<csc>"))
+B.uJ=A.e(s([]),A.aD("D<csc>"))
 B.WO=A.e(s([]),t.E)
 B.el=A.e(s([]),t.RT)
 B.WX=A.e(s([]),t.fJ)
@@ -161800,6 +161789,17 @@ B.WG=A.e(s([]),t.t)
 B.agY=A.e(s([]),A.aD("D<0&>"))
 B.a2=A.e(s([]),t.ee)
 B.WW=A.e(s([]),t._m)
+B.SJ=new A.bs(62283,"MaterialIcons",null,!1)
+B.a55=new A.Ju("Discover","We get to know your business, your goals, and your customers. We research your competitors and align everything to your brand, then hand you a clear feature list, a competitor report, and an upfront price \u2014 no guessing games, no surprise fees.",B.SJ,B.f)
+B.SF=new A.bs(62031,"MaterialIcons",null,!1)
+B.a5a=new A.Ju("Design","Every screen is designed around your brand and shown to you for approval before we write a single line of code. What you see is exactly what gets built.",B.SF,B.am)
+B.T2=new A.bs(984701,"MaterialIcons",null,!1)
+B.a59=new A.Ju("Build","We build your app to be fast, secure, and connected to everything it needs \u2014 including payments and a live database. Watch progress in your client portal in real time.",B.T2,B.aq)
+B.a54=new A.Ju("Deploy","The final payment is only collected after you review and approve the finished product. Then we launch it \u2014 on your domain, under your brand, ready for real users.",B.ud,B.f)
+B.a57=new A.Ju("Expand","Need something new later? Add features like online booking, an AI chat assistant, or a loyalty program straight from your portal. No new contracts, no waiting in line.",B.jT,B.am)
+B.SK=new A.bs(62318,"MaterialIcons",null,!1)
+B.a56=new A.Ju("Operate","We handle hosting, updates, and support so you can focus on running your business. If you ever want to move on, we hand over everything \u2014 code, logins, and documentation.",B.SK,B.aq)
+B.uK=A.e(s([B.a55,B.a5a,B.a59,B.a54,B.a57,B.a56]),t.bY)
 B.nL=A.e(s([B.eK,B.jO,B.dS,B.T,B.ae,B.V,B.ai,B.jP,B.hS]),A.aD("D<Kd>"))
 B.a24=new A.aF("sticky","Sticky top bar")
 B.a2_=new A.aF("overlay","Transparent overlay")
