@@ -9,6 +9,7 @@ class AboutScreen extends StatelessWidget {
 
     return SectionContainer(
       minHeightFactor: 0.5,
+      paddingVertical: ESizes.sectionSm,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

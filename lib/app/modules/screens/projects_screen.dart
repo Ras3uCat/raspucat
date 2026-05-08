@@ -12,6 +12,7 @@ class ProjectsScreen extends StatelessWidget {
 
     return SectionContainer(
       paddingHorizontal: 0,
+      paddingVertical: ESizes.sectionSm,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
@@ -36,10 +37,9 @@ class ProjectsScreen extends StatelessWidget {
             startOffset: const Offset(0, 50),
             child: Text(
               EText.projectsSubheading.toUpperCase(),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: EColors.textSecondary,
-                letterSpacing: 3.0,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: EColors.textSecondary, letterSpacing: 3.0),
               textAlign: TextAlign.center,
             ),
           ),
