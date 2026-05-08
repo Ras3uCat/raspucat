@@ -15,13 +15,24 @@ class StatsStrip extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: const [
-          _StatItem(value: 12, suffix: '', label: 'Projects Shipped'),
+          Expanded(
+            child: Center(
+              child: _StatItem(value: 12, suffix: '', label: 'Projects Shipped'),
+            ),
+          ),
           _StatDivider(),
-          _StatItem(value: 4, suffix: '', label: 'Active Clients'),
+          Expanded(
+            child: Center(
+              child: _StatItem(value: 4, suffix: '', label: 'Active Clients'),
+            ),
+          ),
           _StatDivider(),
-          _StatItem(value: 99, suffix: '%', label: 'Uptime'),
+          Expanded(
+            child: Center(
+              child: _StatItem(value: 99, suffix: '%', label: 'Uptime'),
+            ),
+          ),
         ],
       ),
     );

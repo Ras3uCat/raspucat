@@ -16,8 +16,9 @@ class StickySwapItem {
 }
 
 class StickySwapSection extends StatefulWidget {
-  const StickySwapSection({super.key, required this.items});
+  const StickySwapSection({super.key, required this.items, this.sectionLabel = '// WHAT WE BUILD'});
   final List<StickySwapItem> items;
+  final String sectionLabel;
 
   @override
   State<StickySwapSection> createState() => _StickySwapSectionState();
@@ -76,7 +77,7 @@ class _StickySwapSectionState extends State<StickySwapSection> {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     if (size.width < ESizes.mobile) {
-      return _MobileSwapList(items: widget.items);
+      return _MobileSwapList(items: widget.items, sectionLabel: widget.sectionLabel);
     }
     final viewportH = size.height;
     final runway = viewportH * (widget.items.length - 1) * _kItemScrollFactor;
@@ -92,6 +93,7 @@ class _StickySwapSectionState extends State<StickySwapSection> {
             progress: _scrollProgress,
             activeIndex: _activeIndex,
             stickyOffset: _scrolledIn,
+            sectionLabel: widget.sectionLabel,
           ),
         ],
       ),
@@ -105,12 +107,14 @@ class _StickyContent extends StatelessWidget {
     required this.progress,
     required this.activeIndex,
     required this.stickyOffset,
+    required this.sectionLabel,
   });
 
   final List<StickySwapItem> items;
   final double progress;
   final int activeIndex;
   final double stickyOffset;
+  final String sectionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +138,7 @@ class _StickyContent extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '// WHAT WE BUILD',
+                      sectionLabel,
                       style: TextStyle(
                         color: EColors.gold.withValues(alpha: 0.7),
                         fontSize: ESizes.fontSizeLabel,
@@ -202,8 +206,9 @@ class _StickyContent extends StatelessWidget {
 }
 
 class _MobileSwapList extends StatelessWidget {
-  const _MobileSwapList({required this.items});
+  const _MobileSwapList({required this.items, required this.sectionLabel});
   final List<StickySwapItem> items;
+  final String sectionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +218,7 @@ class _MobileSwapList extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '// WHAT WE BUILD',
+            sectionLabel,
             style: TextStyle(
               color: EColors.gold.withValues(alpha: 0.7),
               fontSize: ESizes.fontSizeLabel,

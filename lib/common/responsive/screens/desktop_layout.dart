@@ -1,5 +1,4 @@
 import 'package:raspucat/app/modules/screens/projects_screen.dart';
-import 'package:raspucat/common/widgets/animations/scroll_x_text.dart';
 import 'package:raspucat/common/widgets/cursor_overlay.dart';
 import 'package:raspucat/common/widgets/marquee_section.dart';
 import 'package:raspucat/utils/constants/exports.dart';
@@ -45,20 +44,14 @@ class DesktopLayout extends StatelessWidget {
                       // Remaining static screens (About, Projects, Plans?)
                       ..._staticScreens.skip(1),
 
-                      // Priority 9: ScrollXText above stats.
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: ESizes.xl,
-                          vertical: ESizes.md,
-                        ),
-                        child: ScrollXText(text: 'SELECTED WORK'),
-                      ),
-
                       // Priority 10: stats strip.
                       const StatsStrip(),
 
-                      // Priority 6: What We Build (StickySwapSection, 4 items).
-                      const WhatWeBuildSection(),
+                      // Priority 6: What We Build — orbital overview.
+                      const WhatWeBuildOrbitalSection(),
+
+                      // How It Works — orbital process map (mirrors WhatWeBuild orbital layout).
+                      const HowItWorksOrbitalSection(),
 
                       // Priority 7: HowItWorksPanels (4 panels).
                       const HowItWorksPanels(),
