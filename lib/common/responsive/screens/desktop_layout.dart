@@ -3,14 +3,13 @@ import 'package:raspucat/common/widgets/cursor_overlay.dart';
 import 'package:raspucat/common/widgets/marquee_section.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
-// Section order: Home(0) Marquee About(1) Projects(2) [Plans(3)] WhatWeBuild
+// Section order: Home(0) Marquee About(1) Projects(2) Plans(3) WhatWeBuild
 //   HowItWorksPanels Stats Contact Footer
-// Plans is conditionally included based on EEnv.showPlans (?preview=plans URL param).
 List<Widget> get _staticScreens => [
   HomeScreen(),
   const AboutScreen(),
   ProjectsScreen(),
-  if (EEnv.showPlans) PlansScreen(),
+  const PlansScreen(),
 ];
 
 class DesktopLayout extends StatelessWidget {
