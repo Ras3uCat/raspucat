@@ -7,11 +7,7 @@ const List<PlanModel> planData = [
     label: 'Launchpad',
     price: 'Starting at \$1,500',
     idealFor: 'Solopreneurs & Startups',
-    features: [
-      'Core Site (Hero, Services, FAQ)',
-      'Blog & Gallery',
-      'CRM & Lead Gen',
-    ],
+    features: ['Core Site (Hero, Services, FAQ)', 'Blog & Gallery', 'CRM & Lead Gen'],
     isFeatured: false,
     isCustom: false,
   ),
@@ -40,7 +36,7 @@ const List<PlanModel> planData = [
     idealFor: 'Franchises & High-Growth',
     features: [
       'Everything in Premium',
-      'AI Chatbot (Claude-powered)',
+      // 'AI Chatbot (Claude-powered)',
       'Automated PDF Invoices',
       'Multi-location Support',
       'Mobile Apps (iOS/Android)',
