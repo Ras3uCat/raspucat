@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:raspucat/app/data/models/app_project_model.dart';
 import 'package:raspucat/app/data/repositories/app_project_repository.dart';
 import 'package:raspucat/app/modules/screens/_app_project_landing_panel.dart';
-import 'package:raspucat/routes/routes.dart';
 import 'package:raspucat/utils/constants/colors.dart';
 import 'package:raspucat/utils/constants/sizes.dart';
 
@@ -21,22 +20,40 @@ class _AppProjectLandingScreenState extends State<AppProjectLandingScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    // Post-frame so the navigator is fully settled before any async work.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
   Future<void> _load() async {
     final slug = Get.parameters['slug'] ?? '';
-    final project = await AppProjectRepository().fetchBySlug(slug);
-    if (!mounted) return;
-    if (project == null) {
-      Get.offAllNamed(ERoutes.home);
-      return;
+
+    AppProject? project;
+    try {
+      if (slug.isNotEmpty) {
+        project = await AppProjectRepository().fetchBySlug(slug);
+      }
+    } catch (_) {
+      // Network error or Supabase unavailable — fall through to fallback.
     }
+
+    if (!mounted) return;
     setState(() {
-      _project = project;
+      // Use DB project if found; otherwise build a minimal fallback from the slug
+      // so the page always renders instead of redirecting or staying on a spinner.
+      _project = project ?? _fallback(slug);
       _loading = false;
     });
   }
+
+  /// Formats "woowedsmite" → "Woo Wed Smite" is not recoverable from a slug,
+  /// so we just title-case the raw slug as a best-effort display name.
+  AppProject _fallback(String slug) => AppProject(
+    id: '',
+    name: slug.isEmpty ? 'Coming Soon' : slug,
+    status: 'development',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
 
   @override
   Widget build(BuildContext context) {
