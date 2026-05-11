@@ -46,7 +46,7 @@ const RESOURCES = {"assets/assets/images/projects/red_dot_entertainment_beats.pn
 "canvaskit/canvaskit.js": "728b2d477d9b8c14593d4f9b82b484f3",
 "canvaskit/skwasm.js": "ea559890a088fe28b4ddf70e17e60052",
 "flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
-"flutter_bootstrap.js": "eceb30ce108c3c60f1d8a7e560763de3",
+"flutter_bootstrap.js": "47e0acc01595443c1ed280929641196f",
 "main.dart.js": "72ccab1ca301101504cc67ef6c5070a7",
 "version.json": "cb8dd4a21077fcd2d4121ed0128e6ecf",
 "icons/Icon-maskable-512.png": "da8f93103ae5f66e3d166b1767802678",
