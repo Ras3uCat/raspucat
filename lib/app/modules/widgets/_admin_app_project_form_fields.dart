@@ -1,20 +1,100 @@
 import 'dart:math' as math;
 import 'package:raspucat/utils/constants/exports.dart';
-
-const _kStatuses = ['planning', 'development', 'beta', 'live', 'paused'];
+import 'package:raspucat/app/modules/widgets/_admin_project_field_primitives.dart';
 
 String deriveAppProjectSlug(String name) {
   final stripped = name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
   return stripped.substring(0, math.min(50, stripped.length));
 }
 
-class AdminAppProjectFormFields extends StatefulWidget {
-  const AdminAppProjectFormFields({
+// ─── Create form: name only ───────────────────────────────────────────────────
+
+class AdminAppProjectCreateFields extends StatefulWidget {
+  const AdminAppProjectCreateFields({super.key, required this.name});
+
+  final TextEditingController name;
+
+  @override
+  State<AdminAppProjectCreateFields> createState() => _CreateFieldsState();
+}
+
+class _CreateFieldsState extends State<AdminAppProjectCreateFields> {
+  String _slug = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _slug = deriveAppProjectSlug(widget.name.text);
+    widget.name.addListener(_onNameChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.name.removeListener(_onNameChanged);
+    super.dispose();
+  }
+
+  void _onNameChanged() {
+    final s = deriveAppProjectSlug(widget.name.text);
+    if (s != _slug) setState(() => _slug = s);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AdminProjectField(controller: widget.name, label: 'App Name', required: true),
+        if (_slug.isNotEmpty) ...[
+          const SizedBox(height: ESizes.sm),
+          _PreviewRow(icon: Icons.email_outlined, value: '$_slug@raspucat.com'),
+          const SizedBox(height: ESizes.xs),
+          _PreviewRow(icon: Icons.language_outlined, value: 'raspucat.com/$_slug'),
+          const SizedBox(height: ESizes.xs),
+          const Text(
+            'Both will be created on save.',
+            style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
+          ),
+        ],
+        const SizedBox(height: ESizes.sm),
+      ],
+    );
+  }
+}
+
+class _PreviewRow extends StatelessWidget {
+  const _PreviewRow({required this.icon, required this.value});
+
+  final IconData icon;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: ESizes.iconXs, color: EColors.primary),
+        const SizedBox(width: ESizes.xs),
+        Text(
+          value,
+          style: const TextStyle(
+            color: EColors.primary,
+            fontSize: ESizes.fontSizeLabel,
+            fontFamily: 'monospace',
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Edit form: all fields ────────────────────────────────────────────────────
+
+class AdminAppProjectEditFields extends StatefulWidget {
+  const AdminAppProjectEditFields({
     super.key,
     required this.name,
     required this.description,
     required this.techStack,
-    required this.aliasEmail,
     required this.supabaseUrl,
     required this.repoUrl,
     required this.webUrl,
@@ -29,7 +109,6 @@ class AdminAppProjectFormFields extends StatefulWidget {
   final TextEditingController name;
   final TextEditingController description;
   final TextEditingController techStack;
-  final TextEditingController aliasEmail;
   final TextEditingController supabaseUrl;
   final TextEditingController repoUrl;
   final TextEditingController webUrl;
@@ -41,53 +120,18 @@ class AdminAppProjectFormFields extends StatefulWidget {
   final ValueChanged<String> onStatusChanged;
 
   @override
-  State<AdminAppProjectFormFields> createState() => _AdminAppProjectFormFieldsState();
+  State<AdminAppProjectEditFields> createState() => _EditFieldsState();
 }
 
-class _AdminAppProjectFormFieldsState extends State<AdminAppProjectFormFields> {
-  String _slugPreview = '';
+class _EditFieldsState extends State<AdminAppProjectEditFields> {
   bool _showAdvanced = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _slugPreview = deriveAppProjectSlug(widget.name.text);
-    widget.name.addListener(_onNameChanged);
-  }
-
-  @override
-  void dispose() {
-    widget.name.removeListener(_onNameChanged);
-    super.dispose();
-  }
-
-  void _onNameChanged() {
-    final slug = deriveAppProjectSlug(widget.name.text);
-    if (slug != _slugPreview) setState(() => _slugPreview = slug);
-  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AdminProjectField(controller: widget.name, label: 'Name *', required: true),
-        if (_slugPreview.isNotEmpty) ...[
-          const SizedBox(height: ESizes.xs),
-          Text(
-            '$_slugPreview@raspucat.com',
-            style: const TextStyle(
-              color: EColors.textSecondary,
-              fontSize: ESizes.fontSizeLabel,
-              fontFamily: 'monospace',
-            ),
-          ),
-          const SizedBox(height: 2),
-          const Text(
-            'Email will be provisioned after save',
-            style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
-          ),
-        ],
+        AdminProjectField(controller: widget.name, label: 'App Name', required: true),
         const SizedBox(height: ESizes.md),
         AdminProjectField(controller: widget.supabaseUrl, label: 'Supabase Project URL'),
         const SizedBox(height: ESizes.md),
@@ -151,127 +195,6 @@ class _AdvancedToggle extends StatelessWidget {
           ),
           const Expanded(child: Divider(color: EColors.textSecondary, thickness: 0.5)),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Field primitives ─────────────────────────────────────────────────────────
-
-class AdminProjectField extends StatelessWidget {
-  const AdminProjectField({
-    super.key,
-    required this.controller,
-    required this.label,
-    this.hint,
-    this.maxLines = 1,
-    this.required = false,
-  });
-
-  final TextEditingController controller;
-  final String label;
-  final String? hint;
-  final int maxLines;
-  final bool required;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      style: const TextStyle(color: EColors.cyanTintedWhite, fontSize: ESizes.fontSizeSm),
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        labelStyle: const TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeSm),
-        hintStyle: TextStyle(
-          color: EColors.textSecondary.withValues(alpha: 0.5),
-          fontSize: ESizes.fontSizeSm,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: const BorderSide(color: EColors.primary),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: const BorderSide(color: EColors.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: const BorderSide(color: EColors.error),
-        ),
-        filled: true,
-        fillColor: EColors.backgroundDark.withValues(alpha: 0.4),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
-      ),
-      validator: required ? (v) => (v == null || v.trim().isEmpty) ? 'Required' : null : null,
-    );
-  }
-}
-
-class AdminProjectStatusDropdown extends StatelessWidget {
-  const AdminProjectStatusDropdown({super.key, required this.value, required this.onChanged});
-
-  final String value;
-  final ValueChanged<String> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
-      value: value,
-      dropdownColor: EColors.circuitSlate,
-      style: const TextStyle(color: EColors.cyanTintedWhite, fontSize: ESizes.fontSizeSm),
-      decoration: InputDecoration(
-        labelText: 'Status',
-        labelStyle: const TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeSm),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: const BorderSide(color: EColors.primary),
-        ),
-        filled: true,
-        fillColor: EColors.backgroundDark.withValues(alpha: 0.4),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
-      ),
-      items: _kStatuses
-          .map(
-            (s) => DropdownMenuItem(
-              value: s,
-              child: Text(
-                s[0].toUpperCase() + s.substring(1),
-                style: const TextStyle(color: EColors.cyanTintedWhite),
-              ),
-            ),
-          )
-          .toList(),
-      onChanged: (v) => v != null ? onChanged(v) : null,
-    );
-  }
-}
-
-class AdminProjectSectionLabel extends StatelessWidget {
-  const AdminProjectSectionLabel({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: const TextStyle(
-        color: EColors.primary,
-        fontSize: ESizes.fontSizeLabel,
-        fontFamily: 'monospace',
-        fontWeight: FontWeight.w600,
       ),
     );
   }

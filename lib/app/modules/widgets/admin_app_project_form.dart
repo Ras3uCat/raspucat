@@ -29,7 +29,6 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
   late final TextEditingController _name;
   late final TextEditingController _description;
   late final TextEditingController _techStack;
-  late final TextEditingController _aliasEmail;
   late final TextEditingController _supabaseUrl;
   late final TextEditingController _repoUrl;
   late final TextEditingController _webUrl;
@@ -40,6 +39,8 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
   late String _status;
   bool _saving = false;
 
+  bool get _isCreate => widget.initial == null;
+
   @override
   void initState() {
     super.initState();
@@ -47,7 +48,6 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
     _name = TextEditingController(text: p?.name ?? '');
     _description = TextEditingController(text: p?.description ?? '');
     _techStack = TextEditingController(text: p?.techStack.join(', ') ?? '');
-    _aliasEmail = TextEditingController(text: p?.aliasEmail ?? '');
     _supabaseUrl = TextEditingController(text: p?.supabaseUrl ?? '');
     _repoUrl = TextEditingController(text: p?.repoUrl ?? '');
     _webUrl = TextEditingController(text: p?.webUrl ?? '');
@@ -60,17 +60,20 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
 
   @override
   void dispose() {
-    _name.dispose();
-    _description.dispose();
-    _techStack.dispose();
-    _aliasEmail.dispose();
-    _supabaseUrl.dispose();
-    _repoUrl.dispose();
-    _webUrl.dispose();
-    _appStoreUrl.dispose();
-    _playStoreUrl.dispose();
-    _stripeUrl.dispose();
-    _crashUrl.dispose();
+    for (final c in [
+      _name,
+      _description,
+      _techStack,
+      _supabaseUrl,
+      _repoUrl,
+      _webUrl,
+      _appStoreUrl,
+      _playStoreUrl,
+      _stripeUrl,
+      _crashUrl,
+    ]) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -81,54 +84,44 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
     setState(() => _saving = true);
 
     final ctrl = Get.find<AdminAppProjectsController>();
-    final techList = _techStack.text
-        .split(',')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
 
-    final data = <String, dynamic>{
-      'name': _name.text.trim(),
-      'description': _nullIfEmpty(_description.text),
-      'status': _status,
-      'tech_stack': techList,
-      'alias_email': _nullIfEmpty(_aliasEmail.text),
-      'supabase_url': _nullIfEmpty(_supabaseUrl.text),
-      'repo_url': _nullIfEmpty(_repoUrl.text),
-      'web_url': _nullIfEmpty(_webUrl.text),
-      'app_store_url': _nullIfEmpty(_appStoreUrl.text),
-      'play_store_url': _nullIfEmpty(_playStoreUrl.text),
-      'stripe_dashboard_url': _nullIfEmpty(_stripeUrl.text),
-      'crash_report_url': _nullIfEmpty(_crashUrl.text),
-    };
-
-    if (widget.initial == null) {
-      await ctrl.createProject(data);
+    if (_isCreate) {
+      // Create with name only — email + web URL provisioned automatically
+      final created = await ctrl.createProject({'name': _name.text.trim()});
+      if (created != null) {
+        if (mounted) Navigator.of(context).pop();
+        await ctrl.provisionEmail(created.id, created.name);
+      } else {
+        if (mounted) setState(() => _saving = false);
+      }
     } else {
+      final techList = _techStack.text
+          .split(',')
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+
       await ctrl.updateProject(
         widget.initial!.copyWith(
-          name: data['name'] as String,
-          description: data['description'] as String?,
+          name: _name.text.trim(),
+          description: _nullIfEmpty(_description.text),
           status: _status,
           techStack: techList,
-          aliasEmail: data['alias_email'] as String?,
-          supabaseUrl: data['supabase_url'] as String?,
-          repoUrl: data['repo_url'] as String?,
-          webUrl: data['web_url'] as String?,
-          appStoreUrl: data['app_store_url'] as String?,
-          playStoreUrl: data['play_store_url'] as String?,
-          stripeDashboardUrl: data['stripe_dashboard_url'] as String?,
-          crashReportUrl: data['crash_report_url'] as String?,
+          supabaseUrl: _nullIfEmpty(_supabaseUrl.text),
+          repoUrl: _nullIfEmpty(_repoUrl.text),
+          webUrl: _nullIfEmpty(_webUrl.text),
+          appStoreUrl: _nullIfEmpty(_appStoreUrl.text),
+          playStoreUrl: _nullIfEmpty(_playStoreUrl.text),
+          stripeDashboardUrl: _nullIfEmpty(_stripeUrl.text),
+          crashReportUrl: _nullIfEmpty(_crashUrl.text),
         ),
       );
+      if (mounted) Navigator.of(context).pop();
     }
-
-    if (mounted) Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isEdit = widget.initial != null;
     return Dialog(
       backgroundColor: EColors.circuitSlate,
       shape: RoundedRectangleBorder(
@@ -140,33 +133,34 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _FormHeader(isEdit: isEdit),
+            _FormHeader(isEdit: !_isCreate),
             Flexible(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(ESizes.lg, ESizes.md, ESizes.lg, ESizes.md),
                 child: Form(
                   key: _formKey,
-                  child: AdminAppProjectFormFields(
-                    name: _name,
-                    description: _description,
-                    techStack: _techStack,
-                    aliasEmail: _aliasEmail,
-                    supabaseUrl: _supabaseUrl,
-                    repoUrl: _repoUrl,
-                    webUrl: _webUrl,
-                    appStoreUrl: _appStoreUrl,
-                    playStoreUrl: _playStoreUrl,
-                    stripeUrl: _stripeUrl,
-                    crashUrl: _crashUrl,
-                    status: _status,
-                    onStatusChanged: (v) => setState(() => _status = v),
-                  ),
+                  child: _isCreate
+                      ? AdminAppProjectCreateFields(name: _name)
+                      : AdminAppProjectEditFields(
+                          name: _name,
+                          description: _description,
+                          techStack: _techStack,
+                          supabaseUrl: _supabaseUrl,
+                          repoUrl: _repoUrl,
+                          webUrl: _webUrl,
+                          appStoreUrl: _appStoreUrl,
+                          playStoreUrl: _playStoreUrl,
+                          stripeUrl: _stripeUrl,
+                          crashUrl: _crashUrl,
+                          status: _status,
+                          onStatusChanged: (v) => setState(() => _status = v),
+                        ),
                 ),
               ),
             ),
             _FormActions(
               saving: _saving,
-              isEdit: isEdit,
+              isEdit: !_isCreate,
               onCancel: () => Navigator.of(context).pop(),
               onSave: _save,
             ),
@@ -177,11 +171,10 @@ class _AdminAppProjectFormDialogState extends State<_AdminAppProjectFormDialog> 
   }
 }
 
-// ─── Header ──────────────────────────────────────────────────────────────────
+// ─── Header ───────────────────────────────────────────────────────────────────
 
 class _FormHeader extends StatelessWidget {
   const _FormHeader({required this.isEdit});
-
   final bool isEdit;
 
   @override
@@ -208,7 +201,7 @@ class _FormHeader extends StatelessWidget {
   }
 }
 
-// ─── Actions ─────────────────────────────────────────────────────────────────
+// ─── Actions ──────────────────────────────────────────────────────────────────
 
 class _FormActions extends StatelessWidget {
   const _FormActions({
