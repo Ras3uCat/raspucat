@@ -7,4 +7,5 @@ class ERoutes {
   static const admin = '/admin';
   static const portal = '/portal';
   static const portalLogin = '/portal/login';
+  static const appProjectLanding = '/:slug';
 }

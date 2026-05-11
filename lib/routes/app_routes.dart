@@ -1,4 +1,5 @@
 import 'package:raspucat/app/modules/screens/bingequest_legal_screen.dart';
+import 'package:raspucat/app/modules/screens/app_project_landing_screen.dart';
 import 'package:raspucat/app/modules/screens/terms_screen.dart';
 import 'package:raspucat/app/modules/screens/privacy_screen.dart';
 import 'package:raspucat/app/modules/screens/admin_screen.dart';
@@ -24,10 +25,8 @@ class AppRoutes {
       }),
       middlewares: [PortalAuthMiddleware()],
     ),
-    GetPage(
-      name: ERoutes.portalLogin,
-      page: () => const PortalLoginScreen(),
-    ),
+    GetPage(name: ERoutes.portalLogin, page: () => const PortalLoginScreen()),
+    GetPage(name: ERoutes.appProjectLanding, page: () => const AppProjectLandingScreen()),
   ];
 }
 
