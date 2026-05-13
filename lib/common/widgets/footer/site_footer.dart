@@ -94,7 +94,7 @@ class _DesktopFooter extends StatelessWidget {
             _FooterLink(label: 'Privacy', route: ERoutes.privacy),
             Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: ESizes.fontSizeLabel)),
             Text(
-              '© ${DateTime.now().year} ${EBrand.creditCompact}',
+              '© ${DateTime.now().year} Ras3uCat LLC',
               style: TextStyle(
                 color: EColors.textSecondary.withValues(alpha: 0.5),
                 fontSize: ESizes.fontSizeLabel,
@@ -136,7 +136,7 @@ class _MobileFooter extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          '${EBrand.voiceFooter}  ·  © ${DateTime.now().year}',
+          '${EBrand.voiceFooter}  ·  © ${DateTime.now().year} Ras3uCat LLC',
           style: TextStyle(
             color: EColors.textSecondary.withValues(alpha: 0.5),
             fontSize: 10,

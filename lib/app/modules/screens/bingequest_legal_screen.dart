@@ -127,7 +127,7 @@ class _LegalEntry {
 const _privacyPolicySections = [
   _LegalEntry(
     'Introduction',
-    'BingeQuest ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.',
+    'Ras3uCat LLC ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our mobile application.',
   ),
   _LegalEntry(
     'Information We Collect',
@@ -182,7 +182,7 @@ const _privacyPolicySections = [
 const _termsSections = [
   _LegalEntry(
     'Agreement to Terms',
-    'By using BingeQuest, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our app.',
+    'By using BingeQuest, you agree to be bound by these Terms of Service between you and Ras3uCat LLC. If you do not agree to these terms, please do not use our app.',
   ),
   _LegalEntry(
     'Description of Service',

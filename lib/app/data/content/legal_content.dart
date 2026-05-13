@@ -120,13 +120,13 @@ const termsLastUpdated = 'Last updated: March 2026';
 const termsContent = <LegalSection>[
   LegalSection(
     '1. Acceptance of Terms',
-    'By accessing raspucat.com or engaging Raspucat (operated by M3OW Studio, Liberty Hill, Texas) '
+    'By accessing raspucat.com or engaging Ras3uCat LLC '
     'for any services, you agree to be bound by these Terms & Conditions. If you do not agree '
     'to these terms in full, please do not proceed with any purchase or inquiry.',
   ),
   LegalSection(
     '2. Services Provided',
-    'Raspucat provides custom web development services including website design and build, '
+    'Ras3uCat LLC provides custom web development services including website design and build, '
     'a private client portal for project tracking and communication, optional add-on modules '
     '(such as booking systems, AI chatbots, and loyalty programs), and ongoing site management plans. '
     'The exact scope of each engagement is confirmed in writing prior to deposit.',
@@ -154,7 +154,7 @@ const termsContent = <LegalSection>[
     'frameworks, and fonts remain subject to their respective open-source or commercial licenses. '
     'Clients on a monthly management plan retain full access to and use of the live site; '
     'complete code and credential ownership transfers upon selection of the handover package. '
-    'Raspucat reserves the right to display completed work in its public portfolio unless '
+    'Ras3uCat LLC reserves the right to display completed work in its public portfolio unless '
     'you request otherwise in writing.',
   ),
   LegalSection(
@@ -163,11 +163,11 @@ const termsContent = <LegalSection>[
     'images, and any required third-party credentials (e.g. domain registrar access) within '
     'agreed timeframes. Review feedback must be provided within the agreed review window. '
     'Project delays resulting from late or incomplete client input do not constitute a breach '
-    'by Raspucat and may affect the delivery timeline.',
+    'by Ras3uCat LLC and may affect the delivery timeline.',
   ),
   LegalSection(
     '7. Limitation of Liability',
-    'To the fullest extent permitted by applicable law, Raspucat and M3OW Studio shall not '
+    'To the fullest extent permitted by applicable law, Ras3uCat LLC shall not '
     'be liable for any indirect, incidental, special, punitive, or consequential damages — '
     'including lost profits, lost data, or business interruption — arising from your use of '
     'or inability to use any delivered service or website. In all cases, our total aggregate '
@@ -193,7 +193,7 @@ const termsContent = <LegalSection>[
     '10. Contact',
     'If you have questions about these Terms & Conditions, please reach out:\n'
     'Email: meow@raspucat.com\n'
-    'M3OW Studio — Liberty Hill, Texas, USA',
+    'Ras3uCat LLC — Liberty Hill, Texas, USA',
   ),
 ];
 
@@ -232,7 +232,7 @@ const privacyContent = <LegalSection>[
   ),
   LegalSection(
     '4. Data Retention',
-    'We retain your personal and project data for as long as your engagement with Raspucat '
+    'We retain your personal and project data for as long as your engagement with Ras3uCat LLC '
     'is active and for up to 3 years thereafter for business record-keeping and dispute resolution purposes. '
     'Payment records may be retained longer as required by applicable tax law. '
     'You may request early deletion of your data at any time — see Section 5.',
@@ -259,6 +259,6 @@ const privacyContent = <LegalSection>[
     '7. Contact',
     'For any privacy-related questions, data requests, or concerns, please contact us:\n'
     'Email: meow@raspucat.com\n'
-    'M3OW Studio — Liberty Hill, Texas, USA',
+    'Ras3uCat LLC — Liberty Hill, Texas, USA',
   ),
 ];
