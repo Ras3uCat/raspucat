@@ -46,8 +46,8 @@ const RESOURCES = {"assets/assets/images/projects/red_dot_entertainment_beats.pn
 "canvaskit/canvaskit.js": "728b2d477d9b8c14593d4f9b82b484f3",
 "canvaskit/skwasm.js": "ea559890a088fe28b4ddf70e17e60052",
 "flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
-"flutter_bootstrap.js": "4b59285f0aff3ce3daf412f6f0502cff",
-"main.dart.js": "c355c89a411ec38e788ec08e0bbae777",
+"flutter_bootstrap.js": "8775d9ae3b5a2234b61b6484b7d8ec19",
+"main.dart.js": "1c77a5ceab769147e71ff5f34428a664",
 "version.json": "cb8dd4a21077fcd2d4121ed0128e6ecf",
 "icons/Icon-maskable-512.png": "da8f93103ae5f66e3d166b1767802678",
 "icons/Icon-maskable-192.png": "980913cbf3e887c423c356b7d23428aa",
@@ -58,7 +58,7 @@ const RESOURCES = {"assets/assets/images/projects/red_dot_entertainment_beats.pn
 "bingequest/content/index.html": "5f6aacc4f3f21ecf54c0aee4b2e206d0",
 "bingequest/playlist/index.html": "c0edeee13c02606daeb03bdfdbed43af",
 "bingequest/profile/index.html": "f928022699a4561b34b100061f1fe118",
-"legal/bingequest/index.html": "a8ce488dca20527f6f4d90b273b5c4b5"};
+"legal/bingequest/index.html": "29b2c6c54908d878e614bb4948dc8599"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
