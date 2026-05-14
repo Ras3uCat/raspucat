@@ -93,7 +93,10 @@ async function createCloudflareRule(
 
   if (!resp.ok || !json.result?.id) {
     // If Cloudflare rejects as duplicate, adopt the existing rule rather than failing.
-    const isDuplicate = json.errors?.some((e: { code: number }) => e.code === 10044);
+    const isDuplicate = json.errors?.some(
+      (e: { code?: number; message?: string }) =>
+        e.code === 10044 || e.message?.toLowerCase().includes('duplic'),
+    );
     if (isDuplicate) {
       const existingId = await fetchExistingCloudflareRuleId(slug);
       if (existingId) return { ruleId: existingId, email };
@@ -143,6 +146,12 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: 'Email already provisioned.', alias_email: project.alias_email }),
         { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
+    }
+
+    // Partial state: email was written but rule_id was lost (e.g. DB write failed after Cloudflare).
+    // Clear stale alias_email so slug resolution starts clean.
+    if (project.alias_email && !project.cloudflare_routing_rule_id) {
+      await supabase.from('app_projects').update({ alias_email: null }).eq('id', projectId);
     }
 
     const baseSlug = slugOverride ? deriveSlug(slugOverride) : deriveSlug(appName as string);
