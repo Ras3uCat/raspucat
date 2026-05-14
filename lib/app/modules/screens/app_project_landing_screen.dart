@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:raspucat/app/data/models/app_project_model.dart';
 import 'package:raspucat/app/data/repositories/app_project_repository.dart';
 import 'package:raspucat/app/modules/screens/_app_project_landing_panel.dart';
+import 'package:raspucat/app/modules/screens/_app_project_live_panel.dart';
 import 'package:raspucat/utils/constants/colors.dart';
 import 'package:raspucat/utils/constants/sizes.dart';
 
@@ -31,9 +32,10 @@ class _AppProjectLandingScreenState extends State<AppProjectLandingScreen> {
     try {
       if (slug.isNotEmpty) {
         project = await AppProjectRepository().fetchBySlug(slug);
+        debugPrint('[landing] slug=$slug project=${project?.name} status=${project?.status}');
       }
-    } catch (_) {
-      // Network error or Supabase unavailable — fall through to fallback.
+    } catch (e) {
+      debugPrint('[landing] fetchBySlug error: $e');
     }
 
     if (!mounted) return;
@@ -67,6 +69,8 @@ class _AppProjectLandingScreenState extends State<AppProjectLandingScreen> {
                 child: CircularProgressIndicator(color: EColors.primary, strokeWidth: 1.5),
               ),
             )
+          : _project!.status == 'live'
+          ? LiveAppPanel(project: _project!)
           : LaunchingPanel(project: _project!),
     );
   }

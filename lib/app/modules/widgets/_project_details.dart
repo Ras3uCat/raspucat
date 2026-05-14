@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
 class ProjectDetails extends StatelessWidget {
@@ -91,7 +92,14 @@ class ProjectDetails extends StatelessWidget {
                   neonColor: EColors.accent,
                   hoverColor: EColors.primary,
                   padding: const EdgeInsets.symmetric(horizontal: ESizes.lg, vertical: ESizes.md),
-                  onTap: () => EDeviceUtils.launchUrl(project.liveUrl!),
+                  onTap: () {
+                    final uri = Uri.tryParse(project.liveUrl!);
+                    if (uri != null && uri.host.contains('raspucat.com') && uri.path.length > 1) {
+                      Get.offAllNamed(uri.path);
+                    } else {
+                      EDeviceUtils.launchUrl(project.liveUrl!);
+                    }
+                  },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

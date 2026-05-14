@@ -26,8 +26,10 @@ class AppProjectRepository {
   Future<AppProject?> fetchBySlug(String slug) async {
     final row = await _client
         .from('app_projects')
-        .select('id, name, description, status, slug, web_url')
-        .eq('slug', slug)
+        .select(
+          'id, name, description, status, slug, web_url, app_store_url, play_store_url, tech_stack, created_at, updated_at',
+        )
+        .ilike('slug', slug)
         .maybeSingle();
     if (row == null) return null;
     return AppProject.fromJson(row);
