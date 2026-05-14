@@ -32,19 +32,35 @@ async function resolveUniqueSlug(baseSlug: string, excludeProjectId?: string): P
 
   while (true) {
     const expectedEmail = `${candidate}@raspucat.com`;
-    const query = supabase
-      .from('app_projects')
-      .select('id')
-      .eq('alias_email', expectedEmail);
 
-    if (excludeProjectId) query.neq('id', excludeProjectId);
+    const emailQuery = supabase.from('app_projects').select('id').eq('alias_email', expectedEmail);
+    if (excludeProjectId) emailQuery.neq('id', excludeProjectId);
+    const { data: emailRow } = await emailQuery.maybeSingle();
 
-    const { data } = await query.maybeSingle();
-    if (!data) return candidate;
+    const slugQuery = supabase.from('app_projects').select('id').eq('slug', candidate);
+    if (excludeProjectId) slugQuery.neq('id', excludeProjectId);
+    const { data: slugRow } = await slugQuery.maybeSingle();
+
+    if (!emailRow && !slugRow) return candidate;
 
     candidate = `${baseSlug}${suffix}`;
     suffix++;
   }
+}
+
+async function fetchExistingCloudflareRuleId(slug: string): Promise<string | null> {
+  const zoneId = Deno.env.get('CLOUDFLARE_ZONE_ID')!;
+  const token = Deno.env.get('CLOUDFLARE_API_TOKEN')!;
+  const email = `${slug}@raspucat.com`;
+
+  const resp = await fetch(
+    `https://api.cloudflare.com/client/v4/zones/${zoneId}/email/routing/rules`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  const json = await resp.json();
+  const rules: Array<{ id: string; matchers: Array<{ value: string }> }> = json.result ?? [];
+  const existing = rules.find((r) => r.matchers?.some((m) => m.value === email));
+  return existing?.id ?? null;
 }
 
 async function createCloudflareRule(
@@ -76,6 +92,12 @@ async function createCloudflareRule(
   const json = await resp.json();
 
   if (!resp.ok || !json.result?.id) {
+    // If Cloudflare rejects as duplicate, adopt the existing rule rather than failing.
+    const isDuplicate = json.errors?.some((e: { code: number }) => e.code === 10044);
+    if (isDuplicate) {
+      const existingId = await fetchExistingCloudflareRuleId(slug);
+      if (existingId) return { ruleId: existingId, email };
+    }
     console.error('Cloudflare API error:', JSON.stringify(json));
     throw new Error(json.errors?.[0]?.message ?? 'Cloudflare API error');
   }
