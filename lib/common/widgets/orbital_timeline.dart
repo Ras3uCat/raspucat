@@ -148,7 +148,6 @@ class _OrbitalTimelineState extends State<OrbitalTimeline> with SingleTickerProv
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Orbit ring — decorative, non-interactive
                   Container(
                     width: _kOrbitRadius * 2,
                     height: _kOrbitRadius * 2,
@@ -161,6 +160,23 @@ class _OrbitalTimelineState extends State<OrbitalTimeline> with SingleTickerProv
                   ...nodes.map((n) => n.child),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: ESizes.lg),
+          AnimatedOpacity(
+            opacity: _expandedId == null ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 600),
+            child: Column(
+              children: [
+                Text(
+                  '// TAP TO EXPLORE',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: EColors.primary.withValues(alpha: 0.5),
+                    letterSpacing: 3,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

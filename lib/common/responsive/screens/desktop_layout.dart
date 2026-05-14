@@ -1,3 +1,4 @@
+import 'package:raspucat/app/modules/screens/landing_controller.dart';
 import 'package:raspucat/app/modules/screens/projects_screen.dart';
 import 'package:raspucat/common/widgets/cursor_overlay.dart';
 import 'package:raspucat/common/widgets/marquee_section.dart';
@@ -44,7 +45,14 @@ class DesktopLayout extends StatelessWidget {
                       ..._staticScreens.skip(1),
 
                       // Priority 10: stats strip.
-                      const StatsStrip(),
+                      Obx(() {
+                        final c = Get.find<LandingController>();
+                        return StatsStrip(
+                          projectsDeployed: c.projectsDeployed.value,
+                          activeClients: c.activeClients.value,
+                          uptimePct: c.uptimePct.value,
+                        );
+                      }),
 
                       // Priority 6: What We Build — orbital overview.
                       const WhatWeBuildOrbitalSection(),
