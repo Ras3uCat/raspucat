@@ -714,6 +714,15 @@ class AdminController extends GetxController {
     }
   }
 
+  Future<void> markDiscoverySubmitted(String quoteId) async {
+    if (_adminToken.isEmpty) return;
+    await Supabase.instance.client.functions.invoke(
+      'admin-save-discovery',
+      body: {'adminToken': _adminToken, 'quote_id': quoteId, 'markSubmitted': true},
+    );
+    await fetchQuoteDetail(quoteId);
+  }
+
   void markDiscoverySeen(String quoteId) => _setQuoteState(quoteId, 'discoverySeen', true);
 
   void _setQuoteState(String quoteId, String key, dynamic value) {

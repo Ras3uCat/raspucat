@@ -24,20 +24,31 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const { adminToken, quote_id, discovery_data } = await req.json();
+    const { adminToken, quote_id, discovery_data, markSubmitted = false } = await req.json();
 
     const adminPassword = Deno.env.get('ADMIN_PASSWORD');
     if (!adminPassword || adminToken !== adminPassword) {
       return json({ error: 'Unauthorized.' }, 401);
     }
 
-    if (!quote_id || !discovery_data || typeof discovery_data !== 'object') {
+    if (!quote_id) {
       return json({ error: 'Missing required fields.' }, 400);
+    }
+
+    const payload: Record<string, unknown> = {};
+    if (discovery_data && typeof discovery_data === 'object') {
+      payload['discovery_data'] = discovery_data;
+    }
+    if (markSubmitted) {
+      payload['discovery_submitted_at'] = new Date().toISOString();
+    }
+    if (Object.keys(payload).length === 0) {
+      return json({ error: 'Nothing to update.' }, 400);
     }
 
     const { error } = await supabase
       .from('quotes')
-      .update({ discovery_data })
+      .update(payload)
       .eq('id', quote_id);
 
     if (error) {

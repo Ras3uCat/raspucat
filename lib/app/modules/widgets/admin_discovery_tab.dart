@@ -126,13 +126,13 @@ class _State extends State<AdminDiscoveryTab> {
               fontWeight: FontWeight.w500,
             ),
           ),
-        if (widget.portalStage == 'awaiting_discovery') ...[
+        if (widget.submittedAt == null) ...[
           const SizedBox(width: ESizes.sm),
           _SkipDiscoveryButton(
             loading: _advancingStage,
             onTap: () async {
               setState(() => _advancingStage = true);
-              await widget.ctrl.updatePortalStage(widget.quoteId, 'transmitting');
+              await widget.ctrl.markDiscoverySubmitted(widget.quoteId);
               if (mounted) setState(() => _advancingStage = false);
             },
           ),
