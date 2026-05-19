@@ -118509,7 +118509,7 @@ a6=A.e([new A.JC("Plan ID",m==null?d:m,e)],k)
 if(!r.gah(r)){m=r.$ti.i("Y<T.E,ZD>")
 m=A.a1(new A.Y(r,new A.beC(),m),m.i("ap.E"))
 a6.push(new A.ae(B.i6,A.fp(B.be,m,6,6),e))}if(J.h(J.F(f.a.e,c),b)||J.F(f.a.e,a)!=null)a6.push(new A.ae(B.Sk,new A.eC(new A.beD(f),e),e))
-if(J.h(J.F(f.a.e,c),"deposit_paid")||J.h(J.F(f.a.e,c),b)||J.F(f.a.e,a)!=null)a6.push(new A.ae(B.i7,new A.eC(new A.beE(f),e),e))
+if(J.h(J.F(f.a.e,c),"deposit_paid")||J.h(J.F(f.a.e,c),b)||J.h(J.F(f.a.e,c),"active")||J.F(f.a.e,a)!=null)a6.push(new A.ae(B.i7,new A.eC(new A.beE(f),e),e))
 m=f.a
 m=A.e([new A.a5A(m.c,m.d,m.e,e)],k)
 j=J.F(f.a.e,"management_option_name")
