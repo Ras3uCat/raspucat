@@ -237,6 +237,7 @@ class _AdminDetailContentState extends State<AdminDetailContent> {
                 ),
               if (detail['status'] == 'deposit_paid' ||
                   detail['status'] == 'fully_paid' ||
+                  detail['status'] == 'active' ||
                   detail['subscription_started_at'] != null)
                 Padding(
                   padding: const EdgeInsets.only(top: ESizes.sm),
