@@ -9,18 +9,9 @@ class AdminFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-        ESizes.xl,
-        ESizes.sm,
-        ESizes.xl,
-        ESizes.sm,
-      ),
+      padding: const EdgeInsets.fromLTRB(ESizes.xl, ESizes.sm, ESizes.xl, ESizes.sm),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: EColors.primary.withValues(alpha: 0.1),
-          ),
-        ),
+        border: Border(bottom: BorderSide(color: EColors.primary.withValues(alpha: 0.1))),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,10 +19,7 @@ class AdminFilterBar extends StatelessWidget {
           // Search field
           TextField(
             onChanged: (v) => ctrl.searchQuery.value = v,
-            style: const TextStyle(
-              color: EColors.textWhite,
-              fontSize: ESizes.fontSizeSm,
-            ),
+            style: const TextStyle(color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
             decoration: InputDecoration(
               hintText: 'Search by name or email…',
               hintStyle: TextStyle(
@@ -52,19 +40,15 @@ class AdminFilterBar extends StatelessWidget {
               fillColor: EColors.primary.withValues(alpha: 0.04),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                borderSide:
-                    BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
+                borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                borderSide:
-                    BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
+                borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.15)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-                borderSide: BorderSide(
-                  color: EColors.primary.withValues(alpha: 0.5),
-                ),
+                borderSide: BorderSide(color: EColors.primary.withValues(alpha: 0.5)),
               ),
             ),
           ),
@@ -72,62 +56,71 @@ class AdminFilterBar extends StatelessWidget {
           // Plans/Modules row
           _FilterRowLabel('Plans/Modules'),
           const SizedBox(height: 4),
-          Obx(() => Wrap(
-            spacing: ESizes.xs,
-            runSpacing: ESizes.xs,
-            children: [
-              _FilterChip(
-                label: 'All',
-                selected: ctrl.statusFilter.value == 'all',
-                onTap: () => ctrl.statusFilter.value = 'all',
-              ),
-              _FilterChip(
-                label: 'Pending',
-                selected: ctrl.statusFilter.value == 'pending',
-                onTap: () => ctrl.statusFilter.value = 'pending',
-              ),
-              _FilterChip(
-                label: 'Deposit Paid',
-                selected: ctrl.statusFilter.value == 'deposit_paid',
-                onTap: () => ctrl.statusFilter.value = 'deposit_paid',
-              ),
-              _FilterChip(
-                label: 'Fully Paid',
-                selected: ctrl.statusFilter.value == 'fully_paid',
-                onTap: () => ctrl.statusFilter.value = 'fully_paid',
-              ),
-            ],
-          )),
+          Obx(
+            () => Wrap(
+              spacing: ESizes.xs,
+              runSpacing: ESizes.xs,
+              children: [
+                _FilterChip(
+                  label: 'All',
+                  selected: ctrl.statusFilter.value == 'all',
+                  onTap: () => ctrl.statusFilter.value = 'all',
+                ),
+                _FilterChip(
+                  label: 'Pending',
+                  selected: ctrl.statusFilter.value == 'pending',
+                  onTap: () => ctrl.statusFilter.value = 'pending',
+                ),
+                _FilterChip(
+                  label: 'Deposit Paid',
+                  selected: ctrl.statusFilter.value == 'deposit_paid',
+                  onTap: () => ctrl.statusFilter.value = 'deposit_paid',
+                ),
+                _FilterChip(
+                  label: 'Fully Paid',
+                  selected: ctrl.statusFilter.value == 'fully_paid',
+                  onTap: () => ctrl.statusFilter.value = 'fully_paid',
+                ),
+                _FilterChip(
+                  label: 'Active',
+                  selected: ctrl.statusFilter.value == 'active',
+                  onTap: () => ctrl.statusFilter.value = 'active',
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: ESizes.sm),
           // Subscriptions row
           _FilterRowLabel('Subscriptions'),
           const SizedBox(height: 4),
-          Obx(() => Wrap(
-            spacing: ESizes.xs,
-            runSpacing: ESizes.xs,
-            children: [
-              _FilterChip(
-                label: 'All',
-                selected: ctrl.billingFilter.value == 'all',
-                onTap: () => ctrl.billingFilter.value = 'all',
-              ),
-              _FilterChip(
-                label: 'Monthly',
-                selected: ctrl.billingFilter.value == 'monthly',
-                onTap: () => ctrl.billingFilter.value = 'monthly',
-              ),
-              _FilterChip(
-                label: 'Yearly',
-                selected: ctrl.billingFilter.value == 'annual',
-                onTap: () => ctrl.billingFilter.value = 'annual',
-              ),
-              _FilterChip(
-                label: 'Handover',
-                selected: ctrl.billingFilter.value == 'onetime',
-                onTap: () => ctrl.billingFilter.value = 'onetime',
-              ),
-            ],
-          )),
+          Obx(
+            () => Wrap(
+              spacing: ESizes.xs,
+              runSpacing: ESizes.xs,
+              children: [
+                _FilterChip(
+                  label: 'All',
+                  selected: ctrl.billingFilter.value == 'all',
+                  onTap: () => ctrl.billingFilter.value = 'all',
+                ),
+                _FilterChip(
+                  label: 'Monthly',
+                  selected: ctrl.billingFilter.value == 'monthly',
+                  onTap: () => ctrl.billingFilter.value = 'monthly',
+                ),
+                _FilterChip(
+                  label: 'Yearly',
+                  selected: ctrl.billingFilter.value == 'annual',
+                  onTap: () => ctrl.billingFilter.value = 'annual',
+                ),
+                _FilterChip(
+                  label: 'Handover',
+                  selected: ctrl.billingFilter.value == 'onetime',
+                  onTap: () => ctrl.billingFilter.value = 'onetime',
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -153,11 +146,7 @@ class _FilterRowLabel extends StatelessWidget {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+  const _FilterChip({required this.label, required this.selected, required this.onTap});
 
   final String label;
   final bool selected;
@@ -172,13 +161,9 @@ class _FilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
-          color: selected
-              ? EColors.primary.withValues(alpha: 0.12)
-              : Colors.transparent,
+          color: selected ? EColors.primary.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
-          border: Border.all(
-            color: color.withValues(alpha: selected ? 0.5 : 0.25),
-          ),
+          border: Border.all(color: color.withValues(alpha: selected ? 0.5 : 0.25)),
         ),
         child: Text(
           label,

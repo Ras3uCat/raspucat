@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     const { data: rows, error } = await supabase
       .from('quotes')
       .select('*, management_options(name, monthly_price, annual_price, onetime_price), plans(name)')
-      .in('status', ['pending', 'deposit_paid', 'fully_paid'])
+      .in('status', ['pending', 'deposit_paid', 'fully_paid', 'active'])
       .order('created_at', { ascending: false });
 
     if (error) {

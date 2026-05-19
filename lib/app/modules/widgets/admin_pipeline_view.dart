@@ -14,15 +14,17 @@ const _columns = [
   _PipelineColumn(status: 'pending', label: 'Pending'),
   _PipelineColumn(status: 'deposit_paid', label: 'Deposit Paid'),
   _PipelineColumn(status: 'fully_paid', label: 'Fully Paid'),
+  _PipelineColumn(status: 'active', label: 'Active'),
 ];
 
 // ─── Status color helper ───────────────────────────────────────────────────
 
 Color _statusColor(String status) => switch (status) {
-      'fully_paid' => EColors.primary,
-      'deposit_paid' => EColors.gold,
-      _ => EColors.textSecondary,
-    };
+  'active' => EColors.primary,
+  'fully_paid' => EColors.primary,
+  'deposit_paid' => EColors.gold,
+  _ => EColors.textSecondary,
+};
 
 // ─── Pipeline view ─────────────────────────────────────────────────────────
 
@@ -51,9 +53,11 @@ class _WideLayout extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: _columns
-          .map((col) => Expanded(
-                child: _PipelineColumnWidget(ctrl: ctrl, column: col),
-              ))
+          .map(
+            (col) => Expanded(
+              child: _PipelineColumnWidget(ctrl: ctrl, column: col),
+            ),
+          )
           .toList(),
     );
   }
@@ -76,12 +80,12 @@ class _NarrowLayout extends StatelessWidget {
             labelColor: EColors.textWhite,
             unselectedLabelColor: EColors.textSecondary,
             tabs: _columns
-                .map((col) => Obx(() {
-                      final count = ctrl.quotes
-                          .where((q) => q['status'] == col.status)
-                          .length;
-                      return Tab(text: '${col.label} ($count)');
-                    }))
+                .map(
+                  (col) => Obx(() {
+                    final count = ctrl.quotes.where((q) => q['status'] == col.status).length;
+                    return Tab(text: '${col.label} ($count)');
+                  }),
+                )
                 .toList(),
           ),
           Expanded(
@@ -110,7 +114,9 @@ class _PipelineColumnWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _ColumnHeader(ctrl: ctrl, column: column),
-        Expanded(child: _ColumnBody(ctrl: ctrl, column: column)),
+        Expanded(
+          child: _ColumnBody(ctrl: ctrl, column: column),
+        ),
       ],
     );
   }
@@ -126,19 +132,11 @@ class _ColumnHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final count =
-          ctrl.quotes.where((q) => q['status'] == column.status).length;
+      final count = ctrl.quotes.where((q) => q['status'] == column.status).length;
       return Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: ESizes.md,
-          vertical: ESizes.sm,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
         decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: EColors.primary.withValues(alpha: 0.1),
-            ),
-          ),
+          border: Border(bottom: BorderSide(color: EColors.primary.withValues(alpha: 0.1))),
         ),
         child: Text(
           '${column.label} ($count)',
@@ -169,10 +167,7 @@ class _ColumnBody extends StatelessWidget {
 
       if (items.isEmpty) {
         return Center(
-          child: Text(
-            'None',
-            style: TextStyle(color: EColors.textSecondary),
-          ),
+          child: Text('None', style: TextStyle(color: EColors.textSecondary)),
         );
       }
 
@@ -204,6 +199,7 @@ class _PipelineCard extends StatelessWidget {
     final status = quote['status'] as String? ?? '';
     final statusColor = _statusColor(status);
     final (statusLabel, _) = switch (status) {
+      'active' => ('Active', null),
       'fully_paid' => ('Fully Paid', null),
       'deposit_paid' => ('Deposit Paid', null),
       _ => ('Pending', null),
@@ -214,20 +210,12 @@ class _PipelineCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: ESizes.sm,
-          vertical: 4,
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: ESizes.md,
-          vertical: ESizes.sm,
-        ),
+        margin: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
         decoration: BoxDecoration(
           color: EColors.primary.withValues(alpha: 0.03),
           borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          border: Border.all(
-            color: EColors.primary.withValues(alpha: 0.12),
-          ),
+          border: Border.all(color: EColors.primary.withValues(alpha: 0.12)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,10 +231,7 @@ class _PipelineCard extends StatelessWidget {
             if (businessName.isNotEmpty)
               Text(
                 businessName,
-                style: TextStyle(
-                  color: EColors.textSecondary,
-                  fontSize: ESizes.fontSizeLabel,
-                ),
+                style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
               ),
             const SizedBox(height: 4),
             Container(
