@@ -24,6 +24,7 @@ class AdminDiscoveryTab extends StatefulWidget {
 class _State extends State<AdminDiscoveryTab> {
   late final Map<String, dynamic> _data;
   Timer? _debounce;
+  String _saveStatus = '';
 
   @override
   void initState() {
@@ -31,22 +32,31 @@ class _State extends State<AdminDiscoveryTab> {
     _data = Map<String, dynamic>.from(widget.discoveryData);
   }
 
+  void _scheduleSave() {
+    setState(() => _saveStatus = 'Saving…');
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 800), () async {
+      final err = await widget.ctrl.saveDiscoveryData(widget.quoteId, _data);
+      if (!mounted) return;
+      setState(() => _saveStatus = err == null ? 'Saved ✓' : 'Error: $err');
+      if (err == null) {
+        Future.delayed(const Duration(seconds: 2), () {
+          if (mounted) setState(() => _saveStatus = '');
+        });
+      }
+    });
+  }
+
   void _set(String k, dynamic v) {
     _data[k] = v;
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 800), () {
-      widget.ctrl.saveDiscoveryData(widget.quoteId, _data);
-    });
+    _scheduleSave();
   }
 
   void _setBrandBrief(String k, String v) {
     final bb = Map<String, dynamic>.from((_data['brand_brief'] as Map<String, dynamic>?) ?? {});
     bb[k] = v;
     _data['brand_brief'] = bb;
-    _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 800), () {
-      widget.ctrl.saveDiscoveryData(widget.quoteId, _data);
-    });
+    _scheduleSave();
   }
 
   @override
@@ -76,6 +86,7 @@ class _State extends State<AdminDiscoveryTab> {
 
   Widget _header() {
     final submitted = widget.submittedAt != null;
+    final isError = _saveStatus.startsWith('Error');
     return Row(
       children: [
         Icon(
@@ -102,6 +113,16 @@ class _State extends State<AdminDiscoveryTab> {
             ),
           ),
         ],
+        const Spacer(),
+        if (_saveStatus.isNotEmpty)
+          Text(
+            _saveStatus,
+            style: TextStyle(
+              color: isError ? EColors.error : EColors.primary,
+              fontSize: ESizes.fontSizeLabel,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
       ],
     );
   }

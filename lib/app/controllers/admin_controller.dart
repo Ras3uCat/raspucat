@@ -699,11 +699,19 @@ class AdminController extends GetxController {
     return data?['clientJson'] as String? ?? '{}';
   }
 
-  Future<void> saveDiscoveryData(String quoteId, Map<String, dynamic> data) async {
-    await Supabase.instance.client.functions.invoke(
-      'admin-save-discovery',
-      body: {'adminToken': _adminToken, 'quote_id': quoteId, 'discovery_data': data},
-    );
+  Future<String?> saveDiscoveryData(String quoteId, Map<String, dynamic> data) async {
+    if (_adminToken.isEmpty) return 'Not authenticated.';
+    try {
+      final res = await Supabase.instance.client.functions.invoke(
+        'admin-save-discovery',
+        body: {'adminToken': _adminToken, 'quote_id': quoteId, 'discovery_data': data},
+      );
+      final body = res.data as Map<String, dynamic>?;
+      if (body?['error'] != null) return body!['error'] as String;
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 
   void markDiscoverySeen(String quoteId) => _setQuoteState(quoteId, 'discoverySeen', true);
