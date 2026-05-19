@@ -56,6 +56,7 @@ class AdminQuoteRow extends StatelessWidget {
   bool get _canStartSub =>
       quote['billing_cycle'] != 'onetime' &&
       quote['activated_at'] == null &&
+      quote['status'] != 'active' &&
       (_isComped || quote['stripe_payment_method_id'] != null);
 
   @override

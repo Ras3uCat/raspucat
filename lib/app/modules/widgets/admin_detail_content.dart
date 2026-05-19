@@ -38,6 +38,7 @@ class _AdminDetailContentState extends State<AdminDetailContent> {
   Map<String, dynamic> get detail => widget.detail;
 
   static String _fmtSub(Map<String, dynamic> d) {
+    if (d['is_comped'] == true) return '—';
     final cents = d['subscription_amount_cents'] as int?;
     final cycle = d['billing_cycle'] as String?;
     if (cents == null || cents == 0 || cycle == 'onetime') return '—';
