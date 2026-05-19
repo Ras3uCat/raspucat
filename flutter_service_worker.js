@@ -55,10 +55,10 @@ const RESOURCES = {"bingequest/profile/index.html": "f928022699a4561b34b100061f1
 "canvaskit/chromium/canvaskit.js": "8191e843020c832c9cf8852a4b909d4c",
 "canvaskit/canvaskit.js": "728b2d477d9b8c14593d4f9b82b484f3",
 "canvaskit/skwasm.wasm": "39dd80367a4e71582d234948adc521c0",
-"flutter_bootstrap.js": "9fbe4dafff3ce56c0ddcbe4e4f097293",
+"flutter_bootstrap.js": "bd80510f60b86cb26861cfc546452f83",
 "manifest.json": "b903179230055979c0f8f0b0020c0492",
 "404.html": "d6f85ac73e83fb6cd6d44ca0e1f01557",
-"main.dart.js": "779d5ebeffed0e32e6a48942087fe4eb"};
+"main.dart.js": "a4e9ee49f127dea759f314e287e04d05"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
