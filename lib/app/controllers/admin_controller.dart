@@ -702,7 +702,7 @@ class AdminController extends GetxController {
   Future<void> saveDiscoveryData(String quoteId, Map<String, dynamic> data) async {
     await Supabase.instance.client.functions.invoke(
       'admin-save-discovery',
-      body: {'adminToken': _adminToken, 'quoteId': quoteId, 'discovery_data': data},
+      body: {'adminToken': _adminToken, 'quote_id': quoteId, 'discovery_data': data},
     );
   }
 
