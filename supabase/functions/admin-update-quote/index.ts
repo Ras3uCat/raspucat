@@ -35,6 +35,7 @@ Deno.serve(async (req) => {
       managementOptionId,
       billingCycle,
       setupTotalCents,
+      isComped = false,
     } = await req.json();
 
     const adminPassword = Deno.env.get('ADMIN_PASSWORD');
@@ -66,8 +67,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const depositCents = Math.floor(setupTotalCents / 2);
-    const balanceCents = setupTotalCents - depositCents;
+    const resolvedSetupTotal = isComped ? 0 : setupTotalCents;
+    const depositCents = isComped ? 0 : Math.floor(resolvedSetupTotal / 2);
+    const balanceCents = isComped ? 0 : resolvedSetupTotal - depositCents;
 
     const { error: updateError } = await supabase
       .from('quotes')
@@ -79,9 +81,10 @@ Deno.serve(async (req) => {
         module_ids: moduleIds ?? [],
         management_option_id: managementOptionId ?? null,
         billing_cycle: billingCycle ?? null,
-        setup_total_cents: setupTotalCents,
+        setup_total_cents: resolvedSetupTotal,
         deposit_cents: depositCents,
         balance_cents: balanceCents,
+        is_comped: isComped,
       })
       .eq('id', quoteId);
 
