@@ -34,6 +34,7 @@ Deno.serve(async (req) => {
       managementOptionId,
       billingCycle,
       setupTotalCents,
+      isComped = false,
     } = await req.json();
 
     const adminPassword = Deno.env.get('ADMIN_PASSWORD');
@@ -45,15 +46,16 @@ Deno.serve(async (req) => {
     }
 
     // Validate required fields
-    if (!clientName || !clientEmail || !planId || !(setupTotalCents > 0)) {
+    if (!clientName || !clientEmail || !planId || (!isComped && !(setupTotalCents > 0))) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields: clientName, clientEmail, planId, setupTotalCents.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
-    const depositCents = Math.floor(setupTotalCents / 2);
-    const balanceCents = setupTotalCents - depositCents;
+    const resolvedSetupTotal = isComped ? 0 : setupTotalCents;
+    const depositCents = isComped ? 0 : Math.floor(resolvedSetupTotal / 2);
+    const balanceCents = isComped ? 0 : resolvedSetupTotal - depositCents;
 
     const { data: quote, error } = await supabase
       .from('quotes')
@@ -65,9 +67,10 @@ Deno.serve(async (req) => {
         module_ids: moduleIds ?? [],
         management_option_id: managementOptionId ?? null,
         billing_cycle: billingCycle ?? null,
-        setup_total_cents: setupTotalCents,
+        setup_total_cents: resolvedSetupTotal,
         deposit_cents: depositCents,
         balance_cents: balanceCents,
+        is_comped: isComped,
         status: 'pending',
       })
       .select()
@@ -81,7 +84,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    logEvent(quote.id, 'quote_created', { plan_id: planId, setup_total_cents: setupTotalCents });
+    logEvent(quote.id, 'quote_created', { plan_id: planId, setup_total_cents: resolvedSetupTotal, is_comped: isComped });
 
     return new Response(
       JSON.stringify({ quote }),

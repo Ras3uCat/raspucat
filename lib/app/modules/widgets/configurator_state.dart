@@ -26,6 +26,7 @@ class ConfiguratorState {
   final RxnString errorMessage = RxnString();
   final RxString clientSecret = ''.obs;
   final RxString quoteId = ''.obs;
+  final RxBool isComped = false.obs;
 
   // Promo code
   final RxString appliedPromoCode = ''.obs;
@@ -217,8 +218,9 @@ class ConfiguratorState {
         return false;
       }
 
-      clientSecret.value = data['clientSecret'] as String;
+      clientSecret.value = data['clientSecret'] as String? ?? '';
       quoteId.value = (data['quoteId'] as String?) ?? '';
+      isComped.value = data['isComped'] as bool? ?? false;
       // Sync server-confirmed discount (re-validation may differ from client estimate)
       if (data['discountAmountCents'] != null) {
         promoDiscountCents.value = data['discountAmountCents'] as int;

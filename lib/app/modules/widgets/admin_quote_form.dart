@@ -1,7 +1,8 @@
+import 'package:get/get.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/app/controllers/admin_catalog_controller.dart';
-import 'package:raspucat/app/modules/widgets/admin_quote_form_body.dart';
+import 'package:raspucat/app/modules/widgets/_admin_quote_form_fields.dart';
 import 'package:raspucat/app/modules/widgets/admin_form_widgets.dart';
 
 /// Create / Edit Quote modal.
@@ -68,6 +69,7 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
   String? _selectedBillingCycle;
   bool _submitting = false;
   String? _error;
+  final RxBool _isComped = false.obs;
 
   bool get _isEdit => widget.existingQuote != null;
 
@@ -88,6 +90,7 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
       _selectedModuleIds = rawIds.map((e) => e.toString()).toSet();
       _selectedMgmtId = q['management_option_id'] as String?;
       _selectedBillingCycle = q['billing_cycle'] as String?;
+      _isComped.value = q['is_comped'] as bool? ?? false;
     }
   }
 
@@ -101,9 +104,9 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
   }
 
   int _calcSetupTotal() {
-    final plan = widget.catalogCtrl.plans.firstWhereOrNull(
-      (p) => (p as Map)['id'] == _selectedPlanId,
-    ) as Map?;
+    final plan =
+        widget.catalogCtrl.plans.firstWhereOrNull((p) => (p as Map)['id'] == _selectedPlanId)
+            as Map?;
     final base = plan?['setup_price'] as int? ?? 0;
     final lockedRaw = plan?['locked_module_ids'] as List<dynamic>? ?? [];
     final lockedIds = lockedRaw.map((e) => e.toString()).toSet();
@@ -118,9 +121,12 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
     int discountPct = 0;
     if (plan?['is_custom'] == true) {
       final count = _selectedModuleIds.length;
-      if (count >= 9) discountPct = 15;
-      else if (count >= 6) discountPct = 10;
-      else if (count >= 3) discountPct = 5;
+      if (count >= 9)
+        discountPct = 15;
+      else if (count >= 6)
+        discountPct = 10;
+      else if (count >= 3)
+        discountPct = 5;
     }
     final discountAmt = (moduleTotal * discountPct / 100).round();
     return base + moduleTotal - discountAmt;
@@ -134,11 +140,14 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
       return;
     }
     final setupTotal = _calcSetupTotal();
-    if (setupTotal <= 0) {
+    if (setupTotal <= 0 && !_isComped.value) {
       setState(() => _error = 'Setup total must be greater than zero.');
       return;
     }
-    setState(() { _submitting = true; _error = null; });
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
     final handoffFeeDollars = int.tryParse(_handoffFeeCtrl.text.trim()) ?? 0;
     final data = <String, dynamic>{
       'clientName': name,
@@ -150,12 +159,11 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
       'billingCycle': _selectedBillingCycle,
       'setupTotalCents': setupTotal,
       'handoffFeeCents': handoffFeeDollars * 100,
+      'isComped': _isComped.value,
     };
     bool success;
     if (_isEdit) {
-      success = await widget.catalogCtrl.updateQuote(
-        widget.existingQuote!['id'] as String, data,
-      );
+      success = await widget.catalogCtrl.updateQuote(widget.existingQuote!['id'] as String, data);
     } else {
       success = await widget.catalogCtrl.createQuote(data);
     }
@@ -214,77 +222,25 @@ class _AdminQuoteFormModalState extends State<AdminQuoteFormModal> {
             onClose: () => Navigator.of(context).pop(),
           ),
           Flexible(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(ESizes.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AdminFormSectionLabel('Client Details'),
-                  const SizedBox(height: 8),
-                  AdminFormTextField(controller: _nameCtrl, hint: 'Full Name'),
-                  const SizedBox(height: 8),
-                  AdminFormTextField(
-                    controller: _emailCtrl,
-                    hint: 'Email Address',
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 8),
-                  AdminFormTextField(controller: _businessCtrl, hint: 'Business Name (optional)'),
-                  const SizedBox(height: 8),
-                  AdminFormTextField(
-                    controller: _handoffFeeCtrl,
-                    hint: 'Handoff fee \$ (0 = included)',
-                    keyboardType: TextInputType.number,
-                  ),
-                  const SizedBox(height: ESizes.md),
-                  AdminQuoteFormBody(
-                    ctrl: widget.catalogCtrl,
-                    selectedPlanId: _selectedPlanId,
-                    selectedModuleIds: _selectedModuleIds,
-                    selectedMgmtId: _selectedMgmtId,
-                    selectedBillingCycle: _selectedBillingCycle,
-                    onPlanSelected: _onPlanSelected,
-                    onModuleToggled: _onModuleToggled,
-                    onMgmtSelected: _onMgmtSelected,
-                    onBillingSelected: (c) => setState(() => _selectedBillingCycle = c),
-                  ),
-                  const SizedBox(height: ESizes.md),
-                  if (_error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        _error!,
-                        style: const TextStyle(
-                          color: Color(0xFFFF4D4D),
-                          fontSize: ESizes.fontSizeLabel,
-                        ),
-                      ),
-                    ),
-                  NeonButton(
-                    width: double.infinity,
-                    onTap: _submitting ? null : _submit,
-                    neonColor: EColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: ESizes.md),
-                    child: _submitting
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              color: EColors.primary,
-                              strokeWidth: 1.5,
-                            ),
-                          )
-                        : Text(
-                            _isEdit ? 'Save Changes' : 'Create Quote',
-                            style: const TextStyle(
-                              color: EColors.textWhite,
-                              fontWeight: FontWeight.w600,
-                              fontSize: ESizes.fontSizeMd,
-                            ),
-                          ),
-                  ),
-                ],
-              ),
+            child: AdminQuoteFormFields(
+              nameCtrl: _nameCtrl,
+              emailCtrl: _emailCtrl,
+              businessCtrl: _businessCtrl,
+              handoffFeeCtrl: _handoffFeeCtrl,
+              catalogCtrl: widget.catalogCtrl,
+              selectedPlanId: _selectedPlanId,
+              selectedModuleIds: _selectedModuleIds,
+              selectedMgmtId: _selectedMgmtId,
+              selectedBillingCycle: _selectedBillingCycle,
+              isComped: _isComped,
+              isEdit: _isEdit,
+              submitting: _submitting,
+              error: _error,
+              onPlanSelected: _onPlanSelected,
+              onModuleToggled: _onModuleToggled,
+              onMgmtSelected: _onMgmtSelected,
+              onBillingSelected: (c) => setState(() => _selectedBillingCycle = c),
+              onSubmit: _submit,
             ),
           ),
         ],

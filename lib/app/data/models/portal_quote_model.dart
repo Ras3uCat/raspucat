@@ -19,6 +19,7 @@ class PortalQuote {
   final DateTime? cancelledAt;
   final Map<String, dynamic> discoveryData;
   final DateTime? discoverySubmittedAt;
+  final bool isComped;
 
   const PortalQuote({
     required this.id,
@@ -39,6 +40,7 @@ class PortalQuote {
     this.cancelledAt,
     this.discoveryData = const {},
     this.discoverySubmittedAt,
+    this.isComped = false,
   });
 
   factory PortalQuote.fromJson(Map<String, dynamic> json) => PortalQuote(
@@ -68,6 +70,7 @@ class PortalQuote {
     discoverySubmittedAt: json['discovery_submitted_at'] != null
         ? DateTime.parse(json['discovery_submitted_at'] as String)
         : null,
+    isComped: json['is_comped'] as bool? ?? false,
   );
 
   bool get discoverySubmitted => discoverySubmittedAt != null;

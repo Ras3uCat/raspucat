@@ -46,6 +46,8 @@ class _PaymentStepState extends State<PaymentStep> {
     }
 
     return Obx(() {
+      if (widget.state.isComped.value) return const SizedBox.shrink();
+
       final error = widget.state.errorMessage.value;
 
       return Column(

@@ -1,6 +1,8 @@
+import 'package:get/get.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import 'package:raspucat/app/controllers/admin_catalog_controller.dart';
 import 'package:raspucat/app/modules/widgets/admin_form_widgets.dart';
+import 'package:raspucat/app/modules/widgets/_comp_toggle_section.dart';
 
 /// Plan / module / management / pricing sections of the quote form.
 /// Kept in a separate file to respect the 300-line limit.
@@ -16,6 +18,7 @@ class AdminQuoteFormBody extends StatelessWidget {
     required this.onModuleToggled,
     required this.onMgmtSelected,
     required this.onBillingSelected,
+    required this.isComped,
   });
 
   final AdminCatalogController ctrl;
@@ -27,6 +30,7 @@ class AdminQuoteFormBody extends StatelessWidget {
   final ValueChanged<String> onModuleToggled;
   final ValueChanged<Map<String, dynamic>> onMgmtSelected;
   final ValueChanged<String> onBillingSelected;
+  final RxBool isComped;
 
   static String _fmtCents(dynamic cents) {
     final c = cents as int? ?? 0;
@@ -78,14 +82,11 @@ class AdminQuoteFormBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final plan = ctrl.plans.firstWhereOrNull(
-      (p) => (p as Map)['id'] == selectedPlanId,
-    ) as Map?;
+    final plan = ctrl.plans.firstWhereOrNull((p) => (p as Map)['id'] == selectedPlanId) as Map?;
     final lockedIds = _lockedIds(plan);
 
-    final selectedMgmt = ctrl.managementOptions.firstWhereOrNull(
-      (o) => (o as Map)['id'] == selectedMgmtId,
-    ) as Map?;
+    final selectedMgmt =
+        ctrl.managementOptions.firstWhereOrNull((o) => (o as Map)['id'] == selectedMgmtId) as Map?;
     final isHandover = (selectedMgmt?['name'] as String? ?? '').toLowerCase().contains('handover');
 
     final moduleAddonTotal = _calcModuleAddonTotal(plan);
@@ -98,22 +99,28 @@ class AdminQuoteFormBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── Comp toggle ───────────────────────────────────────────────
+        CompToggleSection(isComped: isComped),
+        const SizedBox(height: ESizes.md),
+
         // ── Plan ──────────────────────────────────────────────────────
         const AdminFormSectionLabel('Plan'),
         const SizedBox(height: 8),
-        Obx(() => Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ctrl.plans.map((p) {
-            final pm = p as Map;
-            final id = pm['id'] as String;
-            return AdminFormSelectChip(
-              label: pm['name'] as String? ?? id,
-              selected: id == selectedPlanId,
-              onTap: () => onPlanSelected(Map<String, dynamic>.from(pm)),
-            );
-          }).toList(),
-        )),
+        Obx(
+          () => Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ctrl.plans.map((p) {
+              final pm = p as Map;
+              final id = pm['id'] as String;
+              return AdminFormSelectChip(
+                label: pm['name'] as String? ?? id,
+                selected: id == selectedPlanId,
+                onTap: () => onPlanSelected(Map<String, dynamic>.from(pm)),
+              );
+            }).toList(),
+          ),
+        ),
         const SizedBox(height: ESizes.md),
 
         // ── Modules ───────────────────────────────────────────────────
@@ -172,19 +179,21 @@ class AdminQuoteFormBody extends StatelessWidget {
         // ── Management ────────────────────────────────────────────────
         const AdminFormSectionLabel('Management'),
         const SizedBox(height: 8),
-        Obx(() => Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ctrl.managementOptions.map((o) {
-            final om = o as Map;
-            final id = om['id'] as String;
-            return AdminFormSelectChip(
-              label: om['name'] as String? ?? id,
-              selected: id == selectedMgmtId,
-              onTap: () => onMgmtSelected(Map<String, dynamic>.from(om)),
-            );
-          }).toList(),
-        )),
+        Obx(
+          () => Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ctrl.managementOptions.map((o) {
+              final om = o as Map;
+              final id = om['id'] as String;
+              return AdminFormSelectChip(
+                label: om['name'] as String? ?? id,
+                selected: id == selectedMgmtId,
+                onTap: () => onMgmtSelected(Map<String, dynamic>.from(om)),
+              );
+            }).toList(),
+          ),
+        ),
         const SizedBox(height: ESizes.md),
 
         // ── Billing Cycle ─────────────────────────────────────────────
@@ -211,27 +220,38 @@ class AdminQuoteFormBody extends StatelessWidget {
         ],
 
         // ── Price Summary ─────────────────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(ESizes.md),
-          decoration: BoxDecoration(
-            color: EColors.primary.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-            border: Border.all(color: EColors.primary.withValues(alpha: 0.15)),
-          ),
-          child: Column(
-            children: [
-              if (discountPct > 0) ...[
-                AdminFormPriceRow('Modules subtotal', _fmtCents(moduleAddonTotal)),
-                const SizedBox(height: 4),
-                AdminFormPriceRow('Volume discount ($discountPct%)', '-${_fmtCents(discountAmt)}'),
-                const SizedBox(height: 4),
-              ],
-              AdminFormPriceRow('Setup Total', _fmtCents(setupTotal)),
-              const SizedBox(height: 4),
-              AdminFormPriceRow('Deposit (50%)', _fmtCents(deposit)),
-              const SizedBox(height: 4),
-              AdminFormPriceRow('Balance', _fmtCents(balance)),
-            ],
+        Obx(
+          () => IgnorePointer(
+            ignoring: isComped.value,
+            child: Opacity(
+              opacity: isComped.value ? 0.35 : 1.0,
+              child: Container(
+                padding: const EdgeInsets.all(ESizes.md),
+                decoration: BoxDecoration(
+                  color: EColors.primary.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+                  border: Border.all(color: EColors.primary.withValues(alpha: 0.15)),
+                ),
+                child: Column(
+                  children: [
+                    if (discountPct > 0) ...[
+                      AdminFormPriceRow('Modules subtotal', _fmtCents(moduleAddonTotal)),
+                      const SizedBox(height: 4),
+                      AdminFormPriceRow(
+                        'Volume discount ($discountPct%)',
+                        '-${_fmtCents(discountAmt)}',
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                    AdminFormPriceRow('Setup Total', _fmtCents(setupTotal)),
+                    const SizedBox(height: 4),
+                    AdminFormPriceRow('Deposit (50%)', _fmtCents(deposit)),
+                    const SizedBox(height: 4),
+                    AdminFormPriceRow('Balance', _fmtCents(balance)),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ],

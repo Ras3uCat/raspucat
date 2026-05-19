@@ -142,6 +142,25 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Comped projects bypass Stripe entirely — mark active and exit.
+    if (quote.is_comped) {
+      await supabase.from('quotes').update({
+        status: 'active',
+        subscription_started_at: new Date().toISOString(),
+      }).eq('id', quoteId);
+
+      await supabase.from('quote_events').insert({
+        quote_id: quoteId,
+        event_type: 'quote_comped_activated',
+      });
+
+      // No email sent for comped activations (internal side projects only).
+      return new Response(JSON.stringify({ comped: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Guard: only start subscription for eligible quotes
     if (quote.billing_cycle === 'onetime') {
       return new Response(
