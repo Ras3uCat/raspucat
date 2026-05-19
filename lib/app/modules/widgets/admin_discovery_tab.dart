@@ -10,11 +10,13 @@ class AdminDiscoveryTab extends StatefulWidget {
     required this.ctrl,
     required this.quoteId,
     required this.discoveryData,
+    required this.portalStage,
     this.submittedAt,
   });
   final AdminController ctrl;
   final String quoteId;
   final Map<String, dynamic> discoveryData;
+  final String portalStage;
   final String? submittedAt;
 
   @override
@@ -25,6 +27,7 @@ class _State extends State<AdminDiscoveryTab> {
   late final Map<String, dynamic> _data;
   Timer? _debounce;
   String _saveStatus = '';
+  bool _advancingStage = false;
 
   @override
   void initState() {
@@ -123,6 +126,17 @@ class _State extends State<AdminDiscoveryTab> {
               fontWeight: FontWeight.w500,
             ),
           ),
+        if (widget.portalStage == 'awaiting_discovery') ...[
+          const SizedBox(width: ESizes.sm),
+          _SkipDiscoveryButton(
+            loading: _advancingStage,
+            onTap: () async {
+              setState(() => _advancingStage = true);
+              await widget.ctrl.updatePortalStage(widget.quoteId, 'transmitting');
+              if (mounted) setState(() => _advancingStage = false);
+            },
+          ),
+        ],
       ],
     );
   }
@@ -194,5 +208,40 @@ class _State extends State<AdminDiscoveryTab> {
     } catch (_) {
       return iso;
     }
+  }
+}
+
+class _SkipDiscoveryButton extends StatelessWidget {
+  const _SkipDiscoveryButton({required this.loading, required this.onTap});
+  final bool loading;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: loading ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
+        decoration: BoxDecoration(
+          color: EColors.gold.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+          border: Border.all(color: EColors.gold.withValues(alpha: 0.4)),
+        ),
+        child: loading
+            ? SizedBox(
+                width: 12,
+                height: 12,
+                child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.gold),
+              )
+            : Text(
+                'Skip Discovery',
+                style: TextStyle(
+                  color: EColors.gold,
+                  fontSize: ESizes.fontSizeLabel,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+      ),
+    );
   }
 }

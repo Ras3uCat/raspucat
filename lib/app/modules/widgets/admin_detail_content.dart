@@ -152,6 +152,7 @@ class _AdminDetailContentState extends State<AdminDetailContent> {
               ctrl: ctrl,
               quoteId: quoteId,
               discoveryData: (detail['discovery_data'] as Map<String, dynamic>?) ?? {},
+              portalStage: detail['portal_stage'] as String? ?? 'transmitting',
               submittedAt: detail['discovery_submitted_at'] as String?,
             ),
             _Tab.delivery => AdminDeliverySection(
