@@ -32251,11 +32251,14 @@ this.b=b},
 aKQ:function aKQ(a){this.a=a},
 aKO:function aKO(a){this.a=a},
 aKP:function aKP(a){this.a=a},
-bXK(a){var s,r,q=J.ao(a),p=A.c_(q.h(a,"subscription_amount_cents")),o=A.a3(q.h(a,"billing_cycle"))
-if(p==null||p===0||o==="onetime")return"\u2014"
-s=B.j.a4(p/100)
-r=o==="annual"?"/yr":"/mo"
-return"$"+s+r},
+bXK(a){var s,r,q,p,o=J.ao(a)
+if(J.h(o.h(a,"is_comped"),!0))return"\u2014"
+s=A.c_(o.h(a,"subscription_amount_cents"))
+r=A.a3(o.h(a,"billing_cycle"))
+if(s==null||s===0||r==="onetime")return"\u2014"
+q=B.j.a4(s/100)
+p=r==="annual"?"/yr":"/mo"
+return"$"+q+p},
 adV(a){var s,r,q,p,o,n
 if(a==null)return"\u2014"
 try{s=A.f4(a)
@@ -119787,8 +119790,9 @@ if(J.h(a8.h(a7,a),"deposit_paid")){i=A.c_(a8.h(a7,a3))
 i=(i==null?0:i)>0}else i=!1
 if(i)q.push(new A.a5w("Charge Remaining "+A.aLK(A.c_(a8.h(a7,a3))),o===!0,b.r,B.ak,a0))
 o=!1
-if(!J.h(a8.h(a7,a5),"onetime"))if(a8.h(a7,"activated_at")==null){o=A.eS(a8.h(a7,"is_comped"))
+if(!J.h(a8.h(a7,a5),"onetime"))if(a8.h(a7,"activated_at")==null)if(!J.h(a8.h(a7,a),"active")){o=A.eS(a8.h(a7,"is_comped"))
 a7=o===!0||a8.h(a7,"stripe_payment_method_id")!=null}else a7=o
+else a7=o
 else a7=o
 if(a7)q.push(new A.a5w("Start Subscription",n===!0,b.w,B.e,a0))
 a7=A.e([h,B.Y,s,B.Y,A.fp(B.be,q,8,8)],g)
