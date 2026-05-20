@@ -226,7 +226,8 @@ class AdminQuoteRow extends StatelessWidget {
                       'Management',
                       '${quote['management_option_name']} (${quote['billing_cycle'] ?? '—'})',
                     ),
-                  if ((quote['subscription_amount_cents'] as int? ?? 0) > 0 &&
+                  if (!_isComped &&
+                      (quote['subscription_amount_cents'] as int? ?? 0) > 0 &&
                       quote['billing_cycle'] != 'onetime')
                     _InfoChip(
                       'Sub',

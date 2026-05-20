@@ -43,12 +43,13 @@ Deno.serve(async (req) => {
         .select('balance_cents')
         .eq('status', 'deposit_paid'),
 
-      // mrr: billing quotes with active subscriptions (not onetime)
+      // mrr: billing quotes with active subscriptions (not onetime, not comped)
       supabase
         .from('quotes')
         .select('billing_cycle, management_options(monthly_price, annual_price)')
         .not('subscription_started_at', 'is', null)
-        .neq('billing_cycle', 'onetime'),
+        .neq('billing_cycle', 'onetime')
+        .eq('is_comped', false),
     ]);
 
     if (activeResult.error) {
