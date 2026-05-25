@@ -5,6 +5,9 @@ import 'package:raspucat/app/data/models/booking_model.dart';
 class AdminAvailabilityController extends GetxController {
   final _client = Supabase.instance.client;
 
+  String _adminToken = '';
+  void setToken(String token) => _adminToken = token;
+
   final rules = RxList<AvailabilityRule>([]);
   final blocks = RxList<AvailabilityBlock>([]);
   final isLoading = false.obs;
@@ -21,20 +24,16 @@ class AdminAvailabilityController extends GetxController {
     AvailabilityRule(dayOfWeek: 6, startTime: '09:00', endTime: '17:00', enabled: false),
   ];
 
-  @override
-  void onInit() {
-    super.onInit();
-    loadAvailability();
-  }
-
+  // Called by AdminController after login — don't load on onInit (token not set yet).
   Future<void> loadAvailability() async {
+    if (_adminToken.isEmpty) return;
     isLoading.value = true;
     errorMessage.value = null;
     try {
       final response = await _client.functions.invoke(
         'admin-manage-availability',
         method: HttpMethod.post,
-        body: {'action': 'list'},
+        body: {'action': 'list', 'adminToken': _adminToken},
       );
 
       final data = response.data as Map<String, dynamic>?;
@@ -63,7 +62,11 @@ class AdminAvailabilityController extends GetxController {
       await _client.functions.invoke(
         'admin-manage-availability',
         method: HttpMethod.post,
-        body: {'action': 'set-rules', 'rules': updatedRules.map((r) => r.toJson()).toList()},
+        body: {
+          'action': 'set-rules',
+          'adminToken': _adminToken,
+          'rules': updatedRules.map((r) => r.toJson()).toList(),
+        },
       );
       rules.assignAll(updatedRules);
       successMessage.value = 'Schedule saved.';
@@ -82,15 +85,23 @@ class AdminAvailabilityController extends GetxController {
         'admin-manage-availability',
         method: HttpMethod.post,
         body: {
-          'action': 'block',
-          'from': from.toUtc().toIso8601String(),
-          'until': until.toUtc().toIso8601String(),
+          'action': 'block-time',
+          'adminToken': _adminToken,
+          'blockedFrom': from.toUtc().toIso8601String(),
+          'blockedUntil': until.toUtc().toIso8601String(),
           if (reason != null && reason.isNotEmpty) 'reason': reason,
         },
       );
       final data = response.data as Map<String, dynamic>?;
-      if (data?['block'] != null) {
-        blocks.add(AvailabilityBlock.fromJson(data!['block'] as Map<String, dynamic>));
+      if (data?['blockId'] != null) {
+        blocks.add(
+          AvailabilityBlock(
+            id: data!['blockId'] as String,
+            from: from,
+            until: until,
+            reason: reason,
+          ),
+        );
       }
     } catch (e) {
       errorMessage.value = 'Failed to block time: $e';
@@ -106,7 +117,7 @@ class AdminAvailabilityController extends GetxController {
       await _client.functions.invoke(
         'admin-manage-availability',
         method: HttpMethod.post,
-        body: {'action': 'unblock', 'blockId': blockId},
+        body: {'action': 'unblock-time', 'adminToken': _adminToken, 'blockId': blockId},
       );
       blocks.removeWhere((b) => b.id == blockId);
     } catch (e) {
