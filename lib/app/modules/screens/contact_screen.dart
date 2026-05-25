@@ -1,5 +1,9 @@
+import 'package:raspucat/app/controllers/booking_controller.dart';
 import 'package:raspucat/app/controllers/contact_controller.dart';
+import 'package:raspucat/app/modules/widgets/booking_widget.dart';
 import 'package:raspucat/utils/constants/exports.dart';
+
+part '_contact_form.dart';
 
 class ContactScreen extends StatelessWidget {
   const ContactScreen({super.key});
@@ -18,10 +22,7 @@ class ContactScreen extends StatelessWidget {
             controller: ctrl,
             startOffset: const Offset(0, 25),
             child: FittedBox(
-              child: NeonText(
-                text: 'CONTACT',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
+              child: NeonText(text: 'CONTACT', style: Theme.of(context).textTheme.headlineLarge),
             ),
           ),
           const SizedBox(height: ESizes.sm),
@@ -31,10 +32,9 @@ class ContactScreen extends StatelessWidget {
             startOffset: const Offset(0, 40),
             child: Text(
               EText.contactSubLabel.toUpperCase(),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: EColors.textSecondary,
-                    letterSpacing: 3.0,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: EColors.textSecondary, letterSpacing: 3.0),
               textAlign: TextAlign.center,
             ),
           ),
@@ -63,9 +63,11 @@ class ContactScreen extends StatelessWidget {
             startOffset: const Offset(0, 20),
             child: Container(
               constraints: const BoxConstraints(maxWidth: 520),
-              child: Obx(() => contact.isSubmitted.value
-                  ? const _SuccessMessage()
-                  : _ContactForm(contact: contact)),
+              child: Obx(
+                () => contact.isSubmitted.value
+                    ? _SuccessMessage(meetUrl: contact.meetUrl.value)
+                    : _ContactForm(contact: contact),
+              ),
             ),
           ),
           const SizedBox(height: ESizes.spaceBtwSections),
@@ -74,8 +76,7 @@ class ContactScreen extends StatelessWidget {
             controller: ctrl,
             startOffset: const Offset(0, 15),
             child: _ContactLink(
-              icon: FaIcon(FontAwesomeIcons.github,
-                  color: EColors.primary, size: ESizes.iconMd),
+              icon: FaIcon(FontAwesomeIcons.github, color: EColors.primary, size: ESizes.iconMd),
               label: 'rmr32',
               url: 'https://github.com/rmr32',
             ),
@@ -86,125 +87,11 @@ class ContactScreen extends StatelessWidget {
   }
 }
 
-// ─── Form ─────────────────────────────────────────────────────────────────────
-
-class _ContactForm extends StatelessWidget {
-  const _ContactForm({required this.contact});
-  final ContactController contact;
-
-  static InputDecoration _decor(String label) => InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-          color: EColors.textSecondary,
-          fontSize: ESizes.fontSizeLabel,
-          letterSpacing: 1.0,
-        ),
-        filled: true,
-        fillColor: EColors.primary.withValues(alpha: 0.03),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide:
-              BorderSide(color: EColors.primary.withValues(alpha: 0.2)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide:
-              BorderSide(color: EColors.primary.withValues(alpha: 0.6)),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-          borderSide: const BorderSide(color: Colors.redAccent),
-        ),
-        errorStyle: const TextStyle(
-            color: Colors.redAccent, fontSize: ESizes.fontSizeLabel),
-      );
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: contact.formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          TextFormField(
-            controller: contact.nameCtrl,
-            validator: contact.validateRequired,
-            style: const TextStyle(
-                color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
-            decoration: _decor('Name'),
-            cursorColor: EColors.primary,
-          ),
-          const SizedBox(height: ESizes.md),
-          TextFormField(
-            controller: contact.emailCtrl,
-            validator: contact.validateEmail,
-            keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(
-                color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
-            decoration: _decor('Email'),
-            cursorColor: EColors.primary,
-          ),
-          const SizedBox(height: ESizes.md),
-          TextFormField(
-            controller: contact.messageCtrl,
-            validator: contact.validateRequired,
-            maxLines: 4,
-            style: const TextStyle(
-                color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
-            decoration: _decor('Message'),
-            cursorColor: EColors.primary,
-          ),
-          const SizedBox(height: ESizes.lg),
-          Obx(() => contact.errorMessage.value != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: ESizes.md),
-                  child: Text(
-                    contact.errorMessage.value!,
-                    style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: ESizes.fontSizeLabel),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              : const SizedBox.shrink()),
-          Obx(() => NeonButton(
-                padding: const EdgeInsets.symmetric(vertical: ESizes.md),
-                onTap:
-                    contact.isSubmitting.value ? null : contact.submit,
-                child: contact.isSubmitting.value
-                    ? SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: EColors.primary,
-                        ),
-                      )
-                    : const Text(
-                        'TRANSMIT',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: EColors.primary,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 2.0,
-                          fontSize: ESizes.fontSizeSm,
-                        ),
-                      ),
-              )),
-        ],
-      ),
-    );
-  }
-}
-
 // ─── Success state ────────────────────────────────────────────────────────────
 
 class _SuccessMessage extends StatelessWidget {
-  const _SuccessMessage();
+  const _SuccessMessage({this.meetUrl});
+  final String? meetUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -217,8 +104,7 @@ class _SuccessMessage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.check_circle_outline_rounded,
-              color: EColors.primary, size: ESizes.iconLg),
+          Icon(Icons.check_circle_outline_rounded, color: EColors.primary, size: ESizes.iconLg),
           const SizedBox(height: ESizes.md),
           Text(
             'SIGNAL RECEIVED.',
@@ -231,7 +117,9 @@ class _SuccessMessage extends StatelessWidget {
           ),
           const SizedBox(height: ESizes.sm),
           Text(
-            'Expect a response within one business day.',
+            meetUrl != null
+                ? 'Expect a response within one business day. Your call has been booked.'
+                : 'Expect a response within one business day.',
             style: TextStyle(
               color: EColors.textSecondary,
               fontSize: ESizes.fontSizeLabel,
@@ -239,6 +127,23 @@ class _SuccessMessage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
+          if (meetUrl != null) ...[
+            const SizedBox(height: ESizes.md),
+            GestureDetector(
+              onTap: () => EDeviceUtils.launchUrl(meetUrl!),
+              child: Text(
+                'JOIN MEETING',
+                style: TextStyle(
+                  color: EColors.primary,
+                  fontSize: ESizes.fontSizeLabel,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 1.5,
+                  decoration: TextDecoration.underline,
+                  decorationColor: EColors.primary,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -248,8 +153,7 @@ class _SuccessMessage extends StatelessWidget {
 // ─── GitHub link ──────────────────────────────────────────────────────────────
 
 class _ContactLink extends StatefulWidget {
-  const _ContactLink(
-      {required this.icon, required this.label, required this.url});
+  const _ContactLink({required this.icon, required this.label, required this.url});
   final Widget icon;
   final String label;
   final String url;
@@ -277,11 +181,14 @@ class _ContactLinkState extends State<_ContactLink> {
             children: [
               widget.icon,
               const SizedBox(width: ESizes.sm),
-              Text(widget.label,
-                  style: const TextStyle(
-                      color: EColors.primary,
-                      fontSize: ESizes.fontSizeSm,
-                      letterSpacing: 0.5)),
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  color: EColors.primary,
+                  fontSize: ESizes.fontSizeSm,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ],
           ),
         ),

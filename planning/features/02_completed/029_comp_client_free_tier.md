@@ -3,8 +3,8 @@
 ## Status
 - [x] Backlog (Draft)
 - [x] Approved
-- [ ] In Progress
-- [ ] Completed
+- [x] In Progress
+- [x] Completed
 
 **Mode:** STUDIO
 
@@ -33,15 +33,15 @@ is the gate for site-live state.
 
 ## Acceptance Criteria
 
-- [ ] Admin quote form has a "Comp this project" toggle (admin UI only, no client-facing label)
-- [ ] When toggled on, all monetary fields (setup fee, deposit, balance) display as $0.00 and are read-only
-- [ ] Comped quote is persisted with `is_comped = true` and all cents fields = 0
-- [ ] Client-facing deposit step is skipped (no payment prompt) when `is_comped = true`
-- [ ] "Start Subscription" on a comped quote sets `status = 'active'` and `subscription_started_at = now()` with zero Stripe API calls
-- [ ] No Stripe customer or subscription record is created for comped quotes
-- [ ] Non-comped quotes are unaffected — full Stripe flow continues to work exactly as before
-- [ ] `is_comped` cannot be set by the Flutter client — only via `adminToken`-authenticated Edge Function
-- [ ] All new files stay under 300 lines
+- [x] Admin quote form has a "Comp this project" toggle (admin UI only, no client-facing label)
+- [x] When toggled on, all monetary fields (setup fee, deposit, balance) display as $0.00 and are read-only
+- [x] Comped quote is persisted with `is_comped = true` and all cents fields = 0
+- [x] Client-facing deposit step is skipped (no payment prompt) when `is_comped = true`
+- [x] "Start Subscription" on a comped quote sets `status = 'active'` and `subscription_started_at = now()` with zero Stripe API calls
+- [x] No Stripe customer or subscription record is created for comped quotes
+- [x] Non-comped quotes are unaffected — full Stripe flow continues to work exactly as before
+- [x] `is_comped` cannot be set by the Flutter client — only via `adminToken`-authenticated Edge Function
+- [x] All new files stay under 300 lines
 
 ---
 

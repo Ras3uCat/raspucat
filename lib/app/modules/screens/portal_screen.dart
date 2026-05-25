@@ -1,5 +1,6 @@
 import 'package:raspucat/app/controllers/portal_controller.dart';
 import 'package:raspucat/app/modules/widgets/portal_add_modules_view.dart';
+import 'package:raspucat/app/modules/widgets/portal_booking_view.dart';
 import 'package:raspucat/app/modules/widgets/portal_dashboard.dart';
 import 'package:raspucat/app/modules/widgets/portal_files_view.dart';
 import 'package:raspucat/app/modules/widgets/portal_messages_view.dart';
@@ -16,6 +17,7 @@ class PortalScreen extends GetView<PortalController> {
     _TabDef(icon: Icons.chat_bubble_outline, label: 'Messages'),
     _TabDef(icon: Icons.folder_outlined, label: 'Files'),
     _TabDef(icon: Icons.add_circle_outline, label: 'Add Modules'),
+    _TabDef(icon: Icons.calendar_today_outlined, label: 'Book'),
   ];
 
   @override
@@ -172,6 +174,7 @@ class _PortalContent extends StatelessWidget {
           PortalMessagesView(quoteId: ctrl.activeQuote!.id),
           PortalFilesView(quoteId: ctrl.activeQuote!.id),
           const PortalAddModulesView(),
+          const PortalBookingView(),
         ],
       );
     });

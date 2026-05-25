@@ -8,4 +8,5 @@ class ERoutes {
   static const portal = '/portal';
   static const portalLogin = '/portal/login';
   static const appProjectLanding = '/:slug';
+  static const manageBooking = '/booking/manage';
 }

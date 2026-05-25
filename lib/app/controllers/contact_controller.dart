@@ -1,3 +1,4 @@
+import 'package:raspucat/app/controllers/booking_controller.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,12 +24,27 @@ class ContactController extends GetxController {
   final isSubmitting = false.obs;
   final isSubmitted = false.obs;
   final errorMessage = RxnString();
+  final bookingEnabled = false.obs;
+  final meetUrl = RxnString();
+
+  BookingController? _bookingCtrl;
+
+  bool get hasBooking => _bookingCtrl?.selectedSlot.value != null;
+
+  void attachBookingController(BookingController ctrl) {
+    _bookingCtrl = ctrl;
+  }
+
+  void detachBookingController() {
+    _bookingCtrl = null;
+  }
 
   @override
   void onClose() {
     nameCtrl.dispose();
     emailCtrl.dispose();
     messageCtrl.dispose();
+    _bookingCtrl = null;
     super.onClose();
   }
 
@@ -50,6 +66,22 @@ class ContactController extends GetxController {
         'email': emailCtrl.text.trim(),
         'message': messageCtrl.text.trim(),
       });
+
+      if (hasBooking && _bookingCtrl != null) {
+        try {
+          final result = await _bookingCtrl!.createBooking(
+            name: nameCtrl.text.trim(),
+            email: emailCtrl.text.trim(),
+            message: messageCtrl.text.trim(),
+          );
+          meetUrl.value = result['meetUrl'] as String?;
+        } catch (e) {
+          // Booking failure does not block contact submission success
+          // ignore: avoid_print
+          print('[ContactController] booking error: $e');
+        }
+      }
+
       isSubmitted.value = true;
     } catch (e) {
       errorMessage.value = 'Transmission failed: $e';

@@ -2,6 +2,7 @@ import 'package:raspucat/utils/constants/exports.dart';
 import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/app/controllers/admin_catalog_controller.dart';
 import 'package:raspucat/app/controllers/admin_app_projects_controller.dart';
+import 'package:raspucat/app/controllers/admin_availability_controller.dart';
 import 'package:raspucat/app/modules/widgets/admin_quote_row.dart';
 import 'package:raspucat/app/modules/widgets/admin_filter_bar.dart';
 import 'package:raspucat/app/modules/widgets/admin_stats_bar.dart';
@@ -10,6 +11,7 @@ import 'package:raspucat/app/modules/widgets/admin_pipeline_view.dart';
 import 'package:raspucat/app/modules/widgets/admin_login_gate.dart';
 import 'package:raspucat/app/modules/widgets/admin_quote_form.dart';
 import 'package:raspucat/app/modules/widgets/admin_app_projects_view.dart';
+import 'package:raspucat/app/modules/widgets/admin_availability_widget.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
@@ -20,6 +22,7 @@ class AdminScreen extends StatelessWidget {
     Get.put(AdminCatalogController());
     Get.put(AdminAppProjectsController());
 
+    Get.put(AdminAvailabilityController());
     return Scaffold(
       backgroundColor: EColors.backgroundDark,
       body: Obx(
@@ -59,8 +62,10 @@ class _DashboardState extends State<_Dashboard> {
                 : AdminFilterBar(ctrl: widget.ctrl),
           ),
           Expanded(child: _QuoteContent(ctrl: widget.ctrl)),
-        ] else
-          const Expanded(child: AdminAppProjectsView()),
+        ] else if (_tab == 1)
+          const Expanded(child: AdminAppProjectsView())
+        else
+          const Expanded(child: AdminAvailabilityWidget()),
       ],
     );
   }
@@ -120,8 +125,15 @@ class _DashboardHeader extends StatelessWidget {
             selected: selectedTab == 1,
             onTap: () => onTabChanged(1),
           ),
+          const SizedBox(width: ESizes.md),
+          _TabButton(
+            label: 'Availability',
+            selected: selectedTab == 2,
+            onTap: () => onTabChanged(2),
+          ),
           const Spacer(),
           if (selectedTab == 0) ...[
+            // quote action buttons
             NeonButton(
               onTap: () => AdminQuoteFormModal.show(context, ctrl),
               padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),

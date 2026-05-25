@@ -2,7 +2,7 @@
 Title: Landing Page Animation Upgrades
 Mode: STUDIO
 Priority: High
-Status: Active
+Status: Completed
 Source: Animation pattern audit — Two-Shades-of-Travel (JS) + Cheese-Inc (Flutter) reference sites
 ---
 
@@ -226,4 +226,4 @@ Elevate the Raspucat marketing site from basic scroll-entrance animations to a p
 - [x] HowItWorks replaced with horizontal scroll panels
 - [x] Hero background triangles parallax on scroll
 - [x] `flutter analyze`: no new issues introduced
-- [ ] Smoke test in Chrome across all sections
+- [x] Smoke test in Chrome across all sections
