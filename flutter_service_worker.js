@@ -26,7 +26,7 @@ const RESOURCES = {"bingequest/profile/index.html": "f928022699a4561b34b100061f1
 "assets/assets/images/logos/raspucat_512.png": "9a270910d4f1771b5b13362a60367088",
 "assets/assets/images/logos/raspucat_bimi.svg": "d82361c190a852409dec84c1ebdfc9b1",
 "assets/assets/images/logos/raspucat_black.svg": "20067aff097a215ae9a08a8f36126d99",
-"assets/fonts/MaterialIcons-Regular.otf": "e0515d774a5cb51a54afd3a375835cae",
+"assets/fonts/MaterialIcons-Regular.otf": "b0c132da1143097005f4c24329caf344",
 "assets/AssetManifest.bin": "2f3172ffc3bc4941f538d607ef47e1b6",
 "assets/FontManifest.json": "5a32d4310a6f5d9a6b651e75ba0d7372",
 "assets/AssetManifest.bin.json": "e78d1e98cf3592627ff60744fa7b53f4",
@@ -55,10 +55,10 @@ const RESOURCES = {"bingequest/profile/index.html": "f928022699a4561b34b100061f1
 "canvaskit/chromium/canvaskit.js": "8191e843020c832c9cf8852a4b909d4c",
 "canvaskit/canvaskit.js": "728b2d477d9b8c14593d4f9b82b484f3",
 "canvaskit/skwasm.wasm": "39dd80367a4e71582d234948adc521c0",
-"flutter_bootstrap.js": "f1791ad1455d2e1427d151ad1b262218",
+"flutter_bootstrap.js": "02d6ce682e9d99132b54f54cbd41beff",
 "manifest.json": "b903179230055979c0f8f0b0020c0492",
 "404.html": "d6f85ac73e83fb6cd6d44ca0e1f01557",
-"main.dart.js": "d00d5dd3a0c4578fa0cdd29374ff9a6a"};
+"main.dart.js": "4ac4160aff26c310fcadb86e8dcb0d6b"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
