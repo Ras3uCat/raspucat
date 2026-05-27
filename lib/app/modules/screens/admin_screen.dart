@@ -3,6 +3,7 @@ import 'package:raspucat/app/controllers/admin_controller.dart';
 import 'package:raspucat/app/controllers/admin_catalog_controller.dart';
 import 'package:raspucat/app/controllers/admin_app_projects_controller.dart';
 import 'package:raspucat/app/controllers/admin_availability_controller.dart';
+import 'package:raspucat/app/controllers/admin_outreach_controller.dart';
 import 'package:raspucat/app/modules/widgets/admin_quote_row.dart';
 import 'package:raspucat/app/modules/widgets/admin_filter_bar.dart';
 import 'package:raspucat/app/modules/widgets/admin_stats_bar.dart';
@@ -12,6 +13,7 @@ import 'package:raspucat/app/modules/widgets/admin_login_gate.dart';
 import 'package:raspucat/app/modules/widgets/admin_quote_form.dart';
 import 'package:raspucat/app/modules/widgets/admin_app_projects_view.dart';
 import 'package:raspucat/app/modules/widgets/admin_availability_widget.dart';
+import 'package:raspucat/app/modules/widgets/admin_outreach_widget.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
@@ -23,6 +25,7 @@ class AdminScreen extends StatelessWidget {
     Get.put(AdminAppProjectsController());
 
     Get.put(AdminAvailabilityController());
+    Get.put(AdminOutreachController());
     return Scaffold(
       backgroundColor: EColors.backgroundDark,
       body: Obx(
@@ -64,8 +67,10 @@ class _DashboardState extends State<_Dashboard> {
           Expanded(child: _QuoteContent(ctrl: widget.ctrl)),
         ] else if (_tab == 1)
           const Expanded(child: AdminAppProjectsView())
+        else if (_tab == 2)
+          const Expanded(child: AdminAvailabilityWidget())
         else
-          const Expanded(child: AdminAvailabilityWidget()),
+          const Expanded(child: AdminOutreachWidget()),
       ],
     );
   }
@@ -131,6 +136,8 @@ class _DashboardHeader extends StatelessWidget {
             selected: selectedTab == 2,
             onTap: () => onTabChanged(2),
           ),
+          const SizedBox(width: ESizes.md),
+          _TabButton(label: 'Outreach', selected: selectedTab == 3, onTap: () => onTabChanged(3)),
           const Spacer(),
           if (selectedTab == 0) ...[
             // quote action buttons

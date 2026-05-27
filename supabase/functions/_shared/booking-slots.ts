@@ -111,6 +111,10 @@ export async function getAvailableSlots(
     busy.push({ from: new Date(b.start_at).getTime(), to: new Date(b.end_at).getTime() + BUFFER_MS });
   }
 
+  // No same-day (or past-day) bookings
+  const todayInOwnerTz = new Intl.DateTimeFormat('en-CA', { timeZone: getOwnerTz() }).format(new Date());
+  if (dateStr <= todayInOwnerTz) return [];
+
   const now = Date.now();
   return allSlots.filter((slot) => {
     if (slot.getTime() <= now) return false;

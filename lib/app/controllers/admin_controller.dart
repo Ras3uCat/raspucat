@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 import 'package:raspucat/app/controllers/admin_catalog_controller.dart';
 import 'package:raspucat/app/controllers/admin_availability_controller.dart';
+import 'package:raspucat/app/controllers/admin_outreach_controller.dart';
 
 class AdminController extends GetxController {
   static AdminController get instance => Get.find();
@@ -85,6 +86,7 @@ class AdminController extends GetxController {
 
   AdminCatalogController get _catalog => Get.find<AdminCatalogController>();
   AdminAvailabilityController get _availability => Get.find<AdminAvailabilityController>();
+  AdminOutreachController get _outreach => Get.find<AdminOutreachController>();
 
   Future<String?> login(String password) async {
     if (password.trim().isEmpty) return 'Enter your password.';
@@ -106,6 +108,7 @@ class AdminController extends GetxController {
       isAuthenticated.value = true;
       _catalog.setToken(_adminToken);
       _availability.setToken(_adminToken);
+      _outreach.setToken(_adminToken);
       await Future.wait([
         fetchQuotes(),
         fetchStats(),
@@ -113,6 +116,7 @@ class AdminController extends GetxController {
         fetchPendingModuleCounts(),
         fetchCurrentTemplateVersion(),
         _availability.loadAvailability(),
+        _outreach.loadSettings(),
       ]);
       _pollTimer?.cancel();
       _pollTimer = Timer.periodic(const Duration(seconds: 60), (_) => fetchPendingModuleCounts());

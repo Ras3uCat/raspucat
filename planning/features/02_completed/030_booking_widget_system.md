@@ -4,7 +4,7 @@
 - [x] Backlog (Draft)
 - [x] Approved
 - [x] In Progress
-- [ ] Completed
+- [x] Completed
 
 **Mode:** STUDIO
 
@@ -36,19 +36,19 @@ sync (with auto-generated Google Meet links) and Resend emails are handled via E
 
 ## Acceptance Criteria
 
-- [ ] `availability_rules`, `availability_blocks`, and `bookings` tables exist with RLS enabled
-- [ ] `get-available-slots` Edge Function returns correct 30-min slots, respecting blocks, existing bookings, and 30-min buffer
-- [ ] Contact form has an optional "Schedule a call?" toggle; `BookingWidget` appears when toggled on
-- [ ] Submitting contact form with a slot selected creates a `bookings` row and a `contact_submissions` row
-- [ ] Confirmation email sent via Resend with Google Meet link + manage link
-- [ ] Google Calendar event created for each booking (with Meet link)
-- [ ] `/booking/manage?token=xxx` public route allows cancel and reschedule without login
-- [ ] Cancel: sets `status = 'cancelled'`, deletes Calendar event, sends cancellation email
-- [ ] Reschedule: updates slot, updates Calendar event, sends reschedule email
-- [ ] Client portal has a "Book a Check-in" section using same `BookingWidget` (`session_type = project_checkin`)
-- [ ] Admin availability panel: set weekly hours + block ad-hoc time
-- [ ] Double-booking is prevented (slot re-validated in `create-booking`)
-- [ ] All new files stay under 300 lines
+- [x] `availability_rules`, `availability_blocks`, and `bookings` tables exist with RLS enabled
+- [x] `get-available-slots` Edge Function returns correct 30-min slots, respecting blocks, existing bookings, and 30-min buffer
+- [x] Contact form has an optional "Schedule a call?" toggle; `BookingWidget` appears when toggled on
+- [x] Submitting contact form with a slot selected creates a `bookings` row and a `contact_submissions` row
+- [x] Confirmation email sent via Resend with Google Meet link + manage link
+- [x] Google Calendar event created for each booking (with Meet link)
+- [x] `/booking/manage?token=xxx` public route allows cancel and reschedule without login
+- [x] Cancel: sets `status = 'cancelled'`, deletes Calendar event, sends cancellation email
+- [x] Reschedule: updates slot, updates Calendar event, sends reschedule email
+- [x] Client portal has a "Book a Check-in" section using same `BookingWidget` (`session_type = project_checkin`)
+- [x] Admin availability panel: set weekly hours + block ad-hoc time
+- [x] Double-booking is prevented (slot re-validated in `create-booking`)
+- [x] All new files stay under 300 lines
 
 ---
 
