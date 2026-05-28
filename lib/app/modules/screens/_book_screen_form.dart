@@ -12,7 +12,8 @@ class _BookBody extends StatefulWidget {
   final BookingController bookingCtrl;
   final RxBool isSubmitting;
   final RxnString errorMessage;
-  final Future<void> Function({required String name, required String email, String? message}) onSubmit;
+  final Future<void> Function({required String name, required String email, String? message})
+  onSubmit;
 
   @override
   State<_BookBody> createState() => _BookBodyState();
@@ -66,33 +67,41 @@ class _BookBodyState extends State<_BookBody> {
                     padding: const EdgeInsets.only(bottom: ESizes.sm),
                     child: Text(
                       widget.errorMessage.value!,
-                      style: const TextStyle(color: Colors.redAccent, fontSize: ESizes.fontSizeLabel),
+                      style: const TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: ESizes.fontSizeLabel,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   );
                 }
                 return const SizedBox.shrink();
               }),
-              Obx(() => NeonButton(
-                onTap: widget.isSubmitting.value ? null : _handleSubmit,
-                padding: const EdgeInsets.symmetric(vertical: ESizes.md),
-                child: widget.isSubmitting.value
-                    ? const SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
-                      )
-                    : const Text(
-                        'CONFIRM BOOKING',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: EColors.primary,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 2.0,
-                          fontSize: ESizes.fontSizeSm,
+              Obx(
+                () => NeonButton(
+                  onTap: widget.isSubmitting.value ? null : _handleSubmit,
+                  padding: const EdgeInsets.symmetric(vertical: ESizes.md),
+                  child: widget.isSubmitting.value
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.5,
+                            color: EColors.primary,
+                          ),
+                        )
+                      : const Text(
+                          'CONFIRM BOOKING',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: EColors.primary,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 2.0,
+                            fontSize: ESizes.fontSizeSm,
+                          ),
                         ),
-                      ),
-              )),
+                ),
+              ),
             ],
           );
         }),
@@ -118,7 +127,10 @@ class _ContactForm extends StatelessWidget {
     labelText: label,
     hintText: hint,
     labelStyle: const TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeSm),
-    hintStyle: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.4), fontSize: ESizes.fontSizeSm),
+    hintStyle: TextStyle(
+      color: EColors.textSecondary.withValues(alpha: 0.4),
+      fontSize: ESizes.fontSizeSm,
+    ),
     filled: true,
     fillColor: EColors.primary.withValues(alpha: 0.05),
     contentPadding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm + 4),
@@ -172,7 +184,10 @@ class _ContactForm extends StatelessWidget {
             controller: messageCtrl,
             maxLines: 3,
             style: const TextStyle(color: EColors.textWhite, fontSize: ESizes.fontSizeSm),
-            decoration: _dec('Message (optional)', 'Anything you'd like us to know before the call'),
+            decoration: _dec(
+              'Message (optional)',
+              "Anything you'd like us to know before the call",
+            ),
           ),
         ],
       ),

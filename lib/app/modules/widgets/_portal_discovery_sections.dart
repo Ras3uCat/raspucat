@@ -3,6 +3,7 @@ import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 import '_discovery_color_picker_field.dart';
 import '_discovery_font_selector.dart';
+import '_portal_discovery_sections_b.dart';
 import '_discovery_layout_previews.dart';
 import '_discovery_upload_field.dart';
 export '_portal_discovery_sections_b.dart';
