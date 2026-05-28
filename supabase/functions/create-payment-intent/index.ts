@@ -41,6 +41,8 @@ Deno.serve(async (req) => {
       billingCycle,
       setupTotalCents,
       promoCode,
+      businessWebsite,
+      businessType,
     } = await req.json();
 
     const normalizedEmail = clientEmail?.trim().toLowerCase();
@@ -124,6 +126,8 @@ Deno.serve(async (req) => {
         discount_amount_cents: discountAmtCents,
         original_setup_total_cents: originalSetupTotalCents,
         subscription_promotion_code_id: subscriptionPromotionCodeId,
+        business_website: businessWebsite ?? null,
+        business_type: businessType ?? null,
       })
       .select('id')
       .single();

@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
   const { data: quote, error } = await supabase
     .from('quotes')
-    .select('id, business_name, client_email, plan_id, module_ids, billing_cycle, discovery_data, logo_url, og_image_url')
+    .select('id, business_name, client_email, plan_id, module_ids, billing_cycle, discovery_data, logo_url, og_image_url, industry, pain_points, business_website, decision_maker_name, decision_maker_title, website_audit')
     .eq('id', quoteId)
     .single();
 
@@ -103,11 +103,19 @@ Deno.serve(async (req) => {
 
   // Discovery data — merge non-empty values over FILL_IN placeholders
   const d: Record<string, unknown> = (quote.discovery_data as Record<string, unknown>) ?? {};
+  const audit = (quote.website_audit as Record<string, unknown>) ?? {};
   const bb = (d['brand_brief'] as Record<string, unknown>) ?? {};
 
   const clientJson: Record<string, unknown> = {
     // ── Identity ──────────────────────────────────────────────────────────────
     CLIENT_NAME: quote.business_name,
+    INDUSTRY: fill(quote.industry),
+    DECISION_MAKER_NAME: fill(quote.decision_maker_name),
+    DECISION_MAKER_TITLE: fill(quote.decision_maker_title),
+    BUSINESS_WEBSITE: fill(quote.business_website),
+    PAIN_POINTS: Array.isArray(quote.pain_points) && quote.pain_points.length > 0 ? quote.pain_points.join(', ') : 'FILL_IN',
+    PAGESPEED_SCORE: typeof audit['pagespeedScore'] === 'number' ? String(audit['pagespeedScore']) : 'FILL_IN',
+    WEBSITE_PLATFORM: fill(audit['platform']),
     BUSINESS_NAME: quote.business_name,
     CLIENT_SLUG: slug,
     SHORT_NAME: fill(d['SHORT_NAME']),

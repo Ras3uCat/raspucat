@@ -4,6 +4,89 @@ import 'package:raspucat/utils/constants/exports.dart';
 import '_discovery_address_autocomplete.dart';
 import '_discovery_upload_field.dart';
 
+// Logo field with prefill preview and URL override input.
+// Used by PortalDiscoveryBrandBriefSection in _portal_discovery_sections.dart.
+class DiscoveryLogoField extends StatefulWidget {
+  const DiscoveryLogoField({
+    super.key,
+    required this.logoUrl,
+    required this.prefillLogoUrl,
+    required this.onLogoUpload,
+    this.onLogoUrlChanged,
+  });
+  final String? logoUrl;
+  final String? prefillLogoUrl;
+  final Future<String?> Function(String, String, String) onLogoUpload;
+  final ValueChanged<String>? onLogoUrlChanged;
+
+  @override
+  State<DiscoveryLogoField> createState() => _DiscoveryLogoFieldState();
+}
+
+class _DiscoveryLogoFieldState extends State<DiscoveryLogoField> {
+  late final TextEditingController _urlCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _urlCtrl = TextEditingController(text: widget.logoUrl ?? widget.prefillLogoUrl ?? '');
+  }
+
+  @override
+  void dispose() {
+    _urlCtrl.dispose();
+    super.dispose();
+  }
+
+  static const _hintStyle = TextStyle(
+    color: Color(0x99A0A0B0),
+    fontSize: ESizes.fontSizeLabel,
+    height: 1.4,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final detected = (widget.prefillLogoUrl ?? '').isNotEmpty && _urlCtrl.text.isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (detected)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+            child: Image.network(
+              _urlCtrl.text,
+              height: 56,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+            ),
+          ),
+        const SizedBox(height: ESizes.xs),
+        Text(
+          detected
+              ? 'This logo was detected from your website. Confirm it or paste a replacement URL.'
+              : 'No logo detected — paste your logo URL below, or upload a file.',
+          style: _hintStyle,
+        ),
+        const SizedBox(height: ESizes.xs),
+        DiscoveryLabeledField(
+          'Logo URL',
+          _urlCtrl,
+          hint: 'https://yoursite.com/logo.png',
+          onChanged: (v) => widget.onLogoUrlChanged?.call(v),
+        ),
+        const SizedBox(height: ESizes.xs),
+        DiscoveryUploadField(
+          label: 'Or upload a file',
+          hint: 'PNG, JPG or SVG — used for your favicon and app icon',
+          currentUrl: null,
+          accept: 'image/png,image/jpeg,image/svg+xml,image/webp',
+          onUpload: widget.onLogoUpload,
+        ),
+      ],
+    );
+  }
+}
+
 typedef _KV = void Function(String key, String value);
 
 class PortalDiscoveryBusinessInfoSection extends StatelessWidget {

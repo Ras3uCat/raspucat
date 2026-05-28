@@ -18,8 +18,10 @@ class PortalQuote {
   final DateTime? subscriptionCancelAt;
   final DateTime? cancelledAt;
   final Map<String, dynamic> discoveryData;
+  final Map<String, dynamic> discoveryPrefill;
   final DateTime? discoverySubmittedAt;
   final bool isComped;
+  final String? stripeCheckoutUrl;
 
   const PortalQuote({
     required this.id,
@@ -39,8 +41,10 @@ class PortalQuote {
     this.subscriptionCancelAt,
     this.cancelledAt,
     this.discoveryData = const {},
+    this.discoveryPrefill = const {},
     this.discoverySubmittedAt,
     this.isComped = false,
+    this.stripeCheckoutUrl,
   });
 
   factory PortalQuote.fromJson(Map<String, dynamic> json) => PortalQuote(
@@ -67,15 +71,18 @@ class PortalQuote {
         ? DateTime.parse(json['cancelled_at'] as String)
         : null,
     discoveryData: (json['discovery_data'] as Map<String, dynamic>?) ?? {},
+    discoveryPrefill: (json['discovery_prefill'] as Map<String, dynamic>?) ?? {},
     discoverySubmittedAt: json['discovery_submitted_at'] != null
         ? DateTime.parse(json['discovery_submitted_at'] as String)
         : null,
     isComped: json['is_comped'] as bool? ?? false,
+    stripeCheckoutUrl: json['stripe_checkout_url'] as String?,
   );
 
   bool get discoverySubmitted => discoverySubmittedAt != null;
 
   String get stageLabel => switch (portalStage) {
+    'awaiting_deposit' => 'Awaiting Deposit',
     'awaiting_discovery' => 'Discovery',
     'compiling' => 'Compiling',
     'deployed' => 'Deployed',
@@ -83,6 +90,7 @@ class PortalQuote {
   };
 
   Color get stageColor => switch (portalStage) {
+    'awaiting_deposit' => const Color(0xFFFBBF24),
     'awaiting_discovery' => const Color(0xFFFFB938),
     'compiling' => const Color(0xFF00B4D8),
     'deployed' => const Color(0xFF06D6A0),

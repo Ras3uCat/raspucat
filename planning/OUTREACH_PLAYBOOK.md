@@ -8,6 +8,8 @@ it is a confirmation call. You already have their pain points, their site audit,
 of what you're building, and a closer deck with pre-filled numbers before you ever pick up
 the phone.
 
+**Outreach email:** `hello@raspucat.com` — all outreach sends from here, all replies capture automatically.
+
 ---
 
 ## Phase 1 — Industry Research (Once Per Industry)
@@ -146,21 +148,14 @@ points matched, notes field.
 
 **Trigger:** Lead has score ≥ 60 and has not been prepared yet.
 
-This is run manually (or via the "Prepare" button on the lead row). With the Supabase MCP
-wired into Claude Code, just say:
-
 ```
-Prepare a blueprint for McCullough Heating & Air
+/prepare-lead
 ```
 
-Claude will query the lead's audit data and industry profile automatically, then run
-through the blueprint builder.
+Claude queries the lead's audit data and industry profile via MCP automatically, runs
+the blueprint builder, then creates a draft email in the Drafts queue.
 
-### Step 8 — Blueprint Builder
-
-```
-/blueprint-builder
-```
+### Step 8 — Blueprint Builder (runs inside `/prepare-lead`)
 
 Context fed automatically (via MCP): lead's website audit, pain points, industry profile,
 benchmark stats, decision maker info, Money Map findings, Ride-Along narrative.
@@ -172,18 +167,19 @@ Saves to: `planning/leads/{lead-id}/blueprint.md`
 
 ---
 
-### Step 9 — Send the First Email
+### Step 9 — Review and Send the First Email
 
-The email is written from the blueprint. It surfaces one specific pain point confirmed
-by the website audit — not a generic industry problem, but something visible on their
-actual site.
+After `/prepare-lead` completes, a draft email is created automatically in the Drafts tab.
+The email surfaces one specific pain point confirmed by the website audit — not a generic
+industry problem, but something visible on their actual site.
 
 Example opening: "We noticed your site is built on Wix and scores 38 on mobile — the
 average HVAC site in Austin scores 47. Most of your competitors have the same problem,
 which is exactly why there's an opening."
 
-Lead status → `contacted`. Automated follow-ups send at the configured interval
-(default: 3 days, 2 max) until they reply.
+**Review the draft. Once approved, hit Send.** Resend delivers it and lead status flips
+to `contacted`. Automated follow-ups run at the configured interval (default: 3 days,
+2 max) until they reply.
 
 ---
 
@@ -195,24 +191,19 @@ Their response is data. What they focus on, what they ask, the numbers they volu
 their tone — all of this makes the discovery script and closer deck more targeted than
 any pre-built version could be.
 
-With MCP wired, say:
+The reply body is captured automatically (Cloudflare Email Worker → Supabase). Just run:
 
 ```
-McCullough replied — prepare the discovery script and closer deck.
-Here's their response: [paste their reply]
+/prepare-reply
 ```
 
-Claude pulls their full record automatically and adds their reply as additional context.
+Claude pulls their full record and reply body via MCP automatically — no copy-paste.
 
 ---
 
-### Step 10 — Discovery Script
+### Step 10 — Discovery Script (runs inside `/prepare-reply`)
 
-```
-/discovery-script
-```
-
-Context: industry research + lead audit + their actual email response.
+Context: industry research + lead audit + their actual email response (auto-pulled).
 
 Output: 8–12 questions tailored to this specific lead. Questions that deepen the pain
 points already confirmed on their site and follow the thread of what they said in
@@ -222,13 +213,9 @@ Saves to: `planning/leads/{lead-id}/discovery-script.md`
 
 ---
 
-### Step 11 — Closer Deck
+### Step 11 — Closer Deck (runs inside `/prepare-reply`)
 
-```
-/closer-deck
-```
-
-Context: blueprint + industry benchmark + lead audit + their email response.
+Context: blueprint + industry benchmark + lead audit + their email response (auto-pulled).
 
 Output: 6-slide deck built from what you already know about their business, with
 industry averages pre-filled as placeholders for any numbers not yet confirmed.
@@ -275,10 +262,11 @@ Update lead status in the pipeline as the relationship progresses:
 | `prospect` | Discovered, not yet contacted |
 | `contacted` | First email sent |
 | `replied` | They responded — trigger research package |
-| `call_booked` | Confirmation call scheduled |
+| `call_booked` | Confirmation call scheduled (auto-set via Google Calendar) |
 | `proposal_sent` | Deck sent or presented |
 | `closed_won` | Signed |
 | `closed_lost` | Passed |
+| `unsubscribed` | Auto-set by Resend webhook — lead excluded from all sequences |
 
 ---
 
@@ -298,10 +286,10 @@ AUTOMATED (cron Mon/Thu or manual "Find Leads")
 Google Places + Angi → website audit → Apollo → Hunter → scored pipeline
 
 MANUAL (score ≥ 60, not yet prepared)
-/blueprint-builder  → save md → send email → mark contacted
+/prepare-lead  → blueprint saved → auto-draft created → approve draft → Resend sends → mark contacted
 
 ON REPLY
-/discovery-script + /closer-deck → built from reply context → save md
+/prepare-reply → discovery-script + closer-deck (reply body pulled automatically) → save md
 
 CONFIRMATION CALL
 Present deck → confirm numbers → close
@@ -314,15 +302,14 @@ prospect → contacted → replied → call_booked → proposal_sent → closed_
 
 ## Skill Quick Reference
 
-| Skill | When | Frequency |
-|---|---|---|
-| `/industry-download` | New industry | Once |
-| `/ride-along` | After industry download | Once |
-| `/money-map` | After ride-along | Once |
-| `/client-locator` | After industry setup | Once |
-| `/blueprint-builder` | Score ≥ 60, pre-email | Per qualified lead |
-| `/discovery-script` | After lead replies | Per reply |
-| `/closer-deck` | After lead replies | Per reply |
+| Skill | When | Frequency | Requires |
+|---|---|---|---|
+| `/industry-download` | New industry | Once | Industry name |
+| `/ride-along` | After industry download | Once | Industry name |
+| `/money-map` | After ride-along | Once | Industry name |
+| `/client-locator` | After industry setup | Once | Industry name |
+| `/prepare-lead` | Score ≥ 60, not yet prepared | Per qualified lead | Lead in pipeline (pulled via MCP) |
+| `/prepare-reply` | After lead replies | Per reply | Lead record + reply body (pulled automatically via Cloudflare → Supabase) |
 
 ---
 
@@ -334,5 +321,37 @@ prospect → contacted → replied → call_booked → proposal_sent → closed_
   direct read access to leads and industry profiles — no copy-paste required when
   invoking skills
 - Blueprint is the spine: email, discovery script, and closer deck all derive from it
-- Never run discovery-script or closer-deck before the lead replies — their response
-  adds context that makes both sharper
+- Never run `/prepare-reply` before the lead replies — their response adds context that
+  makes the discovery script and closer deck sharper
+- **Bounced leads:** The Resend webhook auto-flags bounced and spam-complaint emails.
+  Check the pipeline for leads with `bounced` status and exclude them from re-discovery runs.
+- **Re-benchmark cadence:** Re-run `/industry-download` + benchmark sync every 90 days,
+  or any time you add a new city. Stale benchmarks weaken the opening line.
+- **`call_booked` automation:** When you create a Google Calendar event with the prospect's
+  email as an attendee, the integration auto-sets their lead status to `call_booked` and
+  appends the event link to their notes.
+
+---
+
+## Live Infrastructure
+
+| Component | Detail |
+|---|---|
+| Outreach sender | `hello@raspucat.com` |
+| Reply forward | `ras3ucat@gmail.com` |
+| CF Email Worker | `raspucat-email-worker` (deployed 2026-05-27) |
+| Worker URL | `raspucat-email-worker.skyjumper32.workers.dev` |
+| CF routing rule | `hello@raspucat.com` → `raspucat-email-worker` (rule `245256d5e28d454ab45e42c0f963a2f3`) |
+| Inbound Edge Function | `inbound-outreach-reply` (Supabase `gegwqywgbgzahnftppda`) |
+| Reply capture columns | `outreach_emails.reply_body`, `.reply_html`, `.reply_from` |
+| Supabase project | `gegwqywgbgzahnftppda` |
+
+**Reply capture flow:**
+```
+Prospect replies to hello@raspucat.com
+  → Cloudflare Email Worker parses raw email (postal-mime)
+  → Forwards to ras3ucat@gmail.com (personal inbox, always delivered)
+  → POSTs body to inbound-outreach-reply Edge Function
+  → Writes reply_body to outreach_emails, flips lead status to replied
+  → /prepare-reply pulls body via MCP — zero copy-paste
+```

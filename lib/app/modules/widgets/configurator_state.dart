@@ -20,6 +20,8 @@ class ConfiguratorState {
   String clientName = '';
   String clientEmail = '';
   String businessName = '';
+  String businessWebsite = '';
+  String businessType = '';
 
   // Step 3 — payment
   final RxBool isLoading = false.obs;
@@ -197,6 +199,8 @@ class ConfiguratorState {
           'clientName': clientName,
           'clientEmail': clientEmail,
           'businessName': businessName,
+          if (businessWebsite.isNotEmpty) 'businessWebsite': businessWebsite,
+          if (businessType.isNotEmpty) 'businessType': businessType,
           'planId': plan.id,
           'moduleIds': selectedModuleIds,
           'managementOptionId': mgmt?.id,

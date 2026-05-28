@@ -35,6 +35,8 @@ Deno.serve(async (req) => {
       billingCycle,
       setupTotalCents,
       isComped = false,
+      businessWebsite,
+      businessType,
     } = await req.json();
 
     const adminPassword = Deno.env.get('ADMIN_PASSWORD');
@@ -72,6 +74,8 @@ Deno.serve(async (req) => {
         balance_cents: balanceCents,
         is_comped: isComped,
         status: 'pending',
+        business_website: businessWebsite ?? null,
+        business_type: businessType ?? null,
       })
       .select()
       .single();

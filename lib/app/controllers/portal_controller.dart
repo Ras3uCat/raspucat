@@ -136,6 +136,14 @@ class PortalController extends GetxController {
     }
   }
 
+  Future<void> launchDepositUrl(String url) async {
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (_) {
+      Get.snackbar('Error', 'Could not open payment link. Please try again.');
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Discovery form
   // ---------------------------------------------------------------------------
@@ -153,13 +161,22 @@ class PortalController extends GetxController {
     }
   }
 
-  Future<bool> submitDiscovery(Map<String, dynamic> data) async {
+  Future<bool> submitDiscovery(
+    Map<String, dynamic> data, {
+    Map<String, dynamic>? discoveryChanges,
+  }) async {
     final quote = activeQuote;
     if (quote == null) return false;
     try {
       final resp = await Supabase.instance.client.functions.invoke(
         'portal-save-discovery',
-        body: {'quote_id': quote.id, 'discovery_data': data, 'submit': true},
+        body: {
+          'quote_id': quote.id,
+          'discovery_data': data,
+          'submit': true,
+          if (discoveryChanges != null && discoveryChanges.isNotEmpty)
+            'discovery_changes': discoveryChanges,
+        },
       );
       final result = resp.data as Map<String, dynamic>?;
       if (result?['ok'] == true) {

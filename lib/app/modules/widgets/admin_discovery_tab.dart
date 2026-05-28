@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:raspucat/app/controllers/admin_controller.dart';
+import 'package:raspucat/app/modules/widgets/_admin_discovery_tab_widgets.dart';
 import 'package:raspucat/app/modules/widgets/portal_discovery_fields.dart';
 import 'package:raspucat/app/modules/widgets/portal_discovery_readonly.dart';
 import 'package:raspucat/utils/constants/exports.dart';
@@ -12,12 +13,14 @@ class AdminDiscoveryTab extends StatefulWidget {
     required this.discoveryData,
     required this.portalStage,
     this.submittedAt,
+    this.discoveryChanges,
   });
   final AdminController ctrl;
   final String quoteId;
   final Map<String, dynamic> discoveryData;
   final String portalStage;
   final String? submittedAt;
+  final Map<String, dynamic>? discoveryChanges;
 
   @override
   State<AdminDiscoveryTab> createState() => _State();
@@ -78,6 +81,14 @@ class _State extends State<AdminDiscoveryTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _header(),
+          if (widget.discoveryChanges != null && widget.discoveryChanges!.isNotEmpty) ...[
+            const SizedBox(height: ESizes.md),
+            AdminDiscoveryDiffViewer(
+              changes: widget.discoveryChanges!,
+              quoteId: widget.quoteId,
+              ctrl: widget.ctrl,
+            ),
+          ],
           const SizedBox(height: ESizes.lg),
           _summaryCard(),
           const SizedBox(height: ESizes.lg),
@@ -128,7 +139,7 @@ class _State extends State<AdminDiscoveryTab> {
           ),
         if (widget.submittedAt == null) ...[
           const SizedBox(width: ESizes.sm),
-          _SkipDiscoveryButton(
+          AdminDiscoverySkipButton(
             loading: _advancingStage,
             onTap: () async {
               setState(() => _advancingStage = true);
@@ -208,40 +219,5 @@ class _State extends State<AdminDiscoveryTab> {
     } catch (_) {
       return iso;
     }
-  }
-}
-
-class _SkipDiscoveryButton extends StatelessWidget {
-  const _SkipDiscoveryButton({required this.loading, required this.onTap});
-  final bool loading;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: loading ? null : onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
-        decoration: BoxDecoration(
-          color: EColors.gold.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
-          border: Border.all(color: EColors.gold.withValues(alpha: 0.4)),
-        ),
-        child: loading
-            ? SizedBox(
-                width: 12,
-                height: 12,
-                child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.gold),
-              )
-            : Text(
-                'Skip Discovery',
-                style: TextStyle(
-                  color: EColors.gold,
-                  fontSize: ESizes.fontSizeLabel,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-      ),
-    );
   }
 }

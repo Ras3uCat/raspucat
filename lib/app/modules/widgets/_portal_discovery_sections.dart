@@ -164,6 +164,7 @@ class PortalDiscoveryFontsSection extends StatelessWidget {
 
 class PortalDiscoveryBrandBriefSection extends StatelessWidget {
   const PortalDiscoveryBrandBriefSection({
+    super.key,
     required this.shortNameCtrl,
     required this.logoUrl,
     required this.onLogoUpload,
@@ -173,6 +174,8 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
     required this.inspoUrlsCtrl,
     required this.onSet,
     required this.onBrandBrief,
+    this.prefillLogoUrl,
+    this.onLogoUrlChanged,
   });
   final TextEditingController shortNameCtrl,
       threeWordsCtrl,
@@ -180,7 +183,9 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
       targetCustCtrl,
       inspoUrlsCtrl;
   final String? logoUrl;
+  final String? prefillLogoUrl;
   final Future<String?> Function(String, String, String) onLogoUpload;
+  final ValueChanged<String>? onLogoUrlChanged;
   final _KV onSet;
   final _KV onBrandBrief;
 
@@ -189,6 +194,7 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
     '5. Brand Brief',
     "Help us understand your brand's soul",
     child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         DiscoveryLabeledField(
           'Short display name (≤12 chars, e.g. "Acme")',
@@ -198,12 +204,11 @@ class PortalDiscoveryBrandBriefSection extends StatelessWidget {
           onChanged: (v) => onSet('SHORT_NAME', v),
         ),
         const SizedBox(height: ESizes.sm),
-        DiscoveryUploadField(
-          label: 'Logo',
-          hint: 'PNG, JPG or SVG — used for your favicon and app icon',
-          currentUrl: logoUrl,
-          accept: 'image/png,image/jpeg,image/svg+xml,image/webp',
-          onUpload: onLogoUpload,
+        DiscoveryLogoField(
+          logoUrl: logoUrl,
+          prefillLogoUrl: prefillLogoUrl,
+          onLogoUpload: onLogoUpload,
+          onLogoUrlChanged: onLogoUrlChanged,
         ),
         const SizedBox(height: ESizes.sm),
         DiscoveryLabeledField(

@@ -5,6 +5,7 @@ import 'package:raspucat/app/modules/screens/privacy_screen.dart';
 import 'package:raspucat/app/modules/screens/admin_screen.dart';
 import 'package:raspucat/app/modules/screens/portal_screen.dart';
 import 'package:raspucat/app/modules/screens/portal_login_screen.dart';
+import 'package:raspucat/app/modules/screens/book_screen.dart';
 import 'package:raspucat/app/modules/screens/manage_booking_screen.dart';
 import 'package:raspucat/app/modules/widgets/portal_auth_middleware.dart';
 import 'package:raspucat/app/controllers/portal_controller.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
       middlewares: [PortalAuthMiddleware()],
     ),
     GetPage(name: ERoutes.portalLogin, page: () => const PortalLoginScreen()),
+    GetPage(name: ERoutes.book, page: () => const BookScreen()),
     GetPage(
       name: ERoutes.manageBooking,
       page: () => const ManageBookingScreen(),

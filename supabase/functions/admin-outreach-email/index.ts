@@ -21,7 +21,7 @@ const supabase = createClient(
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://ras3ucat.com';
-const FROM_EMAIL = 'meow@raspucat.com';
+const FROM_EMAIL = 'hello@raspucat.com';
 const FROM_NAME = 'Ryan';
 
 const corsHeaders = {

@@ -1,0 +1,16 @@
+name = "raspucat-email-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Secrets — set these via `wrangler secret put` (never commit values):
+#   wrangler secret put FORWARD_TO_EMAIL
+#   wrangler secret put SUPABASE_FUNCTION_URL
+#   wrangler secret put CF_WORKER_SECRET
+#
+# SUPABASE_FUNCTION_URL format:
+#   https://<project-ref>.supabase.co/functions/v1/inbound-outreach-reply
+#
+# Cloudflare dashboard setup (one-time):
+#   Email → Email Routing → Routes
+#   Add a new route for hello@raspucat.com → action: "Send to a Worker" → raspucat-email-worker
+#   (meow@raspucat.com keeps its existing forward rule — do not change it)

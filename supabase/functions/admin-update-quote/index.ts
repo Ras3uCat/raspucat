@@ -26,6 +26,7 @@ Deno.serve(async (req) => {
   try {
     const {
       adminToken,
+      action,
       quoteId,
       clientName,
       clientEmail,
@@ -44,6 +45,21 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: 'Unauthorized.' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
+    }
+
+    // Handle action-based requests
+    if (action === 'rerun-brand-alignment') {
+      if (!quoteId) {
+        return new Response(
+          JSON.stringify({ error: 'quoteId required.' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+        );
+      }
+      const { data: q } = await supabase.from('quotes').select('reports_status').eq('id', quoteId).single();
+      const status = { ...((q?.reports_status as Record<string, unknown>) ?? {}), brand_alignment_at: null, brand_alignment_rerun_at: new Date().toISOString() };
+      await supabase.from('quotes').update({ reports_status: status }).eq('id', quoteId);
+      logEvent(quoteId, 'brand_alignment_rerun_requested', {});
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // Fetch existing quote

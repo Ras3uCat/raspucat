@@ -152,9 +152,23 @@ class _DetailActions extends StatelessWidget {
               ),
             if (lead.status == 'proposal_sent')
               _ActionButton(label: 'Copy Closer Deck Prompt', onTap: () => _copyCloserPrompt(lead)),
+            if (lead.status == 'proposal_sent' || lead.status == 'closed_won')
+              _ActionButton(
+                label: 'Convert to Client',
+                onTap: () => _showConvertSheet(context, ctrl, lead),
+              ),
           ],
         ),
       ],
+    );
+  }
+
+  void _showConvertSheet(BuildContext context, AdminOutreachController ctrl, LeadModel lead) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ConvertToClientSheet(lead: lead, ctrl: ctrl),
     );
   }
 

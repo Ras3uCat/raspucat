@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     const authEmail = await getAuthEmail(req.headers.get('Authorization'));
     if (!authEmail) return json({ error: 'Unauthorized.' }, 401);
 
-    const { quote_id, discovery_data, submit } = await req.json();
+    const { quote_id, discovery_data, discovery_changes, submit } = await req.json();
 
     if (!quote_id || discovery_data === undefined || typeof discovery_data !== 'object') {
       return json({ error: 'Missing required fields.' }, 400);
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     // Verify ownership
     const { data: quote, error: fetchError } = await supabase
       .from('quotes')
-      .select('id, client_email, business_name, discovery_submitted_at')
+      .select('id, client_email, business_name, discovery_submitted_at, portal_stage')
       .eq('id', quote_id)
       .single();
 
@@ -79,9 +79,15 @@ Deno.serve(async (req) => {
     }
 
     const updatePayload: Record<string, unknown> = { discovery_data };
+    if (discovery_changes && typeof discovery_changes === 'object') {
+      updatePayload['discovery_changes'] = discovery_changes;
+    }
     if (submit) {
       updatePayload['discovery_submitted_at'] = new Date().toISOString();
-      updatePayload['portal_stage'] = 'transmitting';
+      // Only advance to transmitting if they have already paid (not in awaiting_deposit)
+      if (quote.portal_stage !== 'awaiting_deposit') {
+        updatePayload['portal_stage'] = 'transmitting';
+      }
     }
 
     const { error: updateError } = await supabase

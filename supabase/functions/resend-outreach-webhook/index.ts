@@ -1,7 +1,7 @@
 // Edge Function: resend-outreach-webhook
-// Handles outbound tracking (open/click/bounce) and inbound replies.
+// Handles outbound tracking events from Resend: open, click, bounce.
+// Inbound replies are handled by the Cloudflare Email Worker → inbound-outreach-reply.
 // Resend sends a Resend-Signature header for verification.
-// Inbound replies auto-extract phone numbers and update lead status.
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
@@ -22,12 +22,6 @@ function json(body: unknown, status = 200): Response {
     status,
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
-}
-
-// Extracts the first US-format phone number found in text.
-function extractPhone(text: string): string | null {
-  const match = text.match(/\(?\d{3}\)?[\s.\-]\d{3}[\s.\-]\d{4}/);
-  return match ? match[0].replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3') : null;
 }
 
 Deno.serve(async (req) => {
@@ -86,56 +80,6 @@ Deno.serve(async (req) => {
           .update({ status: 'closed_lost', notes: 'Email bounced.' })
           .eq('id', email.lead_id);
       }
-      return json({ received: true });
-    }
-
-    // Inbound reply: data.from is the prospect's email address
-    if (type === 'email.received' && data.from) {
-      const senderEmail = data.from.replace(/.*<(.+)>/, '$1').trim();
-      const bodyText = data.text ?? '';
-
-      // Find the lead by their email
-      const { data: lead } = await supabase
-        .from('leads')
-        .select('id, phone, status')
-        .eq('email', senderEmail)
-        .single();
-
-      if (lead) {
-        const now = new Date().toISOString();
-        const updates: Record<string, unknown> = {};
-
-        if (lead.status === 'contacted') updates.status = 'replied';
-
-        // Extract phone number if not already on record
-        if (!lead.phone) {
-          const phone = extractPhone(bodyText);
-          if (phone) updates.phone = phone;
-        }
-
-        if (Object.keys(updates).length > 0) {
-          await supabase.from('leads').update(updates).eq('id', lead.id);
-        }
-
-        // Mark the most recent sent email as replied
-        const { data: sentEmail } = await supabase
-          .from('outreach_emails')
-          .select('id')
-          .eq('lead_id', lead.id)
-          .not('sent_at', 'is', null)
-          .is('replied_at', null)
-          .order('sent_at', { ascending: false })
-          .limit(1)
-          .single();
-
-        if (sentEmail) {
-          await supabase
-            .from('outreach_emails')
-            .update({ replied_at: now })
-            .eq('id', sentEmail.id);
-        }
-      }
-
       return json({ received: true });
     }
 

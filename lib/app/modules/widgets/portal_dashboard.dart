@@ -31,6 +31,10 @@ class PortalDashboard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _Header(businessName: quote.businessName, ctrl: ctrl),
+              if (quote.portalStage == 'awaiting_deposit') ...[
+                const SizedBox(height: ESizes.xl),
+                _DepositBanner(quote: quote),
+              ],
               const SizedBox(height: ESizes.xl),
               PortalStagePill(quote: quote, large: true),
               const SizedBox(height: ESizes.xl),
@@ -153,6 +157,76 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               color: EColors.textSecondary.withValues(alpha: 0.45),
               fontSize: ESizes.fontSizeLabel,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Deposit banner — shown when portal_stage == 'awaiting_deposit'
+// ---------------------------------------------------------------------------
+
+class _DepositBanner extends StatelessWidget {
+  const _DepositBanner({required this.quote});
+  final PortalQuote quote;
+
+  @override
+  Widget build(BuildContext context) {
+    final ctrl = Get.find<PortalController>();
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(ESizes.lg),
+      decoration: BoxDecoration(
+        color: EColors.gold.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
+        border: Border.all(color: EColors.gold.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(Icons.lock_clock_outlined, color: EColors.gold, size: ESizes.iconMd),
+          const SizedBox(width: ESizes.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Complete your deposit to begin your project',
+                  style: TextStyle(
+                    color: EColors.textWhite,
+                    fontSize: ESizes.fontSizeSm,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Your project slot is reserved. Pay the deposit to kick things off.',
+                  style: TextStyle(
+                    color: EColors.textSecondary.withValues(alpha: 0.7),
+                    fontSize: ESizes.fontSizeLabel,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: ESizes.md),
+          NeonButton(
+            onTap: quote.stripeCheckoutUrl != null
+                ? () => ctrl.launchDepositUrl(quote.stripeCheckoutUrl!)
+                : null,
+            neonColor: EColors.gold,
+            padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
+            child: const Text(
+              'Pay Deposit',
+              style: TextStyle(
+                color: EColors.textWhite,
+                fontSize: ESizes.fontSizeLabel,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
