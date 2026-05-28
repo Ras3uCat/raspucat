@@ -5,6 +5,7 @@ import 'package:raspucat/app/data/repositories/outreach_repository.dart';
 
 class AdminOutreachController extends GetxController {
   String _adminToken = '';
+  String get adminToken => _adminToken;
   void setToken(String token) {
     _adminToken = token;
     _repo = SupabaseOutreachRepository(token);

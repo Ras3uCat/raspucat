@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:raspucat/app/controllers/admin_outreach_controller.dart';
-import 'package:raspucat/app/controllers/plans_controller.dart';
 import 'package:raspucat/app/data/models/lead_model.dart';
 import 'package:raspucat/app/modules/widgets/_convert_to_client_sheet.dart';
 import 'package:raspucat/utils/constants/colors.dart';
