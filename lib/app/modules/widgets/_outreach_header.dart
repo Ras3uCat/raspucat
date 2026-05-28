@@ -28,9 +28,12 @@ class _OutreachHeader extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Obx(() => _LastDiscoveryChip(ctrl: ctrl)),
+          Obx(() {
+            if (ctrl.settings.value.lastDiscoveryAt == null) return const SizedBox.shrink();
+            return _LastDiscoveryChip(ctrl: ctrl);
+          }),
           const SizedBox(width: ESizes.sm),
-          Obx(() => _FindLeadsButton(ctrl: ctrl)),
+          Obx(() => _FindLeadsButton(ctrl: ctrl, busy: ctrl.isDiscovering.value)),
           const SizedBox(width: ESizes.sm),
           _AddLeadButton(ctrl: ctrl),
         ],
@@ -118,12 +121,12 @@ class _AddLeadButton extends StatelessWidget {
 }
 
 class _FindLeadsButton extends StatelessWidget {
-  const _FindLeadsButton({required this.ctrl});
+  const _FindLeadsButton({required this.ctrl, required this.busy});
   final AdminOutreachController ctrl;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) {
-    final busy = ctrl.isDiscovering.value;
     return GestureDetector(
       onTap: busy ? null : ctrl.runDiscovery,
       child: AnimatedContainer(
