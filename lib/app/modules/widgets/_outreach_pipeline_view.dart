@@ -59,7 +59,9 @@ class _OutreachPipelineView extends StatelessWidget {
           children: [
             _PipelineTableHeader(),
             const SizedBox(height: ESizes.sm),
-            ...leads.map((lead) => _LeadRow(lead: lead, ctrl: ctrl)),
+            ...leads.asMap().entries.map(
+              (e) => _LeadRow(lead: e.value, ctrl: ctrl, index: e.key + 1),
+            ),
           ],
         ),
       );
@@ -82,6 +84,7 @@ class _PipelineTableHeader extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: ESizes.sm, vertical: 4),
       child: Row(
         children: const [
+          SizedBox(width: 32, child: Text('#', style: labelStyle)),
           Expanded(flex: 3, child: Text('COMPANY', style: labelStyle)),
           Expanded(flex: 2, child: Text('INDUSTRY', style: labelStyle)),
           Expanded(flex: 2, child: Text('LOCATION', style: labelStyle)),
@@ -96,9 +99,10 @@ class _PipelineTableHeader extends StatelessWidget {
 }
 
 class _LeadRow extends StatelessWidget {
-  const _LeadRow({required this.lead, required this.ctrl});
+  const _LeadRow({required this.lead, required this.ctrl, required this.index});
   final LeadModel lead;
   final AdminOutreachController ctrl;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +121,13 @@ class _LeadRow extends StatelessWidget {
         ),
         child: Row(
           children: [
+            SizedBox(
+              width: 32,
+              child: Text(
+                '$index',
+                style: const TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
+              ),
+            ),
             Expanded(
               flex: 3,
               child: Column(

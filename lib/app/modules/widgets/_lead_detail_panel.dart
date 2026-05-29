@@ -30,6 +30,8 @@ class _LeadDetailPanel extends StatelessWidget {
                     children: [
                       _DetailContactInfo(lead: lead),
                       const SizedBox(height: ESizes.lg),
+                      _DetailSiteAudit(lead: lead),
+                      const SizedBox(height: ESizes.lg),
                       _DetailNotes(lead: lead, ctrl: ctrl),
                       const SizedBox(height: ESizes.lg),
                       _DetailEmailHistory(lead: lead, ctrl: ctrl),

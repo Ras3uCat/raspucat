@@ -29,7 +29,7 @@ If a `business_website` URL is available, run a full site audit. Extract:
 
 **Platform detection:** Check for Wix, Squarespace, Weebly, Shopify, WordPress indicators in meta tags, script src URLs, or CSS class patterns.
 
-**PageSpeed score:** Use the PageSpeed Insights API (or estimate from known hosting platform) if available.
+**PageSpeed score:** Use the PageSpeed Insights API (or estimate from known hosting platform) if available. Note the raw score now — it will be compared against the industry benchmark in Step 2 once the industry profile is loaded.
 
 **Logo detection (priority order):**
 1. `<meta property="og:image">` — often the best quality
@@ -83,6 +83,22 @@ If the industry IS already profiled: load ALL fields and extract the following f
 **From `client_locator_md`:**
 - Note which platform this lead likely came from (Facebook group, referral, Google search)
 - This informs the email tone — a Facebook group lead responds differently than a Google search lead
+
+**From `audit_signals.benchmark`:**
+Load the benchmark object from the industry profile. If present, extract:
+- `avg_pagespeed` — the industry average PageSpeed score across sampled sites
+- `pct_with_booking_cta` — share of sites in this industry that have a booking CTA (0.0–1.0)
+- `pct_diy_platform` — share of sites on Wix/Squarespace/Weebly/GoDaddy
+- `pct_https` — share with HTTPS
+- `sample_size` + `sampled_at` — for credibility framing
+
+Use these benchmarks to contextualize the lead's site audit findings:
+- If their PageSpeed is below `avg_pagespeed`: flag the gap (e.g., "41 vs. industry avg 65 — 24 points below")
+- If `pct_with_booking_cta` is high (> 60%) and this site lacks one: call it out as an outlier ("most shops in this space have online booking — yours doesn't")
+- If `pct_diy_platform` is low (< 30%) and this site IS on a DIY platform: they stand out badly among peers
+- If benchmark is missing: note it and proceed without comparison framing
+
+These comparisons go into: the blueprint's Problem section, the email body (Step 8), and the discovery pre-fill notes.
 
 If the industry is NOT yet profiled:
 1. Run `/industry-download` for the industry
@@ -199,6 +215,7 @@ Write a personalized cold outreach email. Every line should be specific to this 
 - `[Company name] — [specific site finding]` (e.g., "River City Ink — 41 on mobile")
 - A question using their industry vocabulary from the ride-along (e.g., "How many walk-ins did you lose last week?")
 - The money map dollar figure reframed as a question (e.g., "Is [Company] leaving $1,400/month on the table?")
+- A benchmark comparison if the gap is striking (e.g., "River City Ink — 24 points below average")
 
 **Opening line:** Reference one specific thing found on their site. Never open with a compliment.
 Use ride-along vocabulary — call it what they call it, not what a developer would call it.
@@ -206,8 +223,9 @@ Use ride-along vocabulary — call it what they call it, not what a developer wo
 **Body (3–4 sentences max):**
 1. Name the problem using the money map's picked problem + dollar figure
    (e.g., "Most [industry] shops in [city] lose around $X/month to missed after-hours leads...")
-2. Reference the site audit signal that confirms this is their specific problem
-   (e.g., "...and your site doesn't have a way to capture them after hours.")
+2. Reference the site audit signal that confirms this is their specific problem — and if a benchmark
+   gap exists, use it: (e.g., "Your site scores 41 on mobile speed — the average [industry] shop
+   scores 65 — and there's no way to book online when a visitor lands.")
 3. One sentence on what you built to solve it — in plain language, no jargon
 4. What the outcome looks like in their terms (more walk-ins, fewer no-shows, less phone tag)
 

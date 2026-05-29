@@ -130,6 +130,131 @@ class _ContactRow extends StatelessWidget {
   }
 }
 
+class _DetailSiteAudit extends StatelessWidget {
+  const _DetailSiteAudit({required this.lead});
+  final LeadModel lead;
+
+  @override
+  Widget build(BuildContext context) {
+    final audit = lead.websiteAudit;
+    if (audit == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '// SITE AUDIT',
+            style: TextStyle(
+              color: EColors.primary,
+              fontSize: ESizes.fontSizeLabel,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: ESizes.sm),
+          Text(
+            'Not yet audited.',
+            style: TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
+          ),
+        ],
+      );
+    }
+
+    final platform = audit['platform'] as String? ?? 'unknown';
+    final hasHttps = audit['hasHttps'] as bool? ?? false;
+    final hasViewport = audit['hasViewport'] as bool? ?? false;
+    final hasBookingCta = audit['hasBookingCta'] as bool? ?? false;
+    final pagespeedScore = audit['pagespeedScore'] as int?;
+    final lastAuditedAt = audit['lastAuditedAt'] as String?;
+    final painPoints = lead.painPointMatches;
+
+    Color speedColor(int? score) {
+      if (score == null) return EColors.softGrey;
+      if (score >= 70) return Colors.green;
+      if (score >= 50) return Colors.orange;
+      return Colors.redAccent;
+    }
+
+    Widget auditRow(String label, String value, {Color? valueColor}) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 5),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 110,
+              child: Text(
+                label,
+                style: TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
+              ),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                color: valueColor ?? EColors.cyanTintedWhite,
+                fontSize: ESizes.fontSizeLabel,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget boolRow(String label, bool value, {bool invertColor = false}) {
+      final isGood = invertColor ? !value : value;
+      return auditRow(
+        label,
+        value ? 'Yes' : 'No',
+        valueColor: isGood ? Colors.green : Colors.redAccent,
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '// SITE AUDIT',
+          style: TextStyle(
+            color: EColors.primary,
+            fontSize: ESizes.fontSizeLabel,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.5,
+          ),
+        ),
+        const SizedBox(height: ESizes.sm),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(ESizes.md),
+          decoration: BoxDecoration(
+            color: EColors.primary.withAlpha(6),
+            border: Border.all(color: EColors.primary.withAlpha(30)),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              auditRow('Platform', platform),
+              if (pagespeedScore != null)
+                auditRow(
+                  'PageSpeed',
+                  '$pagespeedScore / 100',
+                  valueColor: speedColor(pagespeedScore),
+                ),
+              boolRow('HTTPS', hasHttps),
+              boolRow('Mobile viewport', hasViewport),
+              boolRow('Booking CTA', hasBookingCta),
+              if (lastAuditedAt != null) auditRow('Audited', lastAuditedAt.split('T').first),
+              if (painPoints.isNotEmpty) ...[
+                const SizedBox(height: ESizes.sm),
+                _PainPointTags(painPoints: painPoints),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _DetailNotes extends StatefulWidget {
   const _DetailNotes({required this.lead, required this.ctrl});
   final LeadModel lead;
