@@ -782,7 +782,7 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     const { data: settings } = await supabase.from('outreach_settings').select('*').limit(1).single();
     const runsPerWeek = settings?.discovery_runs_per_week ?? 2;
-    const daysUntilNext = Math.round(7 / runsPerWeek);
+    const daysUntilNext = runsPerWeek > 0 ? Math.round(7 / runsPerWeek) : 7;
     const nextRun = new Date(Date.now() + daysUntilNext * 24 * 60 * 60 * 1000).toISOString();
 
     if (settings?.id) {
@@ -795,7 +795,8 @@ Deno.serve(async (req) => {
 
     return json({ inserted, updated, audited, total: upsertedIds.length });
   } catch (err) {
-    console.error('admin-lead-discovery error:', err);
-    return json({ error: 'Internal server error.' }, 500);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('admin-lead-discovery error:', msg);
+    return json({ error: msg }, 500);
   }
 });

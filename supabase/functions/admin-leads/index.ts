@@ -173,6 +173,20 @@ Deno.serve(async (req) => {
       const { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt, overviewMd, rideAlongMd, moneyMapMd, clientLocatorMd } = body;
       if (!slug || !name) return json({ error: 'slug and name required.' }, 400);
 
+      // Preserve existing benchmark if the incoming auditSignals doesn't include one
+      const { data: existing } = await supabase
+        .from('industry_profiles')
+        .select('audit_signals')
+        .eq('slug', slug)
+        .single();
+      const existingBenchmark = (existing?.audit_signals as Record<string, unknown> | null)?.benchmark;
+      const mergedSignals = {
+        ...(auditSignals ?? {}),
+        ...(existingBenchmark && !(auditSignals as Record<string, unknown>)?.benchmark
+          ? { benchmark: existingBenchmark }
+          : {}),
+      };
+
       const { data, error } = await supabase
         .from('industry_profiles')
         .upsert({
@@ -180,7 +194,7 @@ Deno.serve(async (req) => {
           name,
           pain_points: painPoints ?? [],
           booking_cta_keywords: bookingCtaKeywords ?? [],
-          audit_signals: auditSignals ?? {},
+          audit_signals: mergedSignals,
           researched_at: researchedAt ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),
           ...(overviewMd !== undefined && { overview_md: overviewMd }),
