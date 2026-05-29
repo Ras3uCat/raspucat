@@ -18,6 +18,7 @@ abstract class OutreachRepository {
   Future<OutreachSettings> updateSettings(OutreachSettings settings);
 
   Future<Map<String, dynamic>> runDiscovery({List<String>? industries, List<String>? cities});
+  Future<void> runDiscoveryAction(String action);
   Future<List<IndustryProfileModel>> listIndustryProfiles();
   Future<IndustryProfileModel> syncIndustryProfile(IndustryProfileModel profile);
 }
@@ -136,6 +137,11 @@ class SupabaseOutreachRepository implements OutreachRepository {
       if (cities != null) 'cities': cities,
     });
     return data;
+  }
+
+  @override
+  Future<void> runDiscoveryAction(String action) async {
+    await _invoke('admin-lead-discovery', {'action': action});
   }
 
   @override

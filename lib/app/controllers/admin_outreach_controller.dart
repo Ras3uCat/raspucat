@@ -199,13 +199,21 @@ class AdminOutreachController extends GetxController {
     isDiscovering.value = true;
     errorMessage.value = null;
     try {
-      final result = await _repo.runDiscovery();
+      final result = await _repo.runDiscovery().timeout(
+        const Duration(seconds: 120),
+        onTimeout: () =>
+            throw Exception('Discovery timed out — try again or reduce target cities.'),
+      );
       final inserted = result['inserted'] as int? ?? 0;
       final updated = result['updated'] as int? ?? 0;
       final audited = result['audited'] as int? ?? 0;
       await Future.wait([reloadLeads(), _refreshSettings()]);
       successMessage.value =
           'Found $inserted new leads, updated $updated, audited $audited websites.';
+
+      // Audit remaining sites + enrich high-scorers in background passes
+      _repo.runDiscoveryAction('audit-websites').ignore();
+      _repo.runDiscoveryAction('enrich-apollo').ignore();
     } catch (e) {
       errorMessage.value = 'Discovery failed: $e';
     } finally {

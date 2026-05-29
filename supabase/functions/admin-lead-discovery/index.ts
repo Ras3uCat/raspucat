@@ -740,13 +740,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Website audit pass for newly upserted leads
+    // Audit up to 5 new leads per run to stay within memory limits.
+    // The cron's audit-websites action handles the remainder on subsequent runs.
     let audited = 0;
     const { data: toAudit } = await supabase
       .from('leads')
       .select('id, website, industry, email, phone, rating, review_count, sources')
       .in('id', upsertedIds)
-      .not('website', 'is', null);
+      .not('website', 'is', null)
+      .limit(5);
 
     for (const lead of toAudit ?? []) {
       const profile = findProfile(lead.industry, industryProfiles);
@@ -760,22 +762,8 @@ Deno.serve(async (req) => {
       audited++;
     }
 
-    // Apollo enrichment for high-score new leads
-    if (action === 'run') {
-      const { data: highScore } = await supabase
-        .from('leads')
-        .select('id, website, website_audit')
-        .in('id', upsertedIds)
-        .not('website', 'is', null)
-        .gte('score', 60);
-
-      for (const lead of highScore ?? []) {
-        if (lead.website) {
-          await enrichWithApollo(lead.id, lead.website, lead.website_audit as WebsiteAudit | null);
-          await enrichWithHunter(lead.id, lead.website);
-        }
-      }
-    }
+    // Skip inline Apollo/Hunter enrichment — the audit-websites + enrich-apollo
+    // actions handle this in separate passes to avoid memory limits.
 
     // Update settings
     const now = new Date().toISOString();
