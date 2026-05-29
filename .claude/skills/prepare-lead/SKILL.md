@@ -63,26 +63,53 @@ If `business_website` is not provided, skip the audit steps and continue with in
 
 Check `industry_profiles` in Supabase for a matching `slug` based on the lead's `industry` field.
 
-If the industry IS already profiled: load it and continue.
+If the industry IS already profiled: load ALL fields and extract the following for use downstream:
+
+**From `pain_points[]`:**
+- Which pains are confirmed by the site audit? (missing booking CTA, slow speed, DIY platform)
+- Flag the top 2 confirmed pains — these anchor the blueprint and email
+
+**From `money_map_md`:**
+- Find the **picked problem** (the one ranked #1 at the end of the money map)
+- Extract the specific dollar figure attached to it (e.g., "$1,800/month in missed bookings")
+- This number goes into: email body, Closer Deck Slide 2, and the proposal's Problem section
+
+**From `ride_along_md`:**
+- Extract 3–5 vocabulary words the owner uses that differ from generic business language
+  (e.g., "no-shows" not "missed appointments", "walk-ins" not "new customers")
+- Note the biggest friction moments from their day (italicized inner thoughts sections)
+- These drive: email opening line, discovery script rapport section, proposal Problem section
+
+**From `client_locator_md`:**
+- Note which platform this lead likely came from (Facebook group, referral, Google search)
+- This informs the email tone — a Facebook group lead responds differently than a Google search lead
 
 If the industry is NOT yet profiled:
 1. Run `/industry-download` for the industry
 2. Run `/ride-along` for the industry
 3. Run `/money-map` for the industry
 4. Run `/client-locator` for the industry
-5. Sync the profile to Supabase `industry_profiles`
+5. Sync the profile to Supabase `industry_profiles` (including all narrative fields)
 6. Save industry files to `planning/industries/{slug}.md`
 
 ---
 
 ## Step 3 — Blueprint Builder
 
-Using the confirmed pain points from the audit + the industry profile:
+Using site audit signals + industry narrative data together:
 
 - Only include features that address pain points **confirmed by the site audit**. Do not invent problems.
 - If no booking CTA: booking automation is the core feature
 - If slow PageSpeed / DIY platform: rebuild + performance is the project
 - If missing contact/phone: lead capture is the core feature
+
+**Apply ride-along vocabulary throughout:** Name features the way the owner names their problems.
+Write "eliminate no-shows with automated reminders" not "appointment notification system."
+The blueprint's Problem section should read like their inner monologue from the ride-along — not a technical spec.
+
+**Anchor the core feature to the money map's picked problem.** If the money map identified
+"missed after-hours leads" as the #1 problem worth $X/month, that becomes Feature #1 in the
+blueprint. The dollar figure appears in the Problem section.
 
 Follow the standard blueprint output structure:
 > Project Overview → Target Users → Problem → Core Features → Phase 2 → Tech Stack → Database Schema → Implementation Phases → Kickoff Prompt
@@ -166,20 +193,25 @@ Also write `logo_url` directly to `quotes.logo_url` so it's available in `admin-
 
 ## Step 8 — Draft Outreach Email (Outreach Path Only)
 
-Write a personalized cold outreach email. Rules:
+Write a personalized cold outreach email. Every line should be specific to this business — not templated.
 
-**Subject line:**
-- `[Company name] — [specific finding]` (e.g., "McCullough Heating — 38 on mobile")
-- Or a question about a specific problem visible on their site
+**Subject line (pick one):**
+- `[Company name] — [specific site finding]` (e.g., "River City Ink — 41 on mobile")
+- A question using their industry vocabulary from the ride-along (e.g., "How many walk-ins did you lose last week?")
+- The money map dollar figure reframed as a question (e.g., "Is [Company] leaving $1,400/month on the table?")
 
-**Opening line:** Reference one specific thing found on their site. Never open with a compliment or a generic claim.
+**Opening line:** Reference one specific thing found on their site. Never open with a compliment.
+Use ride-along vocabulary — call it what they call it, not what a developer would call it.
 
 **Body (3–4 sentences max):**
-- What the problem is costing them (Money Map number)
-- What you built to solve it (1 sentence from the blueprint)
-- What the outcome looks like
+1. Name the problem using the money map's picked problem + dollar figure
+   (e.g., "Most [industry] shops in [city] lose around $X/month to missed after-hours leads...")
+2. Reference the site audit signal that confirms this is their specific problem
+   (e.g., "...and your site doesn't have a way to capture them after hours.")
+3. One sentence on what you built to solve it — in plain language, no jargon
+4. What the outcome looks like in their terms (more walk-ins, fewer no-shows, less phone tag)
 
-**CTA:** "Book a 15-minute call" — link to `{SITE_URL}/book`
+**CTA:** "Book a 15-minute call" — link to `{SITE_URL}/book?leadId={lead_id}`
 
 Call `admin-outreach-email` Edge Function with `action: draft` to save it to the Drafts queue. Do NOT send it.
 
