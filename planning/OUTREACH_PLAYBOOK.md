@@ -16,38 +16,30 @@ The "discovery call" is a confirmation call. You present. They confirm. You clos
 
 ## PHASE 1 — Industry Setup (Once Per Industry)
 
-Run these four skills once per industry. Save the outputs. Never run them again for the
-same industry — `/prepare-lead` will auto-run them if missing.
+Run the full pipeline once per industry. Never re-run for an existing industry unless refreshing
+stale data — the skill checks for an existing profile and asks before overwriting.
 
-### In Claude Code — type these in order:
-
-```
-/industry-download HVAC Contractors
-```
-At the end, step 12 outputs two commands. Paste both and run them:
-```bash
-! supabase functions invoke admin-leads ...   # syncs profile (~5s)
-! curl ... benchmark-industry ...             # benchmarks 15 real sites (~60s)
-```
-Saves to: `planning/industries/hvac-contractors.md`
+### In Claude Code — one command does everything:
 
 ```
-/ride-along HVAC Contractors
+/industry-setup HVAC Contractors
 ```
-Saves to: `planning/industries/hvac-contractors-ride-along.md`
 
-```
-/money-map HVAC Contractors
-```
-Saves to: `planning/industries/hvac-contractors-money-map.md`
+This chains all four skills in sequence and handles the Supabase sync automatically:
 
-```
-/client-locator HVAC Contractors
-```
-Saves to: `planning/industries/hvac-contractors-client-locator.md`
+| Step | Skill | Output file |
+|---|---|---|
+| 1 | `/industry-download` | `planning/industries/hvac-contractors.md` |
+| 2 | Sync + benchmark | Profile live in Supabase, Find Leads unblocked |
+| 3 | `/ride-along` | `planning/industries/hvac-contractors-ride-along.md` |
+| 4 | `/money-map` | `planning/industries/hvac-contractors-money-map.md` |
+| 5 | `/client-locator` | `planning/industries/hvac-contractors-client-locator.md` |
 
-> **Skip this phase** if you already have the industry profiled — `/prepare-lead` checks
-> automatically and runs the missing skills if needed.
+The benchmark step (step 2) audits 15 live sites and takes ~60 seconds. The skill will pause and
+ask you to run the two `!` commands before continuing.
+
+> **Skip this phase** if you already have the industry profiled — `/industry-setup` will detect
+> the existing files and ask before re-running.
 
 ---
 
@@ -267,10 +259,8 @@ work. Open it in Chrome, export as PDF, and email it as a follow-up within 24 ho
 
 ```
 ONCE PER INDUSTRY (in Claude Code)
-/industry-download → sync + benchmark (step 12 outputs the commands)
-/ride-along        → save md
-/money-map         → save md
-/client-locator    → save md
+/industry-setup {Industry Name}
+→ runs industry-download + sync + benchmark + ride-along + money-map + client-locator
 
 ADMIN PANEL — Settings tab
 Add industry + city → Save
@@ -302,10 +292,11 @@ Send proposal.html → update status → closed_won
 
 | Skill | When | Notes |
 |---|---|---|
-| `/industry-download` | New industry | Once per industry. Step 12 outputs sync + benchmark commands. |
-| `/ride-along` | After industry download | Once per industry. No sync needed. |
-| `/money-map` | After ride-along | Once per industry. |
-| `/client-locator` | After industry setup | Once per industry. |
+| `/industry-setup` | New industry | Chains all 4 skills + sync + benchmark. One command, full pipeline. |
+| `/industry-download` | Advanced — refresh single file | Also called by `/industry-setup`. Run solo to refresh an existing profile. |
+| `/ride-along` | Advanced — refresh single file | Solo run to regenerate the narrative only. |
+| `/money-map` | Advanced — refresh single file | Solo run to re-rank problems after market changes. |
+| `/client-locator` | Advanced — refresh single file | Solo run to update prospecting platforms. |
 | `/prepare-lead` | Score ≥ 60, pre-email | Pulls lead from Supabase via MCP automatically. |
 | `/prepare-reply` | After lead replies | Pulls lead + reply body automatically. Generates all 4 pre-call files. |
 | `/blueprint-builder` | When you have a call transcript | Standalone — converts a transcript into a build spec. |
