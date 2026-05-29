@@ -170,7 +170,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'sync-industry') {
-      const { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt } = body;
+      const { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt, rideAlongMd, moneyMapMd, clientLocatorMd } = body;
       if (!slug || !name) return json({ error: 'slug and name required.' }, 400);
 
       const { data, error } = await supabase
@@ -183,6 +183,9 @@ Deno.serve(async (req) => {
           audit_signals: auditSignals ?? {},
           researched_at: researchedAt ?? new Date().toISOString(),
           updated_at: new Date().toISOString(),
+          ...(rideAlongMd !== undefined && { ride_along_md: rideAlongMd }),
+          ...(moneyMapMd !== undefined && { money_map_md: moneyMapMd }),
+          ...(clientLocatorMd !== undefined && { client_locator_md: clientLocatorMd }),
         }, { onConflict: 'slug' })
         .select('*')
         .single();
@@ -197,7 +200,7 @@ Deno.serve(async (req) => {
     if (action === 'list-industries') {
       const { data, error } = await supabase
         .from('industry_profiles')
-        .select('slug, name, pain_points, booking_cta_keywords, researched_at')
+        .select('slug, name, pain_points, booking_cta_keywords, audit_signals, researched_at, ride_along_md, money_map_md, client_locator_md')
         .order('name', { ascending: true });
 
       if (error) {

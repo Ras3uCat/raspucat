@@ -23,7 +23,7 @@ class _OutreachHeader extends StatelessWidget {
           Obx(
             () => _SubTabPills(
               activeIndex: ctrl.activeSubTab.value,
-              labels: const ['Pipeline', 'Drafts', 'Settings'],
+              labels: const ['Pipeline', 'Drafts', 'Settings', 'Industries'],
               onTap: (i) => ctrl.activeSubTab.value = i,
             ),
           ),

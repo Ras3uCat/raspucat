@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:raspucat/app/controllers/admin_outreach_controller.dart';
+import 'package:raspucat/app/data/models/industry_profile_model.dart';
 import 'package:raspucat/app/data/models/lead_model.dart';
 import 'package:raspucat/app/modules/widgets/_convert_to_client_sheet.dart';
 import 'package:raspucat/utils/constants/colors.dart';
@@ -18,6 +19,8 @@ part '_lead_detail_sections.dart';
 part '_lead_detail_actions.dart';
 part '_lead_form_dialog.dart';
 part '_outreach_compose_panel.dart';
+part '_outreach_industries_view.dart';
+part '_outreach_industries_card.dart';
 
 class AdminOutreachWidget extends StatelessWidget {
   const AdminOutreachWidget({super.key});
@@ -72,6 +75,8 @@ class _OutreachSubTabBody extends StatelessWidget {
           return _OutreachDraftsView(ctrl: ctrl);
         case 2:
           return _OutreachSettingsPanel(ctrl: ctrl);
+        case 3:
+          return _OutreachIndustriesView(ctrl: ctrl);
         default:
           return _OutreachPipelineView(ctrl: ctrl);
       }

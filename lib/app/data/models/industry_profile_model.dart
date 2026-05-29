@@ -36,6 +36,9 @@ class IndustryProfileModel {
     required this.bookingCtaKeywords,
     required this.researchedAt,
     this.benchmark,
+    this.rideAlongMd,
+    this.moneyMapMd,
+    this.clientLocatorMd,
   });
 
   final String slug;
@@ -44,6 +47,9 @@ class IndustryProfileModel {
   final List<String> bookingCtaKeywords;
   final DateTime researchedAt;
   final IndustryBenchmark? benchmark;
+  final String? rideAlongMd;
+  final String? moneyMapMd;
+  final String? clientLocatorMd;
 
   factory IndustryProfileModel.fromJson(Map<String, dynamic> json) {
     final signals = json['audit_signals'] as Map<String, dynamic>?;
@@ -57,6 +63,9 @@ class IndustryProfileModel {
           .toList(),
       researchedAt: DateTime.parse(json['researched_at'] as String),
       benchmark: bJson != null ? IndustryBenchmark.fromJson(bJson) : null,
+      rideAlongMd: json['ride_along_md'] as String?,
+      moneyMapMd: json['money_map_md'] as String?,
+      clientLocatorMd: json['client_locator_md'] as String?,
     );
   }
 
@@ -66,5 +75,8 @@ class IndustryProfileModel {
     'painPoints': painPoints,
     'bookingCtaKeywords': bookingCtaKeywords,
     'researchedAt': researchedAt.toIso8601String(),
+    if (rideAlongMd != null) 'rideAlongMd': rideAlongMd,
+    if (moneyMapMd != null) 'moneyMapMd': moneyMapMd,
+    if (clientLocatorMd != null) 'clientLocatorMd': clientLocatorMd,
   };
 }

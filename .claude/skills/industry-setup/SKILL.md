@@ -76,6 +76,13 @@ thoughts, dollar leakage thread, dream system close).
 
 Save output to: `planning/industries/{slug}-ride-along.md`
 
+After saving, sync the narrative to Supabase by outputting this command for the user to run:
+
+```bash
+! supabase functions invoke admin-leads --project-ref gegwqywgbgzahnftppda \
+  --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"{slug}","name":"{Full Name}","rideAlongMd":"<full file content as escaped JSON string>"}'
+```
+
 ---
 
 ### STEP 4 — Money Map
@@ -87,6 +94,13 @@ ranked problem list with all five filters applied, ending with one clear pick an
 
 Save output to: `planning/industries/{slug}-money-map.md`
 
+After saving, sync to Supabase:
+
+```bash
+! supabase functions invoke admin-leads --project-ref gegwqywgbgzahnftppda \
+  --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"{slug}","name":"{Full Name}","moneyMapMd":"<full file content as escaped JSON string>"}'
+```
+
 ---
 
 ### STEP 5 — Client Locator
@@ -97,6 +111,13 @@ Run it exactly as if the user had typed `/client-locator {Industry Name}` — pr
 prospecting playbook with named platforms, member counts, and platform-tailored outreach scripts.
 
 Save output to: `planning/industries/{slug}-client-locator.md`
+
+After saving, sync to Supabase:
+
+```bash
+! supabase functions invoke admin-leads --project-ref gegwqywgbgzahnftppda \
+  --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"{slug}","name":"{Full Name}","clientLocatorMd":"<full file content as escaped JSON string>"}'
+```
 
 ---
 
@@ -116,6 +137,8 @@ Files saved:
 Supabase:
   Profile synced — Find Leads button is now unblocked for this industry
   Benchmark stats populated from 15 live sites
+  Ride-along, money map, and client locator narratives stored in Supabase
+  All content viewable in Admin Panel → Outreach → Industries tab
 
 Next steps:
   Admin Panel → Outreach → Settings → add "{Industry Name}" to Target Industries
