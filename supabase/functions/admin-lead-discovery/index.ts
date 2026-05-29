@@ -705,11 +705,14 @@ Deno.serve(async (req) => {
       return json({ error: `Unknown action: ${action}` }, 400);
     }
 
-    // Respect pause: discovery_runs_per_week = 0 means discovery is paused
+    // Respect admin panel schedule: skip if paused (= 0) or not yet due
     if (isCron) {
-      const { data: cronSettings } = await supabase.from('outreach_settings').select('discovery_runs_per_week').limit(1).single();
+      const { data: cronSettings } = await supabase.from('outreach_settings').select('discovery_runs_per_week, next_discovery_run_at').limit(1).single();
       if ((cronSettings?.discovery_runs_per_week ?? 2) === 0) {
         return json({ skipped: true, reason: 'Discovery paused (runs_per_week = 0).' });
+      }
+      if (cronSettings?.next_discovery_run_at && new Date(cronSettings.next_discovery_run_at) > new Date()) {
+        return json({ skipped: true, reason: 'Not due yet.', nextRun: cronSettings.next_discovery_run_at });
       }
     }
 
