@@ -77,7 +77,22 @@ Deno.serve(async (req) => {
       if (email?.lead_id) {
         await supabase
           .from('leads')
-          .update({ status: 'closed_lost', notes: 'Email bounced.' })
+          .update({ status: 'bounced', notes: 'Email bounced.' })
+          .eq('id', email.lead_id);
+      }
+      return json({ received: true });
+    }
+
+    if (type === 'email.unsubscribed' && data.email_id) {
+      const { data: email } = await supabase
+        .from('outreach_emails')
+        .select('lead_id')
+        .eq('resend_id', data.email_id)
+        .single();
+      if (email?.lead_id) {
+        await supabase
+          .from('leads')
+          .update({ status: 'unsubscribed' })
           .eq('id', email.lead_id);
       }
       return json({ received: true });

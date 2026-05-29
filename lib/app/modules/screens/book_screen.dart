@@ -16,10 +16,12 @@ class _BookScreenState extends State<BookScreen> {
   final _isSubmitting = false.obs;
   final _successMessage = RxnString();
   final _errorMessage = RxnString();
+  String? _leadId;
 
   @override
   void initState() {
     super.initState();
+    _leadId = Get.parameters['leadId'];
     _bookingCtrl = Get.put(BookingController(sessionType: 'discovery_call'), tag: 'book_screen');
   }
 
@@ -34,7 +36,7 @@ class _BookScreenState extends State<BookScreen> {
     _isSubmitting.value = true;
     _errorMessage.value = null;
     try {
-      await _bookingCtrl.createBooking(name: name, email: email, message: message);
+      await _bookingCtrl.createBooking(name: name, email: email, message: message, leadId: _leadId);
       _successMessage.value = 'Your session is booked — check your inbox for a confirmation.';
       _bookingCtrl.clearSelection();
     } catch (e) {

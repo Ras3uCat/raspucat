@@ -116,6 +116,7 @@ class _DetailActions extends StatelessWidget {
     'proposal_sent',
     'closed_won',
     'closed_lost',
+    'bounced',
     'unsubscribed',
   ];
 

@@ -126,7 +126,7 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const { sessionType, startAt, name, email, message = null, quoteId = null } = await req.json();
+    const { sessionType, startAt, name, email, message = null, quoteId = null, leadId = null } = await req.json();
 
     if (!sessionType || !startAt || !name || !email) {
       return json({ error: 'sessionType, startAt, name, email required.' }, 400);
@@ -177,6 +177,15 @@ Deno.serve(async (req) => {
     }
 
     await sendConfirmationEmail(email, name, sessionType, startDate, meetUrl, booking.cancellation_token);
+
+    // If this booking came from an outreach lead, advance them to call_booked
+    if (leadId) {
+      await supabase
+        .from('leads')
+        .update({ status: 'call_booked' })
+        .eq('id', leadId)
+        .in('status', ['prospect', 'contacted', 'replied']);
+    }
 
     return json({ bookingId: booking.id, cancellationToken: booking.cancellation_token, meetUrl });
   } catch (err) {

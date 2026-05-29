@@ -10,6 +10,7 @@ abstract class BookingRepository {
     required String email,
     String? message,
     String? quoteId,
+    String? leadId,
   });
   Future<void> cancelBooking(String token);
   Future<void> rescheduleBooking(String token, AvailabilitySlot newSlot);
@@ -47,6 +48,7 @@ class SupabaseBookingRepository implements BookingRepository {
     required String email,
     String? message,
     String? quoteId,
+    String? leadId,
   }) async {
     final body = <String, dynamic>{
       'sessionType': sessionType,
@@ -55,6 +57,7 @@ class SupabaseBookingRepository implements BookingRepository {
       'email': email,
       if (message != null && message.isNotEmpty) 'message': message,
       if (quoteId != null) 'quoteId': quoteId,
+      if (leadId != null) 'leadId': leadId,
     };
 
     final response = await _client.functions.invoke(

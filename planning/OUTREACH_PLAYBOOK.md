@@ -25,16 +25,19 @@ for the same industry.
 
 Outputs: pain points, operator language, what they pay for, booking CTA keywords, audit signals.
 
-At the end of the skill, step 12 outputs two commands. Run both:
+At the end of the skill, step 12 outputs a sync command. Run it to push the profile to Supabase:
 
 ```bash
 # Sync profile to Supabase (fast)
 ! supabase functions invoke admin-leads --project-ref gegwqywgbgzahnftppda \
   --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"hvac-contractors",...}'
+```
 
-# Benchmark 15 real sites in this industry (~60s)
+Then run the benchmark separately (hits real sites — takes ~60s):
+
+```bash
 ! curl -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-lead-discovery \
-  -H "Authorization: Bearer ANON_KEY" \
+  -H "Content-Type: application/json" \
   -d '{"adminToken":"YOUR_TOKEN","action":"benchmark-industry","slug":"hvac-contractors"}'
 ```
 
@@ -52,7 +55,7 @@ Outputs: 1,200–1,800 word first-person day-in-the-life narrative. Timestamps, 
 monologue, dollar leakage, the dream system. This is where you get the language — the
 exact phrases owners use, the moments where money leaks, the emotional texture of their day.
 
-Run step 12 sync command when the skill finishes.
+This is a standalone skill — no sync command needed after it runs.
 
 Saves to: `planning/industries/hvac-contractors-ride-along.md`
 
@@ -100,7 +103,7 @@ Saves to: `planning/industries/hvac-contractors-client-locator.md`
 Admin panel → Settings tab:
 - Add target industry: `HVAC contractors`
 - Add target city: `Austin, TX`
-- Set discovery frequency: 2x/week
+- Set discovery frequency: 2x/week (set to 0 to pause the cron)
 - Save
 
 The industry profile synced in step 1 will appear in the settings panel with benchmark
@@ -112,7 +115,7 @@ Industry Download first.
 
 ### Step 6 — Run Discovery
 
-Admin panel → **Find Leads** button.
+Admin panel → **Find Leads** button (manual run), or let the daily cron handle it.
 
 What runs automatically:
 1. Google Places pulls up to 20 businesses per industry/city pair
@@ -126,7 +129,10 @@ What runs automatically:
 
 When it finishes, the pipeline fills with scored, source-badged, pain-point-labeled leads.
 
-Cron runs automatically Mon + Thu at 9am. The "Find Leads" button triggers a manual run.
+**Cron schedule:** Supabase pg_cron runs both jobs daily at 10AM UTC — no external
+orchestration needed. Frequency is controlled by the `Discovery runs/week` setting in
+the admin panel. **Set to 0 to pause.** When paused, the cron fires but the discovery
+function returns immediately without making any API calls.
 
 ---
 
@@ -163,7 +169,7 @@ benchmark stats, decision maker info, Money Map findings, Ride-Along narrative.
 Output: complete software build plan — features, scope, data model, architecture.
 This is the spine. Everything else (email, discovery script, closer deck) derives from it.
 
-Saves to: `planning/leads/{lead-id}/blueprint.md`
+Saves to: `planning/leads/{client-slug}/blueprint.md`
 
 ---
 
@@ -173,13 +179,20 @@ After `/prepare-lead` completes, a draft email is created automatically in the D
 The email surfaces one specific pain point confirmed by the website audit — not a generic
 industry problem, but something visible on their actual site.
 
+The email CTA links to `https://raspucat.com/book?leadId={id}` — when the prospect
+books a slot, their lead status auto-updates to `call_booked`.
+
 Example opening: "We noticed your site is built on Wix and scores 38 on mobile — the
 average HVAC site in Austin scores 47. Most of your competitors have the same problem,
 which is exactly why there's an opening."
 
 **Review the draft. Once approved, hit Send.** Resend delivers it and lead status flips
-to `contacted`. Automated follow-ups run at the configured interval (default: 3 days,
-2 max) until they reply.
+to `contacted`.
+
+**Automated follow-up drafts:** The daily cron checks for leads in `contacted` status
+where `next_followup_at` has passed and creates a new draft for each. These drafts appear
+in the Drafts tab for you to review and edit. **Nothing sends automatically** — you approve
+each follow-up before it goes out.
 
 ---
 
@@ -209,25 +222,35 @@ Output: 8–12 questions tailored to this specific lead. Questions that deepen t
 points already confirmed on their site and follow the thread of what they said in
 their reply.
 
-Saves to: `planning/leads/{lead-id}/discovery-script.md`
+Saves to: `planning/leads/{client-slug}/discovery-script.md`
 
 ---
 
-### Step 11 — Closer Deck (runs inside `/prepare-reply`)
+### Step 11 — Closer Deck + Proposal (runs inside `/prepare-reply`)
 
 Context: blueprint + industry benchmark + lead audit + their email response (auto-pulled).
 
-Output: 6-slide deck built from what you already know about their business, with
-industry averages pre-filled as placeholders for any numbers not yet confirmed.
+**Closer Deck** output: 6-slide deck built from what you already know about their business,
+with industry averages pre-filled as placeholders for any numbers not yet confirmed.
 
 - Slide 1: Their specific situation (mirrors the pain points back)
 - Slide 2: Cost of the problem (quantified from Money Map + their industry)
 - Slide 3: The solution (from the blueprint)
 - Slide 4: How it works
-- Slide 5: Investment
+- Slide 5: Investment (real numbers from custom-plan.md)
 - Slide 6: Next step
 
-Saves to: `planning/leads/{lead-id}/closer-deck.md`
+Saves to: `planning/leads/{client-slug}/closer-deck.md`
+
+**Module + Pricing Recommendation** output: recommended plan, which modules solve their
+specific pain points, individual module costs, total setup + monthly price.
+
+Saves to: `planning/leads/{client-slug}/custom-plan.md`
+
+**Full Written Proposal** output: scope of work, timeline, deliverables, investment
+summary, next step / signature CTA. Print-ready HTML.
+
+Saves to: `planning/leads/{client-slug}/proposal.html`
 
 ---
 
@@ -262,11 +285,12 @@ Update lead status in the pipeline as the relationship progresses:
 | `prospect` | Discovered, not yet contacted |
 | `contacted` | First email sent |
 | `replied` | They responded — trigger research package |
-| `call_booked` | Confirmation call scheduled (auto-set via Google Calendar) |
+| `call_booked` | Auto-set when prospect books via the `/book` link in the outreach email |
 | `proposal_sent` | Deck sent or presented |
 | `closed_won` | Signed |
-| `closed_lost` | Passed |
-| `unsubscribed` | Auto-set by Resend webhook — lead excluded from all sequences |
+| `closed_lost` | Passed (set manually) |
+| `bounced` | Auto-set by Resend webhook — hard bounce, do not re-contact |
+| `unsubscribed` | Auto-set when prospect clicks the unsubscribe link in the email |
 
 ---
 
@@ -274,25 +298,34 @@ Update lead status in the pipeline as the relationship progresses:
 
 ```
 ONCE PER INDUSTRY
-/industry-download  → sync → benchmark
-/ride-along         → save md
+/industry-download  → sync → benchmark (separate curl call)
+/ride-along         → save md (no sync needed)
 /money-map          → save md
 /client-locator     → save md
 
 CONFIGURE
 Admin Settings → target industry + city → Save
 
-AUTOMATED (cron Mon/Thu or manual "Find Leads")
+AUTOMATED (daily cron at 10AM UTC, or manual "Find Leads")
 Google Places + Angi → website audit → Apollo → Hunter → scored pipeline
+discovery_runs_per_week = 0 → cron fires but discovery skips
 
 MANUAL (score ≥ 60, not yet prepared)
-/prepare-lead  → blueprint saved → auto-draft created → approve draft → Resend sends → mark contacted
+/prepare-lead  → blueprint saved → auto-draft created → review draft → send → contacted
+
+AUTOMATED FOLLOW-UPS
+Daily cron checks next_followup_at → creates draft → appears in Drafts tab → admin approves → send
 
 ON REPLY
-/prepare-reply → discovery-script + closer-deck (reply body pulled automatically) → save md
+/prepare-reply → discovery-script + closer-deck + custom-plan + proposal.html (reply auto-pulled)
+Closer deck is ready to present. Industry benchmarks fill Slide 2 + 5 as starting numbers.
 
 CONFIRMATION CALL
-Present deck → confirm numbers → close
+Open closer-deck.md → present → update numbers live as prospect confirms/corrects them → close
+
+POST-CALL (optional — regenerate with full call notes for a polished send-away)
+/discovery-script  → sharper questions if a follow-up call is needed
+/closer-deck       → clean final version with confirmed numbers, ready to email
 
 PIPELINE
 prospect → contacted → replied → call_booked → proposal_sent → closed_won
@@ -302,34 +335,63 @@ prospect → contacted → replied → call_booked → proposal_sent → closed_
 
 ## Skill Quick Reference
 
+### Phase 1 — Industry Research
+
 | Skill | When | Frequency | Requires |
 |---|---|---|---|
 | `/industry-download` | New industry | Once | Industry name |
 | `/ride-along` | After industry download | Once | Industry name |
 | `/money-map` | After ride-along | Once | Industry name |
 | `/client-locator` | After industry setup | Once | Industry name |
-| `/prepare-lead` | Score ≥ 60, not yet prepared | Per qualified lead | Lead in pipeline (pulled via MCP) |
-| `/prepare-reply` | After lead replies | Per reply | Lead record + reply body (pulled automatically via Cloudflare → Supabase) |
+
+### Phase 3 — Lead Preparation
+
+| Skill | When | Requires |
+|---|---|---|
+| `/prepare-lead` | Score ≥ 60, not yet prepared | Lead in pipeline (pulled via MCP) |
+| `/blueprint-builder` | Standalone: when you have a call transcript and want a full build plan | Discovery call transcript or notes |
+
+### Phase 4 — After Reply / Call Prep
+
+| Skill | When | Requires |
+|---|---|---|
+| `/prepare-reply` | After lead replies | Lead record + reply body (auto-pulled via Cloudflare → Supabase) |
+| `/discovery-script` | Standalone: when `call_booked` and you want to go deeper than the auto-generated version | Industry + company info (admin panel "Copy Discovery Script Prompt" fills this in) |
+| `/closer-deck` | Standalone: after the call to produce a polished final version with confirmed numbers | Call notes + company context (admin panel "Copy Closer Deck Prompt" fills in company context) |
+| `/seo-strategy` | When a client needs SEO — either full site audit or per-service optimization | Client site or service info |
 
 ---
 
 ## Notes
 
 - Industry research files live in `planning/industries/`
-- Per-lead research files live in `planning/leads/{lead-id}/`
+- Per-lead research files live in `planning/leads/{client-slug}/`
 - The Supabase MCP server (configured in `~/.claude/settings.json`) gives Claude Code
   direct read access to leads and industry profiles — no copy-paste required when
   invoking skills
 - Blueprint is the spine: email, discovery script, and closer deck all derive from it
 - Never run `/prepare-reply` before the lead replies — their response adds context that
   makes the discovery script and closer deck sharper
-- **Bounced leads:** The Resend webhook auto-flags bounced and spam-complaint emails.
-  Check the pipeline for leads with `bounced` status and exclude them from re-discovery runs.
+- **Admin panel skill shortcuts:** At `call_booked` status, the lead detail panel shows
+  a "Copy Discovery Script Prompt" button — copies a pre-filled `/discovery-script`
+  invocation to your clipboard, ready to paste in Claude. At `proposal_sent`, "Copy
+  Closer Deck Prompt" does the same for `/closer-deck` (paste in your call notes to
+  produce a clean final version with confirmed numbers for the send-away).
+- **Closer deck timing:** `/prepare-reply` generates the deck immediately from the email
+  reply — industry benchmarks fill the placeholder numbers. You present this on the
+  confirmation call and update the numbers live as the prospect confirms them. The
+  standalone `/closer-deck` is for producing a polished final version after the call
+  with the real numbers locked in.
+- **Bounced leads:** Hard bounces auto-set status to `bounced` via Resend webhook.
+  Exclude bounced leads from re-discovery runs — the email address is invalid.
+- **Unsubscribed leads:** When a prospect clicks the unsubscribe link in any outreach
+  email, a dedicated Edge Function (`public-unsubscribe`) sets their status to
+  `unsubscribed` immediately. No manual action needed.
+- **`call_booked` automation:** When a prospect clicks the booking CTA in the outreach
+  email (`/book?leadId={id}`) and completes a booking, `create-booking` automatically
+  updates their lead status to `call_booked`.
 - **Re-benchmark cadence:** Re-run `/industry-download` + benchmark sync every 90 days,
   or any time you add a new city. Stale benchmarks weaken the opening line.
-- **`call_booked` automation:** When you create a Google Calendar event with the prospect's
-  email as an attendee, the integration auto-sets their lead status to `call_booked` and
-  appends the event link to their notes.
 
 ---
 
@@ -345,6 +407,8 @@ prospect → contacted → replied → call_booked → proposal_sent → closed_
 | Inbound Edge Function | `inbound-outreach-reply` (Supabase `gegwqywgbgzahnftppda`) |
 | Reply capture columns | `outreach_emails.reply_body`, `.reply_html`, `.reply_from` |
 | Supabase project | `gegwqywgbgzahnftppda` |
+| Outreach cron | Supabase pg_cron — daily 10AM UTC (migration `20260528120000_add_outreach_cron.sql`) |
+| Cron auth | `CRON_SECRET` env var on `admin-lead-discovery`; `ADMIN_PASSWORD` for follow-up drafts |
 
 **Reply capture flow:**
 ```

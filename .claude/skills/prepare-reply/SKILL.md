@@ -26,7 +26,7 @@ Query Supabase for:
 - The `reply_body` from `outreach_emails` where `lead_id` matches and `replied_at` is populated
 - The original email draft that was sent (subject, body)
 - The industry profile for context
-- The blueprint from `planning/leads/{lead-id}/blueprint.md` if it exists
+- The blueprint from `planning/leads/{client-slug}/blueprint.md` if it exists
 
 The reply body is captured automatically when inbound email arrives via Cloudflare Email Worker. If `reply_body` is null, tell the user: "Reply body not yet captured — check that Cloudflare email routing is active, or paste their reply directly."
 
@@ -122,18 +122,18 @@ Save to: `planning/leads/{client-slug}/closer-deck.md`
 ```
 Research package ready for [Company Name]:
 
-Custom Plan:       planning/leads/{lead-id}/custom-plan.md
+Custom Plan:       planning/leads/{client-slug}/custom-plan.md
   Recommended:     [Plan tier] — $[setup] setup, $[monthly]/mo
   Key modules:     [comma-separated]
 
-Proposal:          planning/leads/{lead-id}/proposal.html
+Proposal:          planning/leads/{client-slug}/proposal.html
   Ready to send post-call or share in Slide 6
 
-Discovery Script:  planning/leads/{lead-id}/discovery-script.md
+Discovery Script:  planning/leads/{client-slug}/discovery-script.md
   Key focus:       [1-2 things their reply told you to probe]
   Watch for:       [most likely objection]
 
-Closer Deck:       planning/leads/{lead-id}/closer-deck.md
+Closer Deck:       planning/leads/{client-slug}/closer-deck.md
   Cost figure:     $[X]/month
   Confirm on call: [1-2 numbers still unverified]
 ```

@@ -705,6 +705,14 @@ Deno.serve(async (req) => {
       return json({ error: `Unknown action: ${action}` }, 400);
     }
 
+    // Respect pause: discovery_runs_per_week = 0 means discovery is paused
+    if (isCron) {
+      const { data: cronSettings } = await supabase.from('outreach_settings').select('discovery_runs_per_week').limit(1).single();
+      if ((cronSettings?.discovery_runs_per_week ?? 2) === 0) {
+        return json({ skipped: true, reason: 'Discovery paused (runs_per_week = 0).' });
+      }
+    }
+
     if (!industries.length || !cities.length) {
       return json({ error: 'No target industries or cities configured.' }, 400);
     }

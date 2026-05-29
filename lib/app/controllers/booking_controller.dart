@@ -50,6 +50,7 @@ class BookingController extends GetxController {
     required String email,
     String? message,
     String? quoteId,
+    String? leadId,
   }) async {
     final slot = selectedSlot.value;
     if (slot == null) throw Exception('No slot selected');
@@ -60,6 +61,7 @@ class BookingController extends GetxController {
       email: email,
       message: message,
       quoteId: quoteId,
+      leadId: leadId,
     );
   }
 }

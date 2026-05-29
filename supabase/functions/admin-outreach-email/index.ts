@@ -52,8 +52,9 @@ async function sendViaResend(to: string, subject: string, html: string): Promise
 }
 
 function wrapEmailHtml(bodyHtml: string, leadId: string): string {
-  const unsubUrl = `${SITE_URL}/unsubscribe?id=${leadId}`;
-  const bookingUrl = `${SITE_URL}/contact`;
+  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+  const unsubUrl = `${supabaseUrl}/functions/v1/public-unsubscribe?id=${leadId}`;
+  const bookingUrl = `${SITE_URL}/book?leadId=${leadId}`;
   return `
 <!DOCTYPE html><html><head><meta charset="utf-8">
 <style>
@@ -86,7 +87,11 @@ Deno.serve(async (req) => {
     const { adminToken, action } = body;
 
     const adminPassword = Deno.env.get('ADMIN_PASSWORD');
-    if (!adminPassword || adminToken !== adminPassword) {
+    const cronSecret = Deno.env.get('CRON_SECRET');
+    const authHeader = req.headers.get('Authorization');
+    const isCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
+    const isAdmin = adminPassword && adminToken === adminPassword;
+    if (!isCron && !isAdmin) {
       return json({ error: 'Unauthorized.' }, 401);
     }
 
@@ -106,6 +111,7 @@ Deno.serve(async (req) => {
       if (body.maxFollowUps !== undefined) fields.max_follow_ups = body.maxFollowUps;
       if (body.targetIndustries !== undefined) fields.target_industries = body.targetIndustries;
       if (body.targetCities !== undefined) fields.target_cities = body.targetCities;
+      if (body.discoveryRunsPerWeek !== undefined) fields.discovery_runs_per_week = body.discoveryRunsPerWeek;
 
       if (existing?.id) {
         await supabase.from('outreach_settings').update(fields).eq('id', existing.id);
@@ -233,6 +239,71 @@ Deno.serve(async (req) => {
         sent++;
       }
       return json({ sent, failed });
+    }
+
+    if (action === 'auto-draft-followups') {
+      const { data: settings } = await supabase
+        .from('outreach_settings').select('*').limit(1).single();
+      const followUpDays = settings?.follow_up_days ?? 3;
+      const maxFollowUps = settings?.max_follow_ups ?? 3;
+
+      const { data: leads, error: leadsErr } = await supabase
+        .from('leads')
+        .select('id, company_name, email, industry, city, website')
+        .eq('status', 'contacted')
+        .lte('next_followup_at', new Date().toISOString())
+        .not('email', 'is', null);
+
+      if (leadsErr || !leads) return json({ error: 'Failed to fetch leads.' }, 500);
+
+      let drafted = 0;
+      let skipped = 0;
+
+      for (const lead of leads) {
+        const { count } = await supabase
+          .from('outreach_emails')
+          .select('id', { count: 'exact', head: true })
+          .eq('lead_id', lead.id)
+          .not('sent_at', 'is', null);
+
+        if ((count ?? 0) >= maxFollowUps) { skipped++; continue; }
+
+        const { data: existing } = await supabase
+          .from('outreach_emails')
+          .select('sequence_step')
+          .eq('lead_id', lead.id)
+          .order('sequence_step', { ascending: false })
+          .limit(1)
+          .single();
+        const step = (existing?.sequence_step ?? 0) + 1;
+
+        const subject = `Following up — ${lead.company_name}`;
+        const bodyHtml = `
+<p>Hi there,</p>
+<p>I wanted to follow up on my previous email about your website for ${lead.company_name}.</p>
+<p>I've had a chance to look at your site and put together some ideas that could help you [add specific value here].</p>
+<p>Would you be open to a quick 30-minute call to talk through it?</p>
+<p>Ryan<br>Raspucat Web Studio</p>
+        `.trim();
+
+        await supabase.from('outreach_emails').insert({
+          lead_id: lead.id,
+          subject,
+          body_html: bodyHtml,
+          sequence_step: step,
+          sent_at: null,
+        });
+
+        const nextFollowupAt = new Date(Date.now() + followUpDays * 24 * 60 * 60 * 1000).toISOString();
+        await supabase
+          .from('leads')
+          .update({ next_followup_at: nextFollowupAt })
+          .eq('id', lead.id);
+
+        drafted++;
+      }
+
+      return json({ drafted, skipped });
     }
 
     return json({ error: `Unknown action: ${action}` }, 400);
