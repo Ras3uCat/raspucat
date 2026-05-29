@@ -48,6 +48,18 @@ class _OutreachSettingsPanelState extends State<_OutreachSettingsPanel> {
   }
 
   void _save() {
+    // Flush any pending text that hasn't been confirmed with Enter
+    final pendingIndustry = _industryInputCtrl.text.trim();
+    if (pendingIndustry.isNotEmpty && !_industries.contains(pendingIndustry)) {
+      setState(() => _industries.add(pendingIndustry));
+      _industryInputCtrl.clear();
+    }
+    final pendingCity = _cityInputCtrl.text.trim();
+    if (pendingCity.isNotEmpty && !_cities.contains(pendingCity)) {
+      setState(() => _cities.add(pendingCity));
+      _cityInputCtrl.clear();
+    }
+
     final current = widget.ctrl.settings.value;
     final updated = OutreachSettings(
       id: current.id,
