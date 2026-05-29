@@ -21,6 +21,7 @@ part '_lead_form_dialog.dart';
 part '_outreach_compose_panel.dart';
 part '_outreach_industries_view.dart';
 part '_outreach_industries_card.dart';
+part '_outreach_industries_tabs.dart';
 
 class AdminOutreachWidget extends StatelessWidget {
   const AdminOutreachWidget({super.key});

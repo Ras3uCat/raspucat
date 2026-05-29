@@ -143,7 +143,7 @@ class _IndustryCardBody extends StatelessWidget {
   final int activeTab;
   final ValueChanged<int> onTabChanged;
 
-  static const _tabLabels = ['Overview', 'Ride-Along', 'Money Map', 'Client Locator'];
+  static const _tabLabels = ['Overview', 'Benchmarks', 'Ride-Along', 'Money Map', 'Client Locator'];
 
   @override
   Widget build(BuildContext context) {
@@ -175,92 +175,15 @@ class _IndustryTabContent extends StatelessWidget {
       case 0:
         return _MarkdownTab(content: profile.overviewMd);
       case 1:
-        return _MarkdownTab(content: profile.rideAlongMd);
+        return _BenchmarksTab(benchmark: profile.benchmark);
       case 2:
-        return _MarkdownTab(content: profile.moneyMapMd);
+        return _MarkdownTab(content: profile.rideAlongMd);
       case 3:
+        return _MarkdownTab(content: profile.moneyMapMd);
+      case 4:
         return _MarkdownTab(content: profile.clientLocatorMd);
       default:
         return const SizedBox.shrink();
     }
-  }
-}
-
-class _PainPointsTab extends StatelessWidget {
-  const _PainPointsTab({required this.painPoints});
-  final List<String> painPoints;
-
-  @override
-  Widget build(BuildContext context) {
-    if (painPoints.isEmpty) {
-      return Text(
-        'No pain points recorded.',
-        style: TextStyle(color: EColors.primary.withAlpha(102), fontSize: ESizes.fontSizeLabel),
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: painPoints
-          .map(
-            (p) => Padding(
-              padding: const EdgeInsets.only(bottom: ESizes.xs),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '- ',
-                    style: TextStyle(
-                      color: EColors.primary.withAlpha(153),
-                      fontSize: ESizes.fontSizeLabel,
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      p,
-                      style: const TextStyle(
-                        color: EColors.primary,
-                        fontSize: ESizes.fontSizeLabel,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
-class _MarkdownTab extends StatelessWidget {
-  const _MarkdownTab({required this.content});
-  final String? content;
-
-  @override
-  Widget build(BuildContext context) {
-    if (content == null || content!.isEmpty) {
-      return Text(
-        'Not yet synced. Run /industry-setup to generate.',
-        style: TextStyle(color: EColors.primary.withAlpha(102), fontSize: ESizes.fontSizeLabel),
-      );
-    }
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(ESizes.md),
-      decoration: BoxDecoration(
-        color: EColors.primary.withAlpha(6),
-        border: Border.all(color: EColors.primary.withAlpha(30)),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        content!,
-        style: TextStyle(
-          color: EColors.primary.withAlpha(204),
-          fontSize: ESizes.fontSizeLabel,
-          fontFamily: 'monospace',
-          height: 1.6,
-        ),
-      ),
-    );
   }
 }
