@@ -67,13 +67,36 @@ class _DetailHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  lead.companyName,
-                  style: const TextStyle(
-                    color: EColors.cyanTintedWhite,
-                    fontSize: ESizes.fontSizeMd,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        lead.companyName,
+                        style: const TextStyle(
+                          color: EColors.cyanTintedWhite,
+                          fontSize: ESizes.fontSizeMd,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 12, color: EColors.softGrey),
+                      tooltip: 'Copy name',
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: lead.companyName));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Copied'),
+                            duration: Duration(seconds: 1),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 2),
                 Text(

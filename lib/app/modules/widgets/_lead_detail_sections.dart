@@ -6,7 +6,6 @@ class _DetailContactInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final painPoints = lead.painPointMatches;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,10 +42,6 @@ class _DetailContactInfo extends StatelessWidget {
             'No contact info.',
             style: TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
           ),
-        if (painPoints.isNotEmpty) ...[
-          const SizedBox(height: ESizes.sm),
-          _PainPointTags(painPoints: painPoints),
-        ],
       ],
     );
   }
@@ -122,7 +117,16 @@ class _ContactRow extends StatelessWidget {
             tooltip: 'Copy',
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-            onPressed: () {},
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: value));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Copied'),
+                  duration: Duration(seconds: 1),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
           ),
         ],
       ),
