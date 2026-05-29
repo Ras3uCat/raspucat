@@ -243,4 +243,15 @@ class AdminOutreachController extends GetxController {
       (p) => lower.contains(p.slug.replaceAll('-', ' ')) || lower.contains(p.name.toLowerCase()),
     );
   }
+
+  /// True when every configured industry has a synced profile.
+  bool get canRunDiscovery {
+    final industries = settings.value.targetIndustries;
+    if (industries.isEmpty) return false;
+    return industries.every(hasProfileForIndustry);
+  }
+
+  /// Industries missing a profile — shown in the disabled button tooltip.
+  List<String> get missingProfiles =>
+      settings.value.targetIndustries.where((i) => !hasProfileForIndustry(i)).toList();
 }

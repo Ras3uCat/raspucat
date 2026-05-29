@@ -33,7 +33,14 @@ class _OutreachHeader extends StatelessWidget {
             return _LastDiscoveryChip(ctrl: ctrl);
           }),
           const SizedBox(width: ESizes.sm),
-          Obx(() => _FindLeadsButton(ctrl: ctrl, busy: ctrl.isDiscovering.value)),
+          Obx(
+            () => _FindLeadsButton(
+              ctrl: ctrl,
+              busy: ctrl.isDiscovering.value,
+              blocked: !ctrl.canRunDiscovery,
+              missingProfiles: ctrl.missingProfiles,
+            ),
+          ),
           const SizedBox(width: ESizes.sm),
           _AddLeadButton(ctrl: ctrl),
         ],
@@ -121,44 +128,59 @@ class _AddLeadButton extends StatelessWidget {
 }
 
 class _FindLeadsButton extends StatelessWidget {
-  const _FindLeadsButton({required this.ctrl, required this.busy});
+  const _FindLeadsButton({
+    required this.ctrl,
+    required this.busy,
+    required this.blocked,
+    required this.missingProfiles,
+  });
   final AdminOutreachController ctrl;
   final bool busy;
+  final bool blocked;
+  final List<String> missingProfiles;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: busy ? null : ctrl.runDiscovery,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: 8),
-        decoration: BoxDecoration(
-          color: busy ? EColors.primary.withAlpha(10) : EColors.primary.withAlpha(20),
-          border: Border.all(color: busy ? EColors.primary.withAlpha(77) : EColors.primary),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (busy)
-              const SizedBox(
-                width: 10,
-                height: 10,
-                child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
-              )
-            else
-              const Icon(Icons.travel_explore, color: EColors.primary, size: 14),
-            const SizedBox(width: 6),
-            Text(
-              busy ? 'Searching...' : 'Find Leads',
-              style: TextStyle(
-                color: busy ? EColors.primary.withAlpha(153) : EColors.primary,
-                fontSize: ESizes.fontSizeLabel,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
+    final disabled = busy || blocked;
+    return Tooltip(
+      message: blocked ? 'Run /industry-download first for: ${missingProfiles.join(', ')}' : '',
+      child: GestureDetector(
+        onTap: disabled ? null : ctrl.runDiscovery,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: 8),
+          decoration: BoxDecoration(
+            color: EColors.primary.withAlpha(disabled ? 10 : 20),
+            border: Border.all(color: EColors.primary.withAlpha(disabled ? 51 : 255)),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (busy)
+                const SizedBox(
+                  width: 10,
+                  height: 10,
+                  child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
+                )
+              else
+                Icon(
+                  blocked ? Icons.block : Icons.travel_explore,
+                  color: EColors.primary.withAlpha(disabled ? 77 : 255),
+                  size: 14,
+                ),
+              const SizedBox(width: 6),
+              Text(
+                busy ? 'Searching...' : 'Find Leads',
+                style: TextStyle(
+                  color: EColors.primary.withAlpha(disabled ? 77 : 255),
+                  fontSize: ESizes.fontSizeLabel,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

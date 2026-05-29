@@ -720,6 +720,18 @@ Deno.serve(async (req) => {
       return json({ error: 'No target industries or cities configured.' }, 400);
     }
 
+    // Reject if any configured industry has no synced profile.
+    // Run /industry-download in Claude Code first to research the industry.
+    const missingProfiles = industries.filter((ind: string) => {
+      const slug = ind.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      return !industryProfiles.has(slug);
+    });
+    if (missingProfiles.length > 0) {
+      return json({
+        error: `No industry profile for: ${missingProfiles.join(', ')}. Run /industry-download in Claude Code first.`,
+      }, 400);
+    }
+
     let inserted = 0;
     let updated = 0;
     const upsertedIds: string[] = [];
