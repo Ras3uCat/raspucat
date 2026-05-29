@@ -26,7 +26,7 @@ const RESOURCES = {"bingequest/content/index.html": "5f6aacc4f3f21ecf54c0aee4b2e
 ".well-known/assetlinks.json": "b54fd7ee3b8792c7c19a121c3ca256eb",
 ".well-known/apple-app-site-association": "f0fecc8e4349be32e13b0d11ae788e8c",
 "flutter.js": "83d881c1dbb6d6bcd6b42e274605b69c",
-"flutter_bootstrap.js": "c1f6e3c90d3f016cf6b93585c67de6af",
+"flutter_bootstrap.js": "6d68684f2ed6662fc0cda2ff0cfecdc3",
 "manifest.json": "b903179230055979c0f8f0b0020c0492",
 "index.html": "b7c2dc6b3e16c24ad2f842cf8e64fb09",
 "/": "b7c2dc6b3e16c24ad2f842cf8e64fb09",
