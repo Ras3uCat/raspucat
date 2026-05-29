@@ -143,7 +143,7 @@ class _IndustryCardBody extends StatelessWidget {
   final int activeTab;
   final ValueChanged<int> onTabChanged;
 
-  static const _tabLabels = ['Pain Points', 'Ride-Along', 'Money Map', 'Client Locator'];
+  static const _tabLabels = ['Overview', 'Ride-Along', 'Money Map', 'Client Locator'];
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +173,7 @@ class _IndustryTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (activeTab) {
       case 0:
-        return _PainPointsTab(painPoints: profile.painPoints);
+        return _MarkdownTab(content: profile.overviewMd);
       case 1:
         return _MarkdownTab(content: profile.rideAlongMd);
       case 2:
