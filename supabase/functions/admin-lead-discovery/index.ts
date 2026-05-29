@@ -550,6 +550,7 @@ function findProfile(industry: string, profiles: Map<string, IndustryProfile>): 
 async function benchmarkIndustry(
   slug: string,
   citiesOverride?: string[],
+  limit = 5,
 ): Promise<IndustryBenchmark> {
   const { data: profileRow } = await supabase
     .from('industry_profiles')
@@ -563,16 +564,16 @@ async function benchmarkIndustry(
     ? citiesOverride
     : ['Austin, TX', 'Phoenix, AZ', 'Charlotte, NC'];
 
-  // Collect up to 15 unique website URLs from Google Places
+  // Collect up to `limit` unique website URLs from Google Places
   const websites: string[] = [];
   for (const city of sampleCities) {
     const places = await fetchGooglePlaces(profile.name, city);
     for (const p of places) {
-      if (p.website && !websites.includes(p.website) && websites.length < 15) {
+      if (p.website && !websites.includes(p.website) && websites.length < limit) {
         websites.push(p.website);
       }
     }
-    if (websites.length >= 15) break;
+    if (websites.length >= limit) break;
   }
 
   // Audit each site
@@ -665,9 +666,9 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'benchmark-industry') {
-      const { slug, cities } = body as { slug?: string; cities?: string[] };
+      const { slug, cities, limit } = body as { slug?: string; cities?: string[]; limit?: number };
       if (!slug) return json({ error: 'slug is required.' }, 400);
-      const benchmark = await benchmarkIndustry(slug, cities);
+      const benchmark = await benchmarkIndustry(slug, cities, limit ?? 5);
       return json({ slug, benchmark });
     }
 
