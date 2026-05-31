@@ -72,67 +72,13 @@ class _OutreachDraftsView extends StatelessWidget {
                 itemBuilder: (context, i) {
                   final draft = ctrl.drafts[i];
                   final lead = ctrl.leads.where((l) => l.id == draft.leadId).firstOrNull;
-                  return _DraftRow(draft: draft, leadName: lead?.companyName ?? '—', ctrl: ctrl);
+                  return _DraftCard(draft: draft, leadName: lead?.companyName ?? '—', ctrl: ctrl);
                 },
               ),
             ),
           ],
         );
       }),
-    );
-  }
-}
-
-class _DraftRow extends StatelessWidget {
-  const _DraftRow({required this.draft, required this.leadName, required this.ctrl});
-
-  final OutreachEmailModel draft;
-  final String leadName;
-  final AdminOutreachController ctrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
-      decoration: BoxDecoration(
-        color: EColors.primary.withAlpha(10),
-        border: Border.all(color: EColors.primary.withAlpha(31)),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  leadName,
-                  style: const TextStyle(
-                    color: EColors.cyanTintedWhite,
-                    fontSize: ESizes.fontSizeSm,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  draft.subject,
-                  style: const TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.send_outlined, size: 16, color: EColors.primary),
-            tooltip: 'Send',
-            onPressed: () => ctrl.sendEmail(draft.id),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, size: 16, color: Colors.redAccent),
-            tooltip: 'Delete draft',
-            onPressed: () => ctrl.deleteDraft(draft.id),
-          ),
-        ],
-      ),
     );
   }
 }

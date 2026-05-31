@@ -300,7 +300,17 @@ Use ride-along vocabulary — call it what they call it, not what a developer wo
 
 **CTA:** "Book a 15-minute call" — link to `{SITE_URL}/book?leadId={lead_id}`
 
-Call `admin-outreach-email` Edge Function with `action: draft` to save it to the Drafts queue. Do NOT send it.
+**Internal notes to extract** (from the planning document — these appear in the `// INTERNAL NOTES` section of the Drafts tab and are never sent to the lead):
+- Subject line reasoning: which option was chosen and why (e.g., "Chose no-show angle over PageSpeed opener — owner feels it daily")
+- Delivery blockers: missing email address, preferred contact channel, any platform details to withhold from the subject
+- Call prep flags: anything to raise in the discovery call that the email doesn't address (e.g., cash-only deposit flow, commission splits)
+- Benchmark hook available: note the strongest comparative stat for use if doing A/B testing
+
+Call `admin-outreach-email` Edge Function with `action: draft`, passing:
+- `leadId`, `subject`, `bodyHtml`
+- `notes`: the extracted internal notes as a plain-text string (bullet points separated by newlines)
+
+Do NOT send it.
 
 Confirm: "Draft created — review it in the Drafts tab before sending."
 

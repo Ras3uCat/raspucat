@@ -362,6 +362,36 @@ class AdminController extends GetxController {
     }
   }
 
+  Future<void> switchToSelfManaged(String quoteId) async {
+    _setQuoteState(quoteId, 'switchingSelfManaged', true);
+    _setQuoteState(quoteId, 'selfManagedMsg', null);
+    try {
+      final response = await Supabase.instance.client.functions.invoke(
+        'admin-switch-to-self-managed',
+        body: {'quoteId': quoteId, 'adminToken': _adminToken},
+      );
+      final data = response.data as Map<String, dynamic>?;
+      if (data?['error'] != null) {
+        _setQuoteState(quoteId, 'selfManagedMsg', '❌ ${data!['error']}');
+      } else {
+        final feeWaived = data?['feeWaived'] as bool? ?? false;
+        final feeCents = data?['feeCents'] as int? ?? 0;
+        final months = data?['monthsActive'] as int? ?? 0;
+        final msg = feeWaived
+            ? '✅ Switched — loyalty waiver applied ($months months, \$0 fee)'
+            : '✅ Switched — \$${(feeCents / 100).round()} fee due · invoice via Stripe';
+        _setQuoteState(quoteId, 'selfManagedMsg', msg);
+        quoteDetail.remove(quoteId);
+        quoteDetail.refresh();
+        await Future.wait([fetchQuotes(), fetchStats()]);
+      }
+    } catch (_) {
+      _setQuoteState(quoteId, 'selfManagedMsg', '❌ Something went wrong');
+    } finally {
+      _setQuoteState(quoteId, 'switchingSelfManaged', false);
+    }
+  }
+
   Future<void> cancelSubscription(String quoteId) async {
     _setQuoteState(quoteId, 'cancellingSubscription', true);
     _setQuoteState(quoteId, 'cancelMsg', null);

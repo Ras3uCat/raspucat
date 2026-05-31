@@ -10,6 +10,7 @@ import 'package:raspucat/app/modules/widgets/admin_delivery_section.dart';
 import 'package:raspucat/app/modules/widgets/admin_site_health_section.dart';
 import 'package:raspucat/app/modules/widgets/admin_discovery_tab.dart';
 import 'package:raspucat/app/modules/widgets/admin_provision_email_section.dart';
+import 'package:raspucat/app/modules/widgets/admin_self_managed_section.dart';
 import '_admin_asset_upload_section.dart';
 
 class AdminDetailContent extends StatefulWidget {
@@ -281,6 +282,10 @@ class _AdminDetailContentState extends State<AdminDetailContent> {
                     ' · ${detail['billing_cycle'] ?? '—'}',
               ),
               _Row('Subscription', _fmtSub(detail)),
+              Padding(
+                padding: const EdgeInsets.only(top: ESizes.sm),
+                child: AdminSelfManagedSection(ctrl: ctrl, quoteId: quoteId, detail: detail),
+              ),
             ],
           ),
           divider,

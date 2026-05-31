@@ -172,6 +172,7 @@ class OutreachEmailModel {
     required this.bodyHtml,
     required this.sequenceStep,
     required this.createdAt,
+    this.notes,
     this.resendId,
     this.sentAt,
     this.openedAt,
@@ -185,6 +186,7 @@ class OutreachEmailModel {
   final String bodyHtml;
   final int sequenceStep;
   final DateTime createdAt;
+  final String? notes;
   final String? resendId;
   final DateTime? sentAt;
   final DateTime? openedAt;
@@ -201,6 +203,7 @@ class OutreachEmailModel {
     bodyHtml: json['body_html'] as String,
     sequenceStep: (json['sequence_step'] as num).toInt(),
     createdAt: DateTime.parse(json['created_at'] as String),
+    notes: json['notes'] as String?,
     resendId: json['resend_id'] as String?,
     sentAt: json['sent_at'] != null ? DateTime.parse(json['sent_at'] as String) : null,
     openedAt: json['opened_at'] != null ? DateTime.parse(json['opened_at'] as String) : null,

@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'draft') {
-      const { leadId, subject, bodyHtml } = body;
+      const { leadId, subject, bodyHtml, notes } = body;
       if (!leadId || !subject || !bodyHtml) {
         return json({ error: 'leadId, subject, and bodyHtml required.' }, 400);
       }
@@ -138,7 +138,7 @@ Deno.serve(async (req) => {
 
       const { data, error } = await supabase
         .from('outreach_emails')
-        .insert({ lead_id: leadId, subject, body_html: bodyHtml, sequence_step: step, sent_at: null })
+        .insert({ lead_id: leadId, subject, body_html: bodyHtml, sequence_step: step, sent_at: null, ...(notes ? { notes } : {}) })
         .select('*')
         .single();
       if (error) {
@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
       const { leadId } = body;
       let query = supabase
         .from('outreach_emails')
-        .select('*, leads(company_name, email, industry, city)')
+        .select('id, lead_id, subject, body_html, notes, sequence_step, created_at, resend_id, sent_at, opened_at, clicked_at, replied_at, leads(company_name, email, industry, city)')
         .is('sent_at', null)
         .order('created_at', { ascending: true });
       if (leadId) query = query.eq('lead_id', leadId);

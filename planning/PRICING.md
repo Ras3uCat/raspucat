@@ -8,6 +8,7 @@ Our pricing follows a **Base + Configurator** model. Every plan starts from the 
 
 **Core Site + CRM/Lead Gen — $1,200 setup**
 - Hero, Services, About & FAQ pages
+- Photo gallery
 - Contact form + basic lead capture
 - Mobile-responsive, SEO-ready
 
@@ -23,8 +24,8 @@ This is the minimum viable product. Everything below is additive.
 | **Preset Modules** | ✅ Pre-selected & locked | ✅ Pre-selected & locked | None — fully open |
 | **Bundle Discount** | ~12% off a la carte | ~18% off a la carte | — |
 | **Volume Discount** | — | — | Up to 15% (see below) |
-| **Setup Price** | **$2,200** *(save ~$300)* | **$3,500** *(save ~$750)* | **From $1,200 + add-ons** |
-| **Monthly** | $149/mo management | $149/mo management | $149/mo management |
+| **Setup Price** | **$2,200** *(save ~$300)* | **$3,500** *(save ~$750)* | **$1,200 base · add only what you need** |
+| **Monthly** | $179/mo management | $179/mo management | $179/mo management |
 
 > **⭐ Most Popular** — Premium (Engine) is the sweet spot for established service businesses ready to take bookings, payments, and client retention seriously.
 
@@ -33,14 +34,14 @@ This is the minimum viable product. Everything below is additive.
 ## What's Pre-Selected Per Plan
 
 ### Pro (Launchpad) — Preset Modules
-- Blog & Gallery
 - Online Booking / Shop
 - Stripe Integration
+- SMS Reminders
 
 *A la carte value: ~$2,500 → Bundle price: $2,200*
 
 ### ⭐ Premium (Engine) — Preset Modules
-- Blog & Gallery
+- Enhanced Blog & Gallery
 - Online Booking / Shop
 - Stripe Integration
 - Tip/Gratuity at Checkout
@@ -60,19 +61,19 @@ These are the individual modules available in the configurator. Prices shown are
 
 | Module | Price |
 |:---|:---:|
-| Blog & Gallery | $400 |
+| Enhanced Blog & Gallery *(upgrades the base gallery — adds full blog CMS, categories, managed portfolio)* | $400 |
 | Online Booking / Shop | $600 |
 | Stripe Integration | $300 |
 | Tip/Gratuity at Checkout | $200 |
 | PWA Push Notifications *(home screen, no App Store)* | $400 |
 | Monthly Stats Digest *(branded PDF: revenue, top services, growth)* | $300 |
 | AI Chatbot — Lite *(FAQ, hours, pricing Q&A)* | $500 |
-| AI Chatbot — Full *(custom-trained, fine-tuned monthly)* | $800 *(upgrade from Lite)* |
+| AI Chatbot — Full *(custom-trained, fine-tuned monthly — fine-tuning included with Premium Management)* | $800 *(upgrade from Lite)* |
 | Automated PDF Invoices | $400 |
 | Multi-location Support | $900 |
 | Native Mobile Apps *(iOS/Android, App Store presence)* | $3,500 |
 | Stripe Connect *(multi-staff payouts)* | $700 |
-| SMS Reminders *(Twilio)* | $400 + usage |
+| SMS Reminders *(Twilio — ~$20–40/mo usage for an active shop, quoted separately)* | $400 setup |
 | Loyalty & Referrals | $600 |
 | Google Reviews Auto-Sync | $350 |
 | Custom Menu/Pricing Module | $450 |
@@ -107,9 +108,9 @@ Every plan opens the same interactive dialog:
 
 ## Step 2 — Management Plan
 
-After the build is configured, clients choose how the site is maintained. Management is the default path — handover is available as a paid option.
+After the build is configured, clients choose how the site is maintained. Management is the default path — self-managed is available as a paid option.
 
-**Standard Management: $149/mo** *(or $1,490/yr — save $298)*
+**Standard Management: $179/mo** *(or $1,788/yr — save $360)*
 - Hosting & SSL
 - Supabase Database & Auth
 - Domain Management
@@ -117,13 +118,13 @@ After the build is configured, clients choose how the site is maintained. Manage
 - Monthly Stats Digest email
 - 1 hour of content updates/support
 
-**Premium Management: $299/mo** *(or $2,990/yr — save $598)*
+**Premium Management: $349/mo** *(or $3,492/yr — save $696)*
 - All Standard features
 - Priority support (under 4h response)
-- Monthly AI Chatbot fine-tuning
+- Monthly AI Chatbot fine-tuning *(required to get full value from AI Chatbot — Full)*
 - Advanced SEO tracking & reporting
 
-**Handover & Documentation: $400 one-time** *(self-manage option)*
+**Self-Managed: $800 one-time** *(fee waived after 12 months of management)*
 - Full deployment to client's own infrastructure
 - Credential & access transfer
 - Technical documentation package
@@ -139,7 +140,7 @@ One-click tip selector before checkout. A favorite for salons and spas — often
 
 ### 2. AI Business Concierge
 - **Lite:** Pre-loaded with your FAQ, hours, and service list. Handles the "Are you open?" questions 24/7.
-- **Full:** Deeply trained on your business data and tone. Fine-tuned monthly. Reduces admin load by up to 40%.
+- **Full:** Deeply trained on your business data and tone. Fine-tuned monthly. Reduces admin load by up to 40%. *(Monthly fine-tuning included with Premium Management.)*
 
 ### 3. PWA vs. Native Mobile Apps
 - **PWA:** Zero App Store friction. Home screen install + push notifications for booking reminders and promos.
