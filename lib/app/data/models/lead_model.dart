@@ -22,6 +22,11 @@ class LeadModel {
     this.rating,
     this.reviewCount,
     this.websiteAudit,
+    this.blueprintMd,
+    this.brandBriefHtml,
+    this.competitorHtml,
+    this.brandAlignmentHtml,
+    this.customPlanMd,
   });
 
   final String id;
@@ -48,6 +53,18 @@ class LeadModel {
   // Keys: platform, hasHttps, hasViewport, hasBookingCta, pagespeedScore,
   //       painPointMatches (List<String>), lastAuditedAt
   final Map<String, dynamic>? websiteAudit;
+  final String? blueprintMd;
+  final String? brandBriefHtml;
+  final String? competitorHtml;
+  final String? brandAlignmentHtml;
+  final String? customPlanMd;
+
+  bool get hasReports =>
+      blueprintMd != null ||
+      brandBriefHtml != null ||
+      competitorHtml != null ||
+      brandAlignmentHtml != null ||
+      customPlanMd != null;
 
   factory LeadModel.fromJson(Map<String, dynamic> json) => LeadModel(
     id: json['id'] as String,
@@ -76,6 +93,11 @@ class LeadModel {
     rating: json['rating'] != null ? (json['rating'] as num).toDouble() : null,
     reviewCount: json['review_count'] != null ? (json['review_count'] as num).toInt() : null,
     websiteAudit: json['website_audit'] as Map<String, dynamic>?,
+    blueprintMd: json['blueprint_md'] as String?,
+    brandBriefHtml: json['brand_brief_html'] as String?,
+    competitorHtml: json['competitor_html'] as String?,
+    brandAlignmentHtml: json['brand_alignment_html'] as String?,
+    customPlanMd: json['custom_plan_md'] as String?,
   );
 
   LeadModel copyWith({
@@ -120,6 +142,11 @@ class LeadModel {
     rating: rating ?? this.rating,
     reviewCount: reviewCount ?? this.reviewCount,
     websiteAudit: websiteAudit ?? this.websiteAudit,
+    blueprintMd: blueprintMd,
+    brandBriefHtml: brandBriefHtml,
+    competitorHtml: competitorHtml,
+    brandAlignmentHtml: brandAlignmentHtml,
+    customPlanMd: customPlanMd,
   );
 
   String get locationDisplay {

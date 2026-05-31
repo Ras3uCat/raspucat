@@ -21,6 +21,14 @@ abstract class OutreachRepository {
   Future<void> runDiscoveryAction(String action);
   Future<List<IndustryProfileModel>> listIndustryProfiles();
   Future<IndustryProfileModel> syncIndustryProfile(IndustryProfileModel profile);
+  Future<LeadModel> syncLeadReports(
+    String leadId, {
+    String? blueprintMd,
+    String? brandBriefHtml,
+    String? competitorHtml,
+    String? brandAlignmentHtml,
+    String? customPlanMd,
+  });
 }
 
 class SupabaseOutreachRepository implements OutreachRepository {
@@ -156,5 +164,26 @@ class SupabaseOutreachRepository implements OutreachRepository {
   Future<IndustryProfileModel> syncIndustryProfile(IndustryProfileModel profile) async {
     final data = await _invoke('admin-leads', {'action': 'sync-industry', ...profile.toJson()});
     return IndustryProfileModel.fromJson(data['profile'] as Map<String, dynamic>);
+  }
+
+  @override
+  Future<LeadModel> syncLeadReports(
+    String leadId, {
+    String? blueprintMd,
+    String? brandBriefHtml,
+    String? competitorHtml,
+    String? brandAlignmentHtml,
+    String? customPlanMd,
+  }) async {
+    final data = await _invoke('admin-leads', {
+      'action': 'sync-reports',
+      'leadId': leadId,
+      if (blueprintMd != null) 'blueprintMd': blueprintMd,
+      if (brandBriefHtml != null) 'brandBriefHtml': brandBriefHtml,
+      if (competitorHtml != null) 'competitorHtml': competitorHtml,
+      if (brandAlignmentHtml != null) 'brandAlignmentHtml': brandAlignmentHtml,
+      if (customPlanMd != null) 'customPlanMd': customPlanMd,
+    });
+    return LeadModel.fromJson(data['lead'] as Map<String, dynamic>);
   }
 }

@@ -15,6 +15,7 @@ part '_outreach_settings_panel.dart';
 part '_outreach_settings_fields.dart';
 part '_outreach_chip_input.dart';
 part '_lead_detail_panel.dart';
+part '_lead_detail_reports.dart';
 part '_lead_detail_sections.dart';
 part '_lead_detail_actions.dart';
 part '_lead_form_dialog.dart';

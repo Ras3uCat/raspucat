@@ -169,6 +169,33 @@ Deno.serve(async (req) => {
       return json({ success: true });
     }
 
+    if (action === 'sync-reports') {
+      const { leadId, blueprintMd, brandBriefHtml, competitorHtml, brandAlignmentHtml, customPlanMd } = body;
+      if (!leadId) return json({ error: 'leadId required.' }, 400);
+
+      const fields: Record<string, unknown> = {};
+      if (blueprintMd !== undefined) fields.blueprint_md = blueprintMd;
+      if (brandBriefHtml !== undefined) fields.brand_brief_html = brandBriefHtml;
+      if (competitorHtml !== undefined) fields.competitor_html = competitorHtml;
+      if (brandAlignmentHtml !== undefined) fields.brand_alignment_html = brandAlignmentHtml;
+      if (customPlanMd !== undefined) fields.custom_plan_md = customPlanMd;
+
+      if (Object.keys(fields).length === 0) return json({ error: 'No report fields provided.' }, 400);
+
+      const { data, error } = await supabase
+        .from('leads')
+        .update(fields)
+        .eq('id', leadId)
+        .select('id, blueprint_md, brand_brief_html, competitor_html, brand_alignment_html, custom_plan_md')
+        .single();
+
+      if (error) {
+        console.error('sync-reports error:', error);
+        return json({ error: 'Failed to sync reports.' }, 500);
+      }
+      return json({ lead: data });
+    }
+
     if (action === 'sync-industry') {
       const { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt, overviewMd, rideAlongMd, moneyMapMd, clientLocatorMd } = body;
       if (!slug || !name) return json({ error: 'slug and name required.' }, 400);

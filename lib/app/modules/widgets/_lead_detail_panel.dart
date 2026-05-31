@@ -32,6 +32,10 @@ class _LeadDetailPanel extends StatelessWidget {
                       const SizedBox(height: ESizes.lg),
                       _DetailSiteAudit(lead: lead),
                       const SizedBox(height: ESizes.lg),
+                      if (lead.hasReports) ...[
+                        _LeadDetailReports(lead: lead),
+                        const SizedBox(height: ESizes.lg),
+                      ],
                       _DetailNotes(lead: lead, ctrl: ctrl),
                       const SizedBox(height: ESizes.lg),
                       _DetailEmailHistory(lead: lead, ctrl: ctrl),

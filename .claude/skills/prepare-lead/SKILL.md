@@ -1,6 +1,6 @@
 ---
 name: prepare-lead
-description: Prepares a complete client intelligence package for any qualified lead or new web client. Pulls the record automatically via Supabase MCP, runs a 7-step flow (site audit → industry research → blueprint → brand brief → competitor intel → brand alignment → discovery pre-population), then creates a draft outreach email for outreach leads. Works on both acquisition paths. Trigger phrases include "prepare lead", "prepare [company name]", "build the research package", "prepare client [name]", "run prepare-lead", or any request to generate the intelligence package for a lead or new client.
+description: Prepares a complete client intelligence package for any qualified lead or new web client. Pulls the record automatically via Supabase MCP, runs an 8-step flow (site audit → industry research → blueprint → brand brief → competitor intel → brand alignment → custom plan draft → discovery pre-population), then creates a draft outreach email for outreach leads. Works on both acquisition paths. Trigger phrases include "prepare lead", "prepare [company name]", "build the research package", "prepare client [name]", "run prepare-lead", or any request to generate the intelligence package for a lead or new client.
 ---
 
 # Prepare Lead
@@ -19,7 +19,8 @@ Generates the full client intelligence package — regardless of whether the cli
 5. `discovery_prefill` jsonb written to the quote record
 
 **Outreach path only:**
-6. Draft outreach email in the Drafts queue (NOT sent — requires your approval)
+6. `planning/leads/{client-slug}/custom-plan-draft.md` — internal plan recommendation (NOT sent to lead)
+7. Draft outreach email in the Drafts queue (NOT sent — requires your approval)
 
 ---
 
@@ -181,7 +182,75 @@ Save to: `planning/leads/{client-slug}/brand_alignment.md` and `brand_alignment_
 
 ---
 
-## Step 7 — Write discovery_prefill to Quote
+## Step 7 — Custom Plan Draft (Internal — Outreach Path Only)
+
+Generate `custom-plan-draft.md` — an internal pricing recommendation built from the blueprint and confirmed audit signals. This document is **never sent to the lead**. Its purpose is to arm you for the call before anyone replies.
+
+**Query the `plans` and `modules` tables from Supabase** to get current real pricing. Never hardcode prices.
+
+**Plan tier selection:**
+- Pick the tier whose `ideal_for` description best matches the lead's industry and confirmed problems
+- Justify the tier in one sentence tied directly to the money map's #1 problem — not a generic description
+
+**Module selection — only include modules that solve confirmed pain points:**
+For each selected module, write one line:
+```
+- [Module name] ($X setup) — [what problem it solves, in ride-along vocabulary]
+```
+
+Do not include modules for problems the site audit did not confirm. If the site has a booking CTA, don't lead with booking unless the audit shows it's broken or deposit-free.
+
+**Pricing block:**
+```
+Plan:          [Tier name] — $[setup_price] setup / $[monthly_price]/mo
+Modules:
+  [Module]     +$[price]
+  [Module]     +$[price]
+  ...
+─────────────────────────────
+Setup total:   $[sum]
+Monthly:       $[monthly_price]/mo
+Deposit (50%): $[setup/2]
+Balance:       $[setup/2]
+```
+
+**"Why this plan" paragraph (3–4 sentences):**
+- Connect the tier recommendation directly to the money map's dollar figure
+- Reference the 2 strongest audit signals that justify the modules chosen
+- Note which module directly addresses the #1 confirmed pain
+- Note anything to confirm or adjust on the call (e.g., "Stripe Connect worth raising if artists split commissions")
+
+**Label at top of file:**
+```
+> ⚠️ INTERNAL ONLY — Do not share with lead. Refine with prepare-reply after they respond.
+```
+
+Save to: `planning/leads/{client-slug}/custom-plan-draft.md`
+
+---
+
+## Step 8 — Sync Reports to Supabase (Both Paths)
+
+After all report files are saved locally, sync them to Supabase so they are viewable in the
+Admin Panel → lead detail → Reports tab. Use the `sync-reports` action on `admin-leads`.
+
+Output these commands for the user to run (replace `YOUR_TOKEN` and `{lead-id}`):
+
+```bash
+! ./scripts/sync-lead-reports.sh {lead-id} {client-slug} YOUR_TOKEN
+```
+
+This script reads all five files from `planning/leads/{client-slug}/` and pushes them in one
+request. Once synced, the lead detail panel will show a **Reports** section with tabs for
+Blueprint, Brand Brief, Competitor, Brand Alignment, and Custom Plan.
+
+If the script isn't available, output individual `! curl` commands using the `sync-reports`
+action on `https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-leads` with fields
+`blueprintMd`, `brandBriefHtml`, `competitorHtml`, `brandAlignmentHtml`, `customPlanMd`.
+
+---
+
+## Step 9 — Write discovery_prefill to Quote
 
 Assemble the `discovery_prefill` jsonb from all extracted signals and write it to the quote record via the Supabase MCP:
 
@@ -203,11 +272,11 @@ Assemble the `discovery_prefill` jsonb from all extracted signals and write it t
 
 Also write `logo_url` directly to `quotes.logo_url` so it's available in `admin-generate-client-json`.
 
-**Outreach path only:** After Step 7, proceed to Step 8 (draft email). Skip Step 8 for web path.
+**Outreach path only:** After Step 8, proceed to Step 9 (draft email). Skip Steps 7 and 9 for web path.
 
 ---
 
-## Step 8 — Draft Outreach Email (Outreach Path Only)
+## Step 9 — Draft Outreach Email (Outreach Path Only)
 
 Write a personalized cold outreach email. Every line should be specific to this business — not templated.
 
@@ -249,6 +318,7 @@ After this skill completes:
 | `competitor_report.html` | Print-ready competitor report |
 | `brand_alignment.md` | Brand alignment analysis |
 | `brand_alignment_report.html` | Print-ready brand alignment report |
+| `custom-plan-draft.md` | Internal plan + pricing recommendation (outreach path only — never sent) |
 | `discovery_prefill` on quote | Pre-populated discovery form data |
 
 **Outreach path also:** Draft email in Drafts queue (pending your approval).
