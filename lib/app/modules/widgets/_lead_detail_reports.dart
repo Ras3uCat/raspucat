@@ -164,14 +164,18 @@ class _ReportPane extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(top: 6, right: 6, child: _CopyButton(onTap: () => _copyToClipboard(context))),
+        Positioned(
+          top: 6,
+          right: 6,
+          child: _ReportCopyButton(onTap: () => _copyToClipboard(context)),
+        ),
       ],
     );
   }
 }
 
-class _CopyButton extends StatelessWidget {
-  const _CopyButton({required this.onTap});
+class _ReportCopyButton extends StatelessWidget {
+  const _ReportCopyButton({required this.onTap});
   final VoidCallback onTap;
 
   @override
