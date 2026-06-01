@@ -135,19 +135,71 @@ Save to: `planning/leads/{client-slug}/blueprint.md`
 
 ---
 
+## HTML Report Template (applies to Steps 4, 5, 6)
+
+All three HTML reports share the **Raspucat space/HUD chrome** with **client theme preview sections** inside.
+
+**The split: Raspucat = the frame. Client theme = the sample content within it.**
+
+Add a `<style>` block in `<head>` for:
+```css
+.panel { position: relative; }
+.panel::before, .panel::after {
+  content: ''; position: absolute; width: 12px; height: 12px;
+  border-color: rgba(88,227,239,0.4); border-style: solid;
+}
+.panel::before { top: 0; left: 0; border-width: 1.5px 0 0 1.5px; }
+.panel::after  { top: 0; right: 0; border-width: 1.5px 1.5px 0 0; }
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
+}
+a { color: #58E3EF; text-decoration: none; }
+table { border-collapse: collapse; width: 100%; }
+```
+
+If a Google Font was detected, include `<link>` in `<head>` for it.
+
+**Chrome design tokens (inline everywhere else):**
+- Background: `#000612` | Text: `#E8FEFF` | Muted: `rgba(232,255,255,0.45)`
+- Primary: `#58E3EF` | Surface: `rgba(88,227,239,0.04)` | Border: `rgba(88,227,239,0.12)`
+- Error: `#FF6B6B` | Warning/amber: `#F0A500`
+
+**Header pattern (all reports):**
+```html
+<div style="height:2px;background:linear-gradient(90deg,transparent,#58E3EF,transparent);"></div>
+<!-- eyebrow: "// RASPUCAT · CLIENT INTELLIGENCE PACKAGE" in faded cyan monospace -->
+<!-- title with text-shadow glow, meta line in muted monospace -->
+<!-- divider: linear-gradient(90deg, #58E3EF, transparent) -->
+```
+
+**Section label pattern:** `// SECTION NAME` — 10px, uppercase, 0.18em letter-spacing, cyan, glow text-shadow
+
+**Panel pattern:** `.panel` class + `background: rgba(88,227,239,0.04)` + `border: 1px solid rgba(88,227,239,0.12)`
+
+**Footer pattern:**
+```html
+<!-- faded cyan divider line -->
+<!-- left: "RASPUCAT STUDIO · raspucat.com" monospace cyan | right: year muted monospace -->
+<!-- 2px gradient bottom bar -->
+```
+
+---
+
 ## Step 4 — Brand Brief Report
 
-Generate a pre-filled brand brief from the site audit signals:
+Generate a pre-filled brand brief from the site audit signals using the HTML template above.
 
-- **Colors:** Detected primary/secondary colors (label them, show hex)
-- **Fonts:** Detected font families
-- **Business type:** From `industry` field or checkout `business_type`
-- **Tagline / tone:** From extracted h1 + meta description
-- **Preliminary personality:** Infer from industry + detected design choices (modern, professional, warm, bold, etc.)
-
-Output as `brand_brief_report.html` — inline CSS, print-ready, matching the styling of `competitor_report.html` and `brand_alignment_report.html`. Include a "Prepared by Raspucat" footer.
-
-Fields that can't be inferred from the site audit are marked `[Client to confirm]` — they will be completed when the discovery form is submitted.
+Content sections:
+- **Business Profile** — name, address, phone, hours, rating, payment method, owners
+- **Site Audit Signals** — platform, PageSpeed (with benchmark gap), SSL, booking CTA, confirmed pain points
+- **Brand Signals** — detected tagline, colors, fonts, tone; detected logo asset
+- **`// BRAND PALETTE PREVIEW`** — 5 color swatches using detected/inferred client colors (70px color block + name + hex + usage label). Fields not confirmed show a dashed placeholder labeled "TBD".
+- **`// SAMPLE UI COMPONENTS`** — rendered in the **client's** colors (not Raspucat cyan):
+  - `[ SAMPLE HEADER ]` — mock nav bar with client bg, business name in their headline font, 3 nav links, CTA button in their accent color
+  - `[ SAMPLE BOOKING WIDGET ]` — mock booking card with artist name, date/time in monospace, deposit amount in accent color, confirm button
+  - If Google Font detected: load via `<link>` and render in that font; otherwise use recommended font name
+- **Social Presence** + **Discovery Fields** (TBD fields marked `[Client to confirm]`)
 
 Save to: `planning/leads/{client-slug}/brand_brief_report.html`
 
@@ -155,14 +207,19 @@ Save to: `planning/leads/{client-slug}/brand_brief_report.html`
 
 ## Step 5 — Competitor Intelligence Report
 
-Using the lead's `industry` + `city`:
+Using the lead's `industry` + `city`, identify 3–5 direct competitors. Use the HTML template above.
 
-- Identify 3–5 direct competitors in the same city/market
-- Audit each competitor's site: platform, PageSpeed, booking CTA presence, features
-- Note what each competitor does well and where they fall short
-- Summarize the opportunity gap
+Content sections:
+- **Intro paragraph** — framing the competitive context
+- **`// COMPETITOR PROFILES`** — one card per competitor with:
+  - Threat badge: HIGH (`#FF6B6B`), MEDIUM (`#F0A500`), LOW (muted)
+  - Platform / PageSpeed / Booking grid
+  - Strengths + Gaps to Exploit columns
+- **`// OPPORTUNITY GAP ANALYSIS`** — comparison table (signal / client today / best competitor)
+- **`// YOUR PROJECTED POSITION`** — second table showing **client post-Raspucat build** vs. today vs. best competitor. Style the "After Build" column in cyan (`#58E3EF`). Include: PageSpeed target, booking system, artist pages, walk-in queue, no-show rate.
+- **Key Insight** quote block
 
-Output: `competitor_intel.md` (raw analysis) + `competitor_report.html` (print-ready client-facing version, same style as brand_brief_report.html).
+Also generates raw `competitor_intel.md`.
 
 Save to: `planning/leads/{client-slug}/competitor_intel.md` and `competitor_report.html`
 
@@ -170,13 +227,21 @@ Save to: `planning/leads/{client-slug}/competitor_intel.md` and `competitor_repo
 
 ## Step 6 — Brand Alignment Report
 
-Gather inspiration sources:
-- If `discovery_prefill.inspo_urls` already populated (from a prior discovery form submission): use those
-- Otherwise: use the 2–3 strongest competitor URLs from Step 5 as inspiration sources
+Gather inspiration sources (discovery prefill or top competitor URLs). Use the HTML template above.
 
-Run the brand alignment analysis: for each source URL, extract visual style, color palette, layout patterns, and UX choices. Synthesize into a coherent brand direction that differentiates from competitors while borrowing what works.
+Content sections:
+- **`// BRAND DNA`** — 2×2 grid (Heritage, Position, Vibe, Identity)
+- **`// RECOMMENDED PALETTE`** — 5 swatches with hex + **usage label** (Primary BG / Body Text / Accent / Alert / Secondary Surface)
+- **`// TYPOGRAPHY DIRECTION`** — Headlines / Body / Labels rows with font samples rendered in recommended fonts
+- **`// DESIGN LANGUAGE`** — table: Texture, Dividers, Photography, Stock Photos rules
+- **`// DESIGN DIRECTION SAMPLES`** — rendered in **client's** recommended palette:
+  - `[ SAMPLE SITE HEADER ]` — nav bar in client palette with headline font, nav links, CTA button
+  - `[ SAMPLE BOOKING CONFIRMATION ]` — receipt-aesthetic booking card with ticket-stub header in client accent color, artist/date/time/deposit in monospace
+- **`// TONE OF VOICE`** — 2×2 grid (Voice, Language, Stance, Delivery) + "Never say this / Say this instead" copy comparison
+- **`// BOOKING UI DIRECTION`** — Interface, Deposit UX, SMS Reminders, Walk-In Queue guidance
+- **`// WHAT TO AVOID`** — ✕ item list with red left borders
 
-Output: `brand_alignment.md` (analysis) + `brand_alignment_report.html` (print-ready, same style).
+Also generates raw `brand_alignment.md`.
 
 Save to: `planning/leads/{client-slug}/brand_alignment.md` and `brand_alignment_report.html`
 
