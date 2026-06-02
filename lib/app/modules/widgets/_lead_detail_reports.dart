@@ -15,11 +15,11 @@ class _LeadDetailReportsState extends State<_LeadDetailReports> {
     if (widget.lead.blueprintMd != null)
       _ReportTab(label: 'Blueprint', content: widget.lead.blueprintMd!),
     if (widget.lead.brandBriefHtml != null)
-      _ReportTab(label: 'Brand Brief', content: widget.lead.brandBriefHtml!),
+      _ReportTab(label: 'Brand Brief', content: widget.lead.brandBriefHtml!, isHtml: true),
     if (widget.lead.competitorHtml != null)
-      _ReportTab(label: 'Competitor', content: widget.lead.competitorHtml!),
+      _ReportTab(label: 'Competitor', content: widget.lead.competitorHtml!, isHtml: true),
     if (widget.lead.brandAlignmentHtml != null)
-      _ReportTab(label: 'Brand Alignment', content: widget.lead.brandAlignmentHtml!),
+      _ReportTab(label: 'Brand Alignment', content: widget.lead.brandAlignmentHtml!, isHtml: true),
     if (widget.lead.customPlanMd != null)
       _ReportTab(label: 'Custom Plan', content: widget.lead.customPlanMd!),
   ];
@@ -45,9 +45,10 @@ class _LeadDetailReportsState extends State<_LeadDetailReports> {
 }
 
 class _ReportTab {
-  const _ReportTab({required this.label, required this.content});
+  const _ReportTab({required this.label, required this.content, this.isHtml = false});
   final String label;
   final String content;
+  final bool isHtml;
 }
 
 class _ReportsSectionHeader extends StatelessWidget {
@@ -119,14 +120,15 @@ class _ReportBody extends StatelessWidget {
     if (tabs.isEmpty) return const SizedBox.shrink();
     final safeIndex = activeTab.clamp(0, tabs.length - 1);
     final tab = tabs[safeIndex];
-    return _ReportPane(label: tab.label, content: tab.content);
+    return _ReportPane(label: tab.label, content: tab.content, isHtml: tab.isHtml);
   }
 }
 
 class _ReportPane extends StatelessWidget {
-  const _ReportPane({required this.label, required this.content});
+  const _ReportPane({required this.label, required this.content, this.isHtml = false});
   final String label;
   final String content;
+  final bool isHtml;
 
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: content));
@@ -137,6 +139,12 @@ class _ReportPane extends StatelessWidget {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  void _openInBrowser() {
+    final blob = html.Blob([content], 'text/html');
+    final url = html.Url.createObjectUrl(blob);
+    html.window.open(url, '_blank');
   }
 
   @override
@@ -151,18 +159,59 @@ class _ReportPane extends StatelessWidget {
             border: Border.all(color: EColors.primary.withAlpha(30)),
             borderRadius: BorderRadius.circular(4),
           ),
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(ESizes.md, ESizes.md, ESizes.xl + ESizes.sm, ESizes.md),
-            child: SelectableText(
-              content,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                color: EColors.primary.withAlpha(204),
-                fontSize: ESizes.fontSizeLabel,
-                height: 1.6,
-              ),
-            ),
-          ),
+          child: isHtml
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(ESizes.xl),
+                    child: GestureDetector(
+                      onTap: _openInBrowser,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: ESizes.lg,
+                          vertical: ESizes.md,
+                        ),
+                        decoration: BoxDecoration(
+                          color: EColors.primary.withAlpha(20),
+                          border: Border.all(color: EColors.primary.withAlpha(80)),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.open_in_new, color: EColors.primary, size: 14),
+                            const SizedBox(width: ESizes.sm),
+                            Text(
+                              'Open in browser',
+                              style: TextStyle(
+                                color: EColors.primary.withAlpha(204),
+                                fontSize: ESizes.fontSizeLabel,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(
+                    ESizes.md,
+                    ESizes.md,
+                    ESizes.xl + ESizes.sm,
+                    ESizes.md,
+                  ),
+                  child: SelectableText(
+                    content,
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      color: EColors.primary.withAlpha(204),
+                      fontSize: ESizes.fontSizeLabel,
+                      height: 1.6,
+                    ),
+                  ),
+                ),
         ),
         Positioned(
           top: 6,
