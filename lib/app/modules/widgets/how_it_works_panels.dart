@@ -12,8 +12,8 @@ class HowItWorksPanels extends StatelessWidget {
       body:
           'We get to know your business, your goals, and your customers. '
           'We research your competitors and align everything to your brand, '
-          'then hand you a clear feature list, a competitor report, and an upfront price — '
-          'no guessing games, no surprise fees.',
+          'then hand you a clear feature list, a competitor report, and an upfront price. '
+          'No guessing games, no surprise fees.',
       icon: Icons.search_outlined,
       color: EColors.primary,
     ),
@@ -28,8 +28,8 @@ class HowItWorksPanels extends StatelessWidget {
     StickySwapItem(
       title: 'Build',
       body:
-          'We build your app to be fast, secure, and connected to everything it needs — '
-          'including payments and a live database. Watch progress in your client portal in real time.',
+          'We build your app to be fast, secure, and connected to everything it needs: '
+          'payments, a live database, and real-time updates. Watch progress in your client portal as it happens.',
       icon: Icons.terminal_outlined,
       color: EColors.gold,
     ),
@@ -37,7 +37,7 @@ class HowItWorksPanels extends StatelessWidget {
       title: 'Deploy',
       body:
           'The final payment is only collected after you review and approve the finished product. '
-          'Then we launch it — on your domain, under your brand, ready for real users.',
+          'Then we launch it on your domain, under your brand, ready for real users.',
       icon: Icons.rocket_launch_outlined,
       color: EColors.primary,
     ),
@@ -53,7 +53,7 @@ class HowItWorksPanels extends StatelessWidget {
       title: 'Operate',
       body:
           'We handle hosting, updates, and support so you can focus on running your business. '
-          'If you ever want to move on, we hand over everything — code, logins, and documentation.',
+          'If you ever want to move on, we hand over everything: code, logins, and documentation.',
       icon: Icons.settings_outlined,
       color: EColors.gold,
     ),

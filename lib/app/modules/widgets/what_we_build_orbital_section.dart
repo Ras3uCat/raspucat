@@ -9,16 +9,16 @@ class WhatWeBuildOrbitalSection extends StatelessWidget {
     StickySwapItem(
       title: 'Marketing Sites',
       body:
-          'Blazing-fast Flutter web — conversion-optimised landing pages '
-          'with animated sections, SEO-ready semantics, and retro-futuristic flair.',
+          'Fast Flutter sites with scroll animations, solid SEO structure, '
+          'and a look that actually stands out. Built around your brand and your goals.',
       icon: Icons.web_outlined,
       color: EColors.primary,
     ),
     StickySwapItem(
       title: 'Client Portals',
       body:
-          'Real-time portals where your clients track progress, upload files, '
-          'send messages, and confirm milestones — all without emailing you.',
+          'Real-time portals where clients track progress, upload files, '
+          'send messages, and confirm milestones. No inbox chaos.',
       icon: Icons.dashboard_outlined,
       color: EColors.accent,
     ),
@@ -33,8 +33,8 @@ class WhatWeBuildOrbitalSection extends StatelessWidget {
     StickySwapItem(
       title: 'SaaS Apps',
       body:
-          'Full-stack SaaS: Supabase auth and RLS, subscription billing, '
-          'role-based access, and modular feature flags — shipped fast.',
+          'Full-stack SaaS with Supabase auth, subscription billing, '
+          'role-based access, and feature flags. Shipped fast.',
       icon: Icons.rocket_launch_outlined,
       color: EColors.primary,
     ),

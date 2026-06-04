@@ -31,10 +31,10 @@ class EText {
   ///
   static const String aboutSubLabel = 'Signal acquired. Systems online.';
   static const String aboutBio =
-      'Flutter developer. Full-stack. Precision interfaces, payment-connected backends, '
-      'and real-time systems — the full sequence from brief to launch. '
-      'Past builds include booking platforms, interactive frontends, and production '
-      'mobile apps deployed to iOS and Android. One point of contact. No overhead.';
+      'Flutter developer. Full-stack builder. We handle the full run from first brief to launch day: '
+      'interfaces, payment backends, live databases, and everything in between. '
+      'Past builds include booking platforms, iOS and Android apps, and interactive web frontends. '
+      'One point of contact. No overhead.';
 
   /// --- SKILLS SECTION TEXT --- ///
   ///
@@ -65,8 +65,8 @@ class EText {
   ///
   static const String plansBaseInclusions =
       'Every plan includes a full website (home, services, about & FAQ), '
-      'contact form, mobile-responsive design, and SEO-ready setup — '
-      'all starting from \$1,200.';
+      'contact form, mobile-responsive design, and SEO-ready setup. '
+      'All starting from \$1,200.';
   static const String planHandoverNote = 'or \$400 one-time handover';
 
   /// --- PORTAL LOGIN TEXT --- ///
