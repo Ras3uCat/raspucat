@@ -1085,7 +1085,7 @@ s.ak_()
 return s},
 bZA(a){return new A.aVr($.aK,a)},
 bGV(){var s,r,q,p,o,n=A.bZb(v.G.window.navigator)
-if(n==null||n.length===0)return B.wx
+if(n==null||n.length===0)return B.ww
 s=A.d([],t.ss)
 for(r=n.length,q=0;q<n.length;n.length===r||(0,A.R)(n),++q){p=n[q]
 o=p.split("-")
@@ -12749,7 +12749,7 @@ bMd(a,b,c){if(b!=null&&!b.l(0,B.O))return A.aoP(b.b0(A.bZw(c)),a)
 return a},
 bZw(a){var s,r,q,p,o,n
 if(a<0)return 0
-for(s=0;r=B.wy[s],q=r.a,a>=q;){if(a===q||s+1===6)return r.b;++s}p=B.wy[s-1]
+for(s=0;r=B.wx[s],q=r.a,a>=q;){if(a===q||s+1===6)return r.b;++s}p=B.wx[s-1]
 o=p.a
 n=p.b
 return n+(a-o)/(q-o)*(r.b-n)},
@@ -29896,7 +29896,7 @@ bES:function bES(a){this.a=a},
 bER:function bER(a,b){this.a=a
 this.b=b},
 bXo(a){var s,r
-for(s=0;s<8;++s){r=B.wv[s]
+for(s=0;s<8;++s){r=B.wu[s]
 if(r.b===a)return r}return null},
 MC:function MC(a,b,c){this.c=a
 this.a=b
@@ -64025,7 +64025,7 @@ A.aHx.prototype={
 lR(){return this.cy},
 o8(a){this.ab()},
 kj(a){a.toString
-return B.wE[A.eh(a)]},
+return B.wD[A.eh(a)]},
 kr(){var s=this.y
 return(s==null?A.y(this).i("aR.T").a(s):s).a}}
 A.aBg.prototype={
@@ -74998,7 +74998,7 @@ return r.aPz(s.d.y.a.a)},
 $S:1}
 A.aer.prototype={
 P(){var s=null
-return new A.akt(new A.bw(s,t.am),new A.SA(B.ef,A.M6(B.wE,t.iF),$.ak(),t.dX),s,A.A(t.yb,t.M),s,!0,s)}}
+return new A.akt(new A.bw(s,t.am),new A.SA(B.ef,A.M6(B.wD,t.iF),$.ak(),t.dX),s,A.A(t.yb,t.M),s,!0,s)}}
 A.akt.prototype={
 ghr(){var s,r,q,p=this,o=p.d
 if(o===$){s=p.a.z
@@ -75013,7 +75013,7 @@ q!==$&&A.ax()
 q=this.e=new A.a2H(s,r)}return q},
 gph(){var s,r,q,p=this,o=p.w
 if(o===$){s=p.a.Q
-r=A.M6(B.wz,t.Md)
+r=A.M6(B.wy,t.Md)
 q=$.ak()
 p.w!==$&&A.ax()
 o=p.w=new A.Vb(s,r,q,t.iw)}return o},
@@ -75180,7 +75180,7 @@ return new A.aky(new A.SA(B.h9,q,p,t.qD),new A.Vb(s,A.M6(B.wA,r),p,t.Bv),new A.a
 A.aky.prototype={
 gph(){var s,r,q,p=this,o=p.z
 if(o===$){s=p.a.as
-r=A.M6(B.wz,t.Md)
+r=A.M6(B.wy,t.Md)
 q=$.ak()
 p.z!==$&&A.ax()
 o=p.z=new A.Vb(s,r,q,t.iw)}return o},
@@ -110922,7 +110922,7 @@ n=q.ay
 p=n
 n=$.bFP().a
 if(n==null)n=m
-n=new A.Y5(r,a.p1,m,B.a3J,q.r,q.gacv(),q.gaNe(),m,s,m,m,m,m,q.gaJk(),q.as,m,o,p,q.ch,m,n,m,m,m,B.wx,!1,!1,!1,m,m,m)
+n=new A.Y5(r,a.p1,m,B.a3J,q.r,q.gacv(),q.gaNe(),m,s,m,m,m,m,q.gaJk(),q.as,m,o,p,q.ch,m,n,m,m,m,B.ww,!1,!1,!1,m,m,m)
 s=n
 return s},
 $S:609}
@@ -112787,7 +112787,7 @@ break $label0$0}if("SIGNED_OUT"===r){s=B.hf
 break $label0$0}if("TOKEN_REFRESHED"===r){s=B.it
 break $label0$0}if("USER_UPDATED"===r){s=B.rP
 break $label0$0}if("MFA_CHALLENGE_VERIFIED"===r){s=B.rO
-break $label0$0}s=A.arD(B.wv,new A.aYA(m))
+break $label0$0}s=A.arD(B.wu,new A.aYA(m))
 break $label0$0}q=s
 if(q!=null){p=null
 if(n.h(a,"session")!=null)p=A.adh(n.h(a,"session"))
@@ -115767,7 +115767,7 @@ e=J.cK(e,new A.aNA(),t.gp)
 b=A.a4(e,e.$ti.i("al.E"))
 i=b
 e=m.ch
-d=J.bP(j)!==0?j:B.wF
+d=J.bP(j)!==0?j:B.wE
 e.sv(0,0)
 a=e.ak$
 a===$&&A.b()
@@ -115790,7 +115790,7 @@ f=m.ch
 if(f.gv(0)===0){f.sv(0,0)
 e=f.ak$
 e===$&&A.b()
-J.ez(e,B.wF)
+J.ez(e,B.wE)
 f.aD$.aL(f.gj(0))}n.push(6)
 s=5
 break
@@ -120394,12 +120394,12 @@ q(a){var s,r,q,p=t.p
 if(A.aC(a,B.bZ,t.w).w.a.a<600){s=A.d([],p)
 for(r=0;r<4;++r){q=this.d
 q===$&&A.b()
-q=A.d([new A.afg(q,r,B.wu[r],null)],p)
+q=A.d([new A.afg(q,r,B.wt[r],null)],p)
 if(r<3)q.push(B.T)
 B.d.C(s,q)}s=A.U(s,B.w,B.l,B.m,0,B.u)}else{s=A.d([],p)
 for(r=0;r<4;++r){q=this.d
 q===$&&A.b()
-s.push(new A.afg(q,r,B.wu[r],null))}s=A.bMF(1.6,s,2,16,16,B.lm,!0)}return new A.a7(B.v3,A.U(A.d([B.ao5,B.aJ,s],p),B.H,B.l,B.m,0,B.u),null)}}
+s.push(new A.afg(q,r,B.wt[r],null))}s=A.bMF(1.6,s,2,16,16,B.lm,!0)}return new A.a7(B.v3,A.U(A.d([B.ao5,B.aJ,s],p),B.H,B.l,B.m,0,B.u),null)}}
 A.afg.prototype={
 q(a){var s=this.d*0.15,r=A.bU(new A.dK(s,B.i.c_(s+0.55,0,1),B.bJ),this.c,null)
 return A.ep(r,new A.bjC(r),new A.Vv(new A.aCz(this.e,null),null))}}
@@ -120525,7 +120525,7 @@ r=A.Ku(A.a96(B.a_,new A.f6("ABOUT",A.W(a).ok.d,o,B.c,!0,o),B.p,B.dn),s,"about_he
 q=A.W(a).ok.r
 q=q==null?o:q.pF(B.z,3)
 p=t.p
-return new A.Vg(A.U(A.d([r,B.V,A.Ku(A.o("Signal acquired. Systems online.".toUpperCase(),o,o,o,o,o,o,o,q,B.ak,o,o,o),s,"about_subtitle",B.px),B.aJ,A.Ku(A.a_(o,A.o("Flutter developer. Full-stack. Precision interfaces, payment-connected backends, and real-time systems \u2014 the full sequence from brief to launch. Past builds include booking platforms, interactive frontends, and production mobile apps deployed to iOS and Android. One point of contact. No overhead.",o,o,o,o,o,o,o,A.J(o,o,B.z,o,o,o,o,o,o,o,o,16,o,o,o,o,1.8,!0,o,o,o,o,o,o,o,o),B.ak,o,o,o),B.p,o,B.LG,o,o,o,o,o,o,o,o,o),s,"about_bio",B.hU),B.aJ,A.Ku(A.eL(B.ml,B.ZV,8,16),s,"about_chips",B.C0),B.aJ,A.Ku(A.U(A.d([A.o('"The heavens declare the glory of God;\nthe skies proclaim the work of his hands."',o,o,o,o,o,o,o,A.J(o,o,B.z.p(0.5),o,o,o,o,o,o,o,o,12,B.d5,o,o,o,1.8,!0,o,0.5,o,o,o,o,o,o),B.ak,o,o,o),B.Z,A.o("PSALM 19:1",o,o,o,o,o,o,o,A.J(o,o,B.z.p(0.3),o,o,o,o,o,o,o,o,12,o,o,o,o,o,!0,o,2.5,o,o,o,o,o,o),o,o,o,o)],p),B.w,B.l,B.m,0,B.u),s,"about_verse",B.a4T)],p),B.w,B.be,B.m,0,B.u),56,o,0.5,o)}}
+return new A.Vg(A.U(A.d([r,B.V,A.Ku(A.o("Signal acquired. Systems online.".toUpperCase(),o,o,o,o,o,o,o,q,B.ak,o,o,o),s,"about_subtitle",B.px),B.aJ,A.Ku(A.a_(o,A.o("Flutter developer. Full-stack builder. We handle the full run from first brief to launch day: interfaces, payment backends, live databases, and everything in between. Past builds include booking platforms, iOS and Android apps, and interactive web frontends. One point of contact. No overhead.",o,o,o,o,o,o,o,A.J(o,o,B.z,o,o,o,o,o,o,o,o,16,o,o,o,o,1.8,!0,o,o,o,o,o,o,o,o),B.ak,o,o,o),B.p,o,B.LG,o,o,o,o,o,o,o,o,o),s,"about_bio",B.hU),B.aJ,A.Ku(A.eL(B.ml,B.ZV,8,16),s,"about_chips",B.C0),B.aJ,A.Ku(A.U(A.d([A.o('"The heavens declare the glory of God;\nthe skies proclaim the work of his hands."',o,o,o,o,o,o,o,A.J(o,o,B.z.p(0.5),o,o,o,o,o,o,o,o,12,B.d5,o,o,o,1.8,!0,o,0.5,o,o,o,o,o,o),B.ak,o,o,o),B.Z,A.o("PSALM 19:1",o,o,o,o,o,o,o,A.J(o,o,B.z.p(0.3),o,o,o,o,o,o,o,o,12,o,o,o,o,o,!0,o,2.5,o,o,o,o,o,o),o,o,o,o)],p),B.w,B.l,B.m,0,B.u),s,"about_verse",B.a4T)],p),B.w,B.be,B.m,0,B.u),56,o,0.5,o)}}
 A.a4d.prototype={
 q(a){var s=null,r=A.P(8),q=B.c.p(0.05),p=A.an(B.c.p(0.2),1)
 return A.a_(s,A.o(this.c,s,s,s,s,s,s,s,B.afX,s,s,s,s),B.p,s,s,new A.X(q,s,p,r,s,s,B.y),s,s,s,s,B.ax,s,s,s)}}
@@ -121090,7 +121090,7 @@ m=A.P(8)
 l=B.c.p(0.05)
 k=A.an(B.c.p(0.15),1)
 j=t.p
-s=A.U(A.d([o,B.V,n,B.T,A.Ku(A.a_(i,A.o("Every plan includes a full website (home, services, about & FAQ), contact form, mobile-responsive design, and SEO-ready setup \u2014 all starting from $1,200.",i,i,i,i,i,i,i,A.J(i,i,B.z,i,i,i,i,i,i,i,i,12,i,i,i,i,1.5,!0,i,i,i,i,i,i,i,i),B.ak,i,i,i),B.p,i,B.mR,new A.X(l,i,k,m,i,i,B.y),i,i,i,i,B.V8,i,i,i),s,"plans_base_blurb",B.hU)],j),B.w,B.l,B.m,0,B.u)
+s=A.U(A.d([o,B.V,n,B.T,A.Ku(A.a_(i,A.o("Every plan includes a full website (home, services, about & FAQ), contact form, mobile-responsive design, and SEO-ready setup. All starting from $1,200.",i,i,i,i,i,i,i,A.J(i,i,B.z,i,i,i,i,i,i,i,i,12,i,i,i,i,1.5,!0,i,i,i,i,i,i,i,i),B.ak,i,i,i),B.p,i,B.mR,new A.X(l,i,k,m,i,i,B.y),i,i,i,i,B.V8,i,i,i),s,"plans_base_blurb",B.hU)],j),B.w,B.l,B.m,0,B.u)
 o=r?B.amr:B.amd
 return new A.Vg(A.U(A.d([new A.a7(p,s,i),B.aJ,o],j),B.w,B.be,B.m,0,B.u),h,q,1,i)}}
 A.agq.prototype={
@@ -129433,7 +129433,7 @@ this.a.toString
 r=p.e
 s=A.d([s,B.T,A.o("SERVICE MAP",q,q,q,q,q,q,q,r==null?q:r.pF(B.D,2),q,q,q,q),B.aJ],t.p)
 this.a.toString
-B.d.C(s,new A.a0(B.wt,new A.bv2(),t.T5))
+B.d.C(s,new A.a0(B.wF,new A.bv2(),t.T5))
 return new A.a7(B.o1,A.U(s,B.H,B.l,B.m,0,B.u),q)},
 q(a){var s=t.w,r=A.aC(a,B.bZ,s).w
 s=A.aC(a,B.bZ,s).w
@@ -129458,7 +129458,7 @@ A.bv_.prototype={
 $1(a){var s=this.a,r=a/this.b*360,q=B.i.aI(r+s.d,360)*3.141592653589793/180,p=Math.cos(q),o=Math.sin(q),n=B.i.c_(0.4+0.6*((1+Math.sin(B.i.aI(r+s.d,360)*3.141592653589793/180))/2),0.4,1),m=B.i.Y(100+50*Math.cos(B.i.aI(r+s.d,360)*3.141592653589793/180))
 o=new A.n(200*p,200*o).a5(0,B.C_)
 s.a.toString
-return new A.Ob(new A.d7(a,t.f3),m,A.QZ(new A.ab9(B.wt[a],s.e===a,new A.buZ(s,a),n,null),o))},
+return new A.Ob(new A.d7(a,t.f3),m,A.QZ(new A.ab9(B.wF[a],s.e===a,new A.buZ(s,a),n,null),o))},
 $S:856}
 A.buZ.prototype={
 $0(){return this.a.aye(this.b)},
@@ -129571,7 +129571,7 @@ s.M(0,this.ga3m())
 this.a9()},
 q(a){var s,r,q,p,o=this,n=null,m="// HOW IT WORKS",l=A.aC(a,B.bZ,t.w).w.a
 if(l.a<700){o.a.toString
-return new A.aEA(B.wD,m,n)}s=l.b
+return new A.aEA(B.wz,m,n)}s=l.b
 o.a.toString
 r=o.d
 q=B.i.eq(r*6)
@@ -129579,7 +129579,7 @@ o.a.toString
 q=B.r.c_(q,0,5)
 p=o.e
 o.a.toString
-return new A.am(n,s+s*5*0.6,A.cW(B.aP,A.d([new A.aIT(B.wD,r,q,p,m,n)],t.p),B.U,B.aE,n),o.r)}}
+return new A.am(n,s+s*5*0.6,A.cW(B.aP,A.d([new A.aIT(B.wz,r,q,p,m,n)],t.p),B.U,B.aE,n),o.r)}}
 A.bzW.prototype={
 $1(a){var s,r=this.a,q=$.au.U$.x.h(0,r.r)
 q=q==null?null:q.ga2()
@@ -132496,14 +132496,14 @@ if(h!=null&&h!==4)s.ax=h
 if(i!=null&&i!==0)s.c=i}this.x.push(s)},
 aPs(a,b,c,d,e,f,g,h){var s,r,q=A.d([],t.O)
 for(s=e.length,r=0;r<s;++r)q.push(A.c6(e[r]))
-this.z.push(A.aYO(new A.n(a,b),new A.n(c,d),q,f,B.ww[g],null))},
+this.z.push(A.aYO(new A.n(a,b),new A.n(c,d),q,f,B.wv[g],null))},
 aPw(a,b,c,d,e,f,g,h,i,j){var s,r,q,p,o,n=new A.n(a,b)
 if(d==null)s=null
 else{e.toString
 s=new A.n(d,e)}r=A.d([],t.O)
 for(q=f.length,p=0;p<q;++p)r.push(A.c6(f[p]))
 o=!J.h(s,n)&&s!=null
-q=B.ww[i]
+q=B.wv[i]
 this.z.push(A.bMC(n,c,r,g,q,h,o?s:null,0))},
 Te(a,b,c,d){return this.aPi(a,b,c,d)},
 aPi(a,b,c,d){var s=0,r=A.v(t.H),q=this,p,o,n,m,l
@@ -171679,13 +171679,6 @@ B.VV=new A.Xg(0,"totp")
 B.VW=new A.Xg(1,"phone")
 B.a_V=A.d(s([B.VV,B.VW]),A.aI("F<Xg>"))
 B.a_W=A.d(s([1116352408,1899447441,3049323471,3921009573,961987163,1508970993,2453635748,2870763221,3624381080,310598401,607225278,1426881987,1925078388,2162078206,2614888103,3248222580,3835390401,4022224774,264347078,604807628,770255983,1249150122,1555081692,1996064986,2554220882,2821834349,2952996808,3210313671,3336571891,3584528711,113926993,338241895,666307205,773529912,1294757372,1396182291,1695183700,1986661051,2177026350,2456956037,2730485921,2820302411,3259730800,3345764771,3516065817,3600352804,4094571909,275423344,430227734,506948616,659060556,883997877,958139571,1322822218,1537002063,1747873779,1955562222,2024104815,2227730452,2361852424,2428436474,2756734187,3204031479,3329325298]),t.t)
-B.Xe=new A.b2(62657,"MaterialIcons",null,!1)
-B.ab6=new A.JQ("Marketing Sites","Blazing-fast Flutter web \u2014 conversion-optimised landing pages with animated sections, SEO-ready semantics, and retro-futuristic flair.",B.Xe,B.c)
-B.ab7=new A.JQ("Client Portals","Real-time portals where your clients track progress, upload files, send messages, and confirm milestones \u2014 all without emailing you.",B.vM,B.aa)
-B.X9=new A.b2(62447,"MaterialIcons",null,!1)
-B.abd=new A.JQ("E-Commerce","Stripe-powered storefronts with product catalogues, secure checkout, webhook-driven order flows, and live inventory management.",B.X9,B.an)
-B.ab8=new A.JQ("SaaS Apps","Full-stack SaaS: Supabase auth and RLS, subscription billing, role-based access, and modular feature flags \u2014 shipped fast.",B.oX,B.c)
-B.wt=A.d(s([B.ab6,B.ab7,B.abd,B.ab8]),t.bY)
 B.Xj=new A.b2(63288,"MaterialIcons",null,!1)
 B.amF=new A.ZR(B.Xj,"Queue Health","Every title gets a score. Stop rewatching the same three shows.",B.c)
 B.Xm=new A.b2(63703,"MaterialIcons",null,!1)
@@ -171694,7 +171687,7 @@ B.Xo=new A.b2(983201,"MaterialIcons",null,!1)
 B.amE=new A.ZR(B.Xo,"Streaming Tracker","Know exactly which service has it \u2014 and when it expires.",B.c)
 B.Xl=new A.b2(63430,"MaterialIcons",null,!1)
 B.amH=new A.ZR(B.Xl,"Shared Watchlists","Build lists with friends. See what they're watching and rating.",B.aa)
-B.wu=A.d(s([B.amF,B.amG,B.amE,B.amH]),A.aI("F<ZR>"))
+B.wt=A.d(s([B.amF,B.amG,B.amE,B.amH]),A.aI("F<ZR>"))
 B.IV=new A.cd(0,0)
 B.IZ=new A.cd(1,0)
 B.J_=new A.cd(2,0)
@@ -171726,7 +171719,7 @@ B.ajN=new A.aG("Community",null,null,null,null,null,null,null,null,null,null,nul
 B.TQ=new A.hy("community",B.ajN,B.fg,null,t.b7)
 B.a_Z=A.d(s([B.TR,B.TQ]),A.aI("F<hy<i>>"))
 B.Kk=new A.MC("",6,"userDeleted")
-B.wv=A.d(s([B.he,B.ir,B.is,B.hf,B.it,B.rP,B.Kk,B.rO]),A.aI("F<MC>"))
+B.wu=A.d(s([B.he,B.ir,B.is,B.hf,B.it,B.rP,B.Kk,B.rO]),A.aI("F<MC>"))
 B.a00=A.d(s(["Core Site Included","Contact form + lead capture","Mobile Responsive & SEO-ready","Choose from 17 add-on modules"]),t.s)
 B.a7R=new A.aE("transmitting","Transmitting")
 B.a7u=new A.aE("compiling","Compiling")
@@ -171748,16 +171741,16 @@ B.a04=A.d(s([0,0.2,0.4,0.6,1]),t.n)
 B.mb=new A.Zo(1,"repeated")
 B.qX=new A.Zo(2,"mirror")
 B.qY=new A.Zo(3,"decal")
-B.ww=A.d(s([B.aA,B.mb,B.qX,B.qY]),A.aI("F<Zo>"))
+B.wv=A.d(s([B.aA,B.mb,B.qX,B.qY]),A.aI("F<Zo>"))
 B.a1K=new A.NH("en","US")
-B.wx=A.d(s([B.a1K]),t.ss)
+B.ww=A.d(s([B.a1K]),t.ss)
 B.amy=new A.T9(0,0)
 B.amD=new A.T9(1,0.05)
 B.amB=new A.T9(3,0.08)
 B.amC=new A.T9(6,0.11)
 B.amA=new A.T9(8,0.12)
 B.amz=new A.T9(12,0.14)
-B.wy=A.d(s([B.amy,B.amD,B.amB,B.amC,B.amA,B.amz]),A.aI("F<T9>"))
+B.wx=A.d(s([B.amy,B.amD,B.amB,B.amC,B.amA,B.amz]),A.aI("F<T9>"))
 B.Tl=new A.cX("discovery_call_complete","Discovery call complete","Setup",!1)
 B.Ta=new A.cX("email_provisioned","Client email provisioned (@raspucat.com)","Setup",!0)
 B.Tf=new A.cX("supabase_account_created","Supabase account created (use provisioned email)","Setup",!0)
@@ -171804,11 +171797,22 @@ B.p1=A.d(s([B.Tl,B.Ta,B.Tf,B.SY,B.SU,B.T5,B.SN,B.SW,B.T3,B.T8,B.Tb,B.SX,B.ST,B.T
 B.a0b=A.d(s(["Overview","Benchmarks","Ride-Along","Money Map","Client Locator"]),t.s)
 B.d_=new A.Yp(0,"portrait")
 B.eC=new A.Yp(1,"landscape")
-B.wz=A.d(s([B.d_,B.eC]),A.aI("F<Yp>"))
+B.wy=A.d(s([B.d_,B.eC]),A.aI("F<Yp>"))
 B.fM=new A.abh(0,"nonZero")
 B.Cg=new A.abh(1,"evenOdd")
 B.a0c=A.d(s([B.fM,B.Cg]),A.aI("F<abh>"))
 B.a0d=A.d(s([-1,0,0,1,0,0,-1,0,1,0,0,0,-1,1,0,1,1,1,1,0]),t.n)
+B.X6=new A.b2(62283,"MaterialIcons",null,!1)
+B.abf=new A.JQ("Discover","We get to know your business, your goals, and your customers. We research your competitors and align everything to your brand, then hand you a clear feature list, a competitor report, and an upfront price. No guessing games, no surprise fees.",B.X6,B.c)
+B.X1=new A.b2(62031,"MaterialIcons",null,!1)
+B.abe=new A.JQ("Design","Every screen is designed around your brand and shown to you for approval before we write a single line of code. What you see is exactly what gets built.",B.X1,B.aa)
+B.Xw=new A.b2(984701,"MaterialIcons",null,!1)
+B.abb=new A.JQ("Build","We build your app to be fast, secure, and connected to everything it needs: payments, a live database, and real-time updates. Watch progress in your client portal as it happens.",B.Xw,B.an)
+B.ab6=new A.JQ("Deploy","The final payment is only collected after you review and approve the finished product. Then we launch it on your domain, under your brand, ready for real users.",B.oX,B.c)
+B.abc=new A.JQ("Expand","Need something new later? Add features like online booking, an AI chat assistant, or a loyalty program straight from your portal. No new contracts, no waiting in line.",B.iX,B.aa)
+B.X7=new A.b2(62318,"MaterialIcons",null,!1)
+B.ab9=new A.JQ("Operate","We handle hosting, updates, and support so you can focus on running your business. If you ever want to move on, we hand over everything: code, logins, and documentation.",B.X7,B.an)
+B.wz=A.d(s([B.abf,B.abe,B.abb,B.ab6,B.abc,B.ab9]),t.bY)
 B.Lc=new A.anV(2,"outer")
 B.u3=new A.E(0.09803921568627451,0,0,0,B.x)
 B.Ma=new A.bG(0.2,B.Lc,B.u3,B.B,11)
@@ -171939,17 +171943,6 @@ B.a0N=A.d(s([]),t.t)
 B.aoM=A.d(s([]),A.aI("F<0&>"))
 B.ae=A.d(s([]),t.ee)
 B.a11=A.d(s([]),t._m)
-B.X6=new A.b2(62283,"MaterialIcons",null,!1)
-B.aba=new A.JQ("Discover","We get to know your business, your goals, and your customers. We research your competitors and align everything to your brand, then hand you a clear feature list, a competitor report, and an upfront price \u2014 no guessing games, no surprise fees.",B.X6,B.c)
-B.X1=new A.b2(62031,"MaterialIcons",null,!1)
-B.abf=new A.JQ("Design","Every screen is designed around your brand and shown to you for approval before we write a single line of code. What you see is exactly what gets built.",B.X1,B.aa)
-B.Xw=new A.b2(984701,"MaterialIcons",null,!1)
-B.abe=new A.JQ("Build","We build your app to be fast, secure, and connected to everything it needs \u2014 including payments and a live database. Watch progress in your client portal in real time.",B.Xw,B.an)
-B.ab9=new A.JQ("Deploy","The final payment is only collected after you review and approve the finished product. Then we launch it \u2014 on your domain, under your brand, ready for real users.",B.oX,B.c)
-B.abc=new A.JQ("Expand","Need something new later? Add features like online booking, an AI chat assistant, or a loyalty program straight from your portal. No new contracts, no waiting in line.",B.iX,B.aa)
-B.X7=new A.b2(62318,"MaterialIcons",null,!1)
-B.abb=new A.JQ("Operate","We handle hosting, updates, and support so you can focus on running your business. If you ever want to move on, we hand over everything \u2014 code, logins, and documentation.",B.X7,B.an)
-B.wD=A.d(s([B.aba,B.abf,B.abe,B.ab9,B.abc,B.abb]),t.bY)
 B.a14=A.d(s(["SUN","MON","TUE","WED","THU","FRI","SAT"]),t.s)
 B.p6=A.d(s([B.fz,B.kS,B.e_,B.X,B.ao,B.R,B.aj,B.hD,B.hE]),A.aI("F<KD>"))
 B.a15=A.d(s(["S","M","T","W","T","F","S"]),t.s)
@@ -171959,7 +171952,7 @@ B.a7H=new A.aE("minimal","Minimal")
 B.a7O=new A.aE("hamburger","Hamburger menu")
 B.a16=A.d(s([B.a7P,B.a7K,B.a7H,B.a7O]),t.Wy)
 B.a19=A.d(s(["prospect","contacted","replied","call_booked","proposal_sent","closed_won","closed_lost","bounced","unsubscribed"]),t.s)
-B.wE=A.d(s([B.ef,B.hg,B.rR,B.k_]),A.aI("F<Nq>"))
+B.wD=A.d(s([B.ef,B.hg,B.rR,B.k_]),A.aI("F<Nq>"))
 B.ln=new A.n(0,2)
 B.M8=new A.bG(0.75,B.ah,B.u3,B.ln,1.5)
 B.a1c=A.d(s([B.M8]),t.V)
@@ -171987,7 +171980,7 @@ B.Ko=new A.K2(3,"09:00","17:00",!0)
 B.Kp=new A.K2(4,"09:00","17:00",!0)
 B.Kq=new A.K2(5,"09:00","17:00",!0)
 B.Ks=new A.K2(6,"09:00","17:00",!1)
-B.wF=A.d(s([B.Kr,B.Kn,B.Km,B.Ko,B.Kp,B.Kq,B.Ks]),t.bn)
+B.wE=A.d(s([B.Kr,B.Kn,B.Km,B.Ko,B.Kp,B.Kq,B.Ks]),t.bn)
 B.R2=new A.E(0.2,0.30980392156862746,0.7647058823529411,0.9686274509803922,B.x)
 B.QI=new A.E(0.2,0.1607843137254902,0.7137254901960784,0.9647058823529412,B.x)
 B.Sa=new A.E(0.2,0.011764705882352941,0.8549019607843137,0.7764705882352941,B.x)
@@ -172000,6 +171993,13 @@ B.RZ=new A.E(0.2,0.00784313725490196,0.5333333333333333,0.8196078431372549,B.x)
 B.R4=new A.E(0.2,0.09803921568627451,0.4627450980392157,0.8235294117647058,B.x)
 B.p7=A.d(s([B.R2,B.QI,B.Sa,B.Qy,B.Rx,B.RP,B.RQ,B.Rs,B.RZ,B.R4]),t.O)
 B.a1r=A.d(s(["Pipeline","Drafts","Settings","Industries"]),t.s)
+B.Xe=new A.b2(62657,"MaterialIcons",null,!1)
+B.ab8=new A.JQ("Marketing Sites","Fast Flutter sites with scroll animations, solid SEO structure, and a look that actually stands out. Built around your brand and your goals.",B.Xe,B.c)
+B.ab7=new A.JQ("Client Portals","Real-time portals where clients track progress, upload files, send messages, and confirm milestones. No inbox chaos.",B.vM,B.aa)
+B.X9=new A.b2(62447,"MaterialIcons",null,!1)
+B.abd=new A.JQ("E-Commerce","Stripe-powered storefronts with product catalogues, secure checkout, webhook-driven order flows, and live inventory management.",B.X9,B.an)
+B.aba=new A.JQ("SaaS Apps","Full-stack SaaS with Supabase auth, subscription billing, role-based access, and feature flags. Shipped fast.",B.oX,B.c)
+B.wF=A.d(s([B.ab8,B.ab7,B.abd,B.aba]),t.bY)
 B.bG=new A.Mc(0,"touch")
 B.cp=new A.Mc(1,"mouse")
 B.cg=new A.Mc(2,"stylus")
