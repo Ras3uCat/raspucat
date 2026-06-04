@@ -12,11 +12,7 @@ class SiteFooter extends StatelessWidget {
       height: ESizes.footerHeight,
       width: double.infinity,
       decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: EColors.primary.withValues(alpha: 0.2),
-          ),
-        ),
+        border: Border(top: BorderSide(color: EColors.primary.withValues(alpha: 0.2))),
       ),
       child: Stack(
         children: [
@@ -59,22 +55,26 @@ class _DesktopFooter extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Brand mark + name
-        M3OWBrandMark(size: 14, color: EColors.primary),
-        const SizedBox(width: ESizes.sm),
-        Text(
-          EBrand.stylizedAppName,
-          style: const TextStyle(
-            color: EColors.primary,
-            fontSize: ESizes.fontSizeLabel,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 2.0,
+        // Brand mark + name — left side (Expanded so center is truly centered)
+        Expanded(
+          child: Row(
+            children: [
+              M3OWBrandMark(size: 14, color: EColors.primary),
+              const SizedBox(width: ESizes.sm),
+              Text(
+                EBrand.stylizedAppName,
+                style: const TextStyle(
+                  color: EColors.primary,
+                  fontSize: ESizes.fontSizeLabel,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2.0,
+                ),
+              ),
+            ],
           ),
         ),
 
-        const Spacer(),
-
-        // Center tagline
+        // Center tagline — mathematically centered
         Text(
           EBrand.voiceFooter,
           style: TextStyle(
@@ -84,24 +84,37 @@ class _DesktopFooter extends StatelessWidget {
           ),
         ),
 
-        const Spacer(),
-
-        // Legal links + copyright
-        Row(
-          children: [
-            _FooterLink(label: 'Terms', route: ERoutes.terms),
-            Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: ESizes.fontSizeLabel)),
-            _FooterLink(label: 'Privacy', route: ERoutes.privacy),
-            Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: ESizes.fontSizeLabel)),
-            Text(
-              '© ${DateTime.now().year} Ras3uCat LLC',
-              style: TextStyle(
-                color: EColors.textSecondary.withValues(alpha: 0.5),
-                fontSize: ESizes.fontSizeLabel,
-                letterSpacing: 0.5,
+        // Legal links + copyright — right side (Expanded so center is truly centered)
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _FooterLink(label: 'Terms', route: ERoutes.terms),
+              Text(
+                '  ·  ',
+                style: TextStyle(
+                  color: EColors.textSecondary.withValues(alpha: 0.3),
+                  fontSize: ESizes.fontSizeLabel,
+                ),
               ),
-            ),
-          ],
+              _FooterLink(label: 'Privacy', route: ERoutes.privacy),
+              Text(
+                '  ·  ',
+                style: TextStyle(
+                  color: EColors.textSecondary.withValues(alpha: 0.3),
+                  fontSize: ESizes.fontSizeLabel,
+                ),
+              ),
+              Text(
+                '© ${DateTime.now().year} Ras3uCat LLC',
+                style: TextStyle(
+                  color: EColors.textSecondary.withValues(alpha: 0.5),
+                  fontSize: ESizes.fontSizeLabel,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -148,7 +161,10 @@ class _MobileFooter extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _FooterLink(label: 'Terms', route: ERoutes.terms),
-            Text('  ·  ', style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: 10)),
+            Text(
+              '  ·  ',
+              style: TextStyle(color: EColors.textSecondary.withValues(alpha: 0.3), fontSize: 10),
+            ),
             _FooterLink(label: 'Privacy', route: ERoutes.privacy),
           ],
         ),
