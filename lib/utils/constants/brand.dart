@@ -34,7 +34,7 @@ class EBrand {
 
   /// --- Brand Voice --- ///
   /// Tone: technical, confident, precise, slightly mysterious.
-  static const String voiceTagline = 'Building the future, one line of code at a time.';
+  static const String voiceTagline = 'Designed to engage. Engineered to move. Deployed to perform.';
   static const String voiceDeploy = 'D3ploy with Ras3uCat.';
   static const String voiceFooter = 'Sync complete △ M3OW';
 }

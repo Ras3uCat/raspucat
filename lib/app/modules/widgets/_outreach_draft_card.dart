@@ -136,6 +136,12 @@ class _EmailBodyPane extends StatelessWidget {
   const _EmailBodyPane({required this.bodyHtml});
   final String bodyHtml;
 
+  String get _plainText {
+    final el = html.DivElement();
+    el.setInnerHtml(bodyHtml, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    return el.innerText;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -149,14 +155,18 @@ class _EmailBodyPane extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(ESizes.md),
+            padding: const EdgeInsets.fromLTRB(
+              ESizes.md,
+              ESizes.md,
+              ESizes.xl + ESizes.sm,
+              ESizes.md,
+            ),
             child: SelectableText(
-              bodyHtml,
-              style: const TextStyle(
-                color: EColors.cyanTintedWhite,
+              _plainText,
+              style: TextStyle(
+                color: EColors.cyanTintedWhite.withAlpha(220),
                 fontSize: ESizes.fontSizeLabel,
-                fontFamily: 'monospace',
-                height: 1.6,
+                height: 1.7,
               ),
             ),
           ),

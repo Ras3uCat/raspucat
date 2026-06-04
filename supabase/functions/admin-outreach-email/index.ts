@@ -277,12 +277,12 @@ Deno.serve(async (req) => {
           .single();
         const step = (existing?.sequence_step ?? 0) + 1;
 
-        const subject = `Following up — ${lead.company_name}`;
+        const subject = `Quick follow-up for ${lead.company_name}`;
         const bodyHtml = `
-<p>Hi there,</p>
-<p>I wanted to follow up on my previous email about your website for ${lead.company_name}.</p>
-<p>I've had a chance to look at your site and put together some ideas that could help you [add specific value here].</p>
-<p>Would you be open to a quick 30-minute call to talk through it?</p>
+<p>Hey ${lead.company_name},</p>
+<p>Sent you a note last week. Making sure it didn't get buried.</p>
+<p>Looked at your site and spotted something worth a conversation.</p>
+<p>Worth 15 minutes? I'll send a link if yes.</p>
 <p>Ryan<br>Raspucat Web Studio</p>
         `.trim();
 

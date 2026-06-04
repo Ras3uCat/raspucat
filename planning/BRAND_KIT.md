@@ -16,7 +16,7 @@
 | Style | Retro-Futuristic Tactical |
 | Credit Line | `D3V × Ras3uCat` |
 | Footer Mark | `Sync complete △ M3OW` |
-| Voice Tagline | `Building the future, one line of code at a time.` |
+| Voice Tagline | `Designed to engage. Engineered to move. Deployed to perform.` |
 | Deploy Line | `D3ploy with Ras3uCat.` |
 
 ---
@@ -211,7 +211,7 @@ Motion should feel like systems activating, not playful UI.
 - `We engineer precision digital systems.`
 - `D3ploy with Ras3uCat.`
 - `Sync complete △ M3OW`
-- `Building the future, one line of code at a time.`
+- `Designed to engage. Engineered to move. Deployed to perform.`
 
 ### Don't
 - ~~"We build awesome apps"~~
@@ -222,7 +222,7 @@ Motion should feel like systems activating, not playful UI.
 ### Voice Tokens (`EBrand`)
 | Constant | Value |
 | :--- | :--- |
-| `EBrand.voiceTagline` | `Building the future, one line of code at a time.` |
+| `EBrand.voiceTagline` | `Designed to engage. Engineered to move. Deployed to perform.` |
 | `EBrand.voiceDeploy` | `D3ploy with Ras3uCat.` |
 | `EBrand.voiceFooter` | `Sync complete △ M3OW` |
 

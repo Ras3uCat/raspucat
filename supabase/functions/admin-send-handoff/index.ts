@@ -41,7 +41,7 @@ function themedEmail(contentHtml: string): string {
   <div style="text-align:center;padding-bottom:28px;border-bottom:1px solid rgba(88,227,239,0.12);">
     <img src="${LOGO_URL}" alt="Ras3uCat" style="height:56px;width:auto;display:block;margin:0 auto 12px;" />
     <p style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;letter-spacing:5px;color:#58E3EF;margin:0 0 6px;text-transform:uppercase;">Ras3uCat</p>
-    <p style="font-size:10px;color:rgba(232,254,255,0.3);letter-spacing:2px;margin:0;text-transform:uppercase;">Building the future, one line of code at a time.</p>
+    <p style="font-size:10px;color:rgba(232,254,255,0.3);letter-spacing:2px;margin:0;text-transform:uppercase;">Designed to engage. Engineered to move. Deployed to perform.</p>
   </div>
   <div style="padding:40px 0 32px;">${contentHtml}</div>
   <div style="padding-top:28px;border-top:1px solid rgba(88,227,239,0.08);">
