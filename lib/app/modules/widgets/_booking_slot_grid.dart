@@ -58,6 +58,7 @@ class _BookingSlotGrid extends StatelessWidget {
         );
       }
 
+      final selectedStartAt = controller.selectedSlot.value?.startAt;
       return LayoutBuilder(
         builder: (context, constraints) {
           final tileWidth = (constraints.maxWidth - ESizes.sm) / 2;
@@ -67,13 +68,12 @@ class _BookingSlotGrid extends StatelessWidget {
             runSpacing: ESizes.sm,
             children: List.generate(slots.length, (i) {
               final slot = slots[i];
-              final isSelected = controller.selectedSlot.value?.startAt == slot.startAt;
               return SizedBox(
                 width: tileWidth,
                 height: tileHeight,
                 child: _SlotTile(
                   label: _formatTime(slot.startAt),
-                  isSelected: isSelected,
+                  isSelected: slot.startAt == selectedStartAt,
                   onTap: () {
                     controller.selectSlot(slot);
                     onSlotSelected?.call();
