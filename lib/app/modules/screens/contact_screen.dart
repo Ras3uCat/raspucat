@@ -77,8 +77,8 @@ class ContactScreen extends StatelessWidget {
             startOffset: const Offset(0, 15),
             child: _ContactLink(
               icon: FaIcon(FontAwesomeIcons.github, color: EColors.primary, size: ESizes.iconMd),
-              label: 'rmr32',
-              url: 'https://github.com/rmr32',
+              label: 'Ras3uCat',
+              url: 'https://github.com/Ras3uCat',
             ),
           ),
         ],

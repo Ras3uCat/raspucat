@@ -58,26 +58,29 @@ class _BookingSlotGrid extends StatelessWidget {
         );
       }
 
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: ESizes.sm,
-          mainAxisSpacing: ESizes.sm,
-          childAspectRatio: 3.0,
-        ),
-        itemCount: slots.length,
-        itemBuilder: (_, i) {
-          final slot = slots[i];
-          final isSelected = controller.selectedSlot.value?.startAt == slot.startAt;
-          return _SlotTile(
-            label: _formatTime(slot.startAt),
-            isSelected: isSelected,
-            onTap: () {
-              controller.selectSlot(slot);
-              onSlotSelected?.call();
-            },
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final tileWidth = (constraints.maxWidth - ESizes.sm) / 2;
+          final tileHeight = tileWidth / 3.0;
+          return Wrap(
+            spacing: ESizes.sm,
+            runSpacing: ESizes.sm,
+            children: List.generate(slots.length, (i) {
+              final slot = slots[i];
+              final isSelected = controller.selectedSlot.value?.startAt == slot.startAt;
+              return SizedBox(
+                width: tileWidth,
+                height: tileHeight,
+                child: _SlotTile(
+                  label: _formatTime(slot.startAt),
+                  isSelected: isSelected,
+                  onTap: () {
+                    controller.selectSlot(slot);
+                    onSlotSelected?.call();
+                  },
+                ),
+              );
+            }),
           );
         },
       );
