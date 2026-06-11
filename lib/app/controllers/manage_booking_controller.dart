@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:raspucat/app/controllers/booking_controller.dart';
 import 'package:raspucat/app/data/repositories/booking_repository.dart';
@@ -9,14 +10,24 @@ class ManageBookingController extends GetxController {
   final BookingRepository _repo;
 
   final isLoading = false.obs;
+  final isLoadingDetails = true.obs;
   final errorMessage = Rx<String?>(null);
   final successMessage = Rx<String?>(null);
   final showReschedule = false.obs;
   final isCancelled = false.obs;
+  final bookingDetails = Rx<Map<String, dynamic>?>(null);
 
   late final BookingController bookingController;
 
-  String get _token => Get.parameters['token'] ?? '';
+  String get _token {
+    final param = Get.parameters['token'];
+    if (param != null && param.isNotEmpty) return param;
+    // Fallback for direct browser navigation where GetX may not parse query params
+    if (kIsWeb) {
+      return Uri.base.queryParameters['token'] ?? '';
+    }
+    return '';
+  }
 
   @override
   void onInit() {
@@ -25,6 +36,9 @@ class ManageBookingController extends GetxController {
     Get.put(bookingController, tag: 'manage_reschedule');
     if (_token.isEmpty) {
       errorMessage.value = 'Invalid or missing booking token.';
+      isLoadingDetails.value = false;
+    } else {
+      _fetchBookingDetails();
     }
   }
 
@@ -32,6 +46,17 @@ class ManageBookingController extends GetxController {
   void onClose() {
     Get.delete<BookingController>(tag: 'manage_reschedule');
     super.onClose();
+  }
+
+  Future<void> _fetchBookingDetails() async {
+    isLoadingDetails.value = true;
+    try {
+      bookingDetails.value = await _repo.getBookingByToken(_token);
+    } catch (e) {
+      errorMessage.value = 'Booking not found or link has expired.';
+    } finally {
+      isLoadingDetails.value = false;
+    }
   }
 
   void toggleReschedule() {

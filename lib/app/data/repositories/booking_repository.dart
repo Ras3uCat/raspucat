@@ -12,6 +12,7 @@ abstract class BookingRepository {
     String? quoteId,
     String? leadId,
   });
+  Future<Map<String, dynamic>> getBookingByToken(String token);
   Future<void> cancelBooking(String token);
   Future<void> rescheduleBooking(String token, AvailabilitySlot newSlot);
 }
@@ -69,6 +70,20 @@ class SupabaseBookingRepository implements BookingRepository {
     final data = response.data as Map<String, dynamic>?;
     if (data == null) throw Exception('No response from create-booking');
     return data;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getBookingByToken(String token) async {
+    final response = await _client.functions.invoke(
+      'manage-booking',
+      method: HttpMethod.post,
+      body: {'token': token, 'action': 'get'},
+    );
+    final data = response.data as Map<String, dynamic>?;
+    if (data == null || data['success'] != true) {
+      throw Exception(data?['error'] ?? 'Booking not found');
+    }
+    return data['booking'] as Map<String, dynamic>;
   }
 
   @override

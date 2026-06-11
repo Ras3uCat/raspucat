@@ -4,6 +4,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { getAvailableSlots, SLOT_DURATION_MS, formatInOwnerTz } from '../_shared/booking-slots.ts';
+import { buildEmail } from '../_shared/email-templates.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -42,8 +43,12 @@ async function getGoogleAccessToken(): Promise<string> {
       grant_type: 'refresh_token',
     }),
   });
-  const { access_token } = await res.json();
-  return access_token;
+  const data = await res.json();
+  if (!res.ok || !data.access_token) {
+    console.error('Google OAuth token exchange failed:', JSON.stringify(data));
+    throw new Error(`Google token exchange failed: ${data.error ?? 'unknown'} — ${data.error_description ?? ''}`);
+  }
+  return data.access_token;
 }
 
 async function deleteCalendarEvent(googleEventId: string, accessToken: string): Promise<void> {
@@ -92,8 +97,8 @@ Deno.serve(async (req) => {
   try {
     const { token, action, newStartAt } = await req.json();
 
-    if (!token || !['cancel', 'reschedule'].includes(action)) {
-      return json({ error: 'token and action (cancel|reschedule) required.' }, 400);
+    if (!token || !['cancel', 'reschedule', 'get'].includes(action)) {
+      return json({ error: 'token and action (cancel|reschedule|get) required.' }, 400);
     }
 
     const { data: booking, error: lookupError } = await supabase
@@ -103,9 +108,27 @@ Deno.serve(async (req) => {
       .single();
 
     if (lookupError || !booking) return json({ error: 'Booking not found.' }, 404);
-    if (booking.status === 'cancelled') return json({ error: 'Booking is already cancelled.' }, 409);
 
     const label = SESSION_LABELS[booking.session_type] ?? booking.session_type;
+
+    if (action === 'get') {
+      return json({
+        success: true,
+        booking: {
+          name: booking.name,
+          email: booking.email,
+          sessionType: booking.session_type,
+          sessionLabel: label,
+          startAt: booking.start_at,
+          endAt: booking.end_at,
+          status: booking.status,
+          meetUrl: booking.meet_url,
+          formattedTime: formatInOwnerTz(new Date(booking.start_at)),
+        },
+      });
+    }
+
+    if (booking.status === 'cancelled') return json({ error: 'Booking is already cancelled.' }, 409);
 
     if (action === 'cancel') {
       await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', booking.id);
@@ -115,16 +138,19 @@ Deno.serve(async (req) => {
           const accessToken = await getGoogleAccessToken();
           await deleteCalendarEvent(booking.google_event_id, accessToken);
         } catch (err) {
-          console.error('Calendar delete error (non-fatal):', err);
+          console.error('Calendar delete error (non-fatal):', err instanceof Error ? err.message : err);
         }
       }
 
-      const html = `
-        <div style="background:#000612;color:#e0e0e0;font-family:Inter,sans-serif;padding:40px 24px;max-width:600px;margin:0 auto">
-          <h2 style="color:#ef5858;margin-bottom:8px">Booking cancelled</h2>
-          <p>Hi ${booking.name}, your <strong>${label}</strong> on ${formatInOwnerTz(new Date(booking.start_at))} has been cancelled.</p>
-          <p>If you'd like to reschedule, <a href="${SITE_URL}/#contact" style="color:#58e3ef">visit the contact page</a>.</p>
-        </div>`;
+      const html = buildEmail({
+        eyebrowLabel: 'Booking Cancelled',
+        heading: 'Your booking has been cancelled.',
+        bodyHtml: `<p>Hi ${booking.name},</p>
+                   <p>Your <strong style="color:#E8FEFF;">${label}</strong> on
+                   <span style="color:#58E3EF;">${formatInOwnerTz(new Date(booking.start_at))}</span>
+                   has been cancelled.</p>
+                   <p>If you'd like to book a new session, <a href="${SITE_URL}/#contact" style="color:#58E3EF;">visit our contact page</a>.</p>`,
+      });
       await sendEmail(booking.email, `${label} cancelled`, html);
       return json({ success: true, action: 'cancelled' });
     }
@@ -153,20 +179,31 @@ Deno.serve(async (req) => {
         const accessToken = await getGoogleAccessToken();
         await updateCalendarEvent(booking.google_event_id, accessToken, newStartAt, newEnd);
       } catch (err) {
-        console.error('Calendar update error (non-fatal):', err);
+        console.error('Calendar update error (non-fatal):', err instanceof Error ? err.message : err);
       }
     }
 
     const manageUrl = `${SITE_URL}/booking/manage?token=${booking.cancellation_token}`;
-    const html = `
-      <div style="background:#000612;color:#e0e0e0;font-family:Inter,sans-serif;padding:40px 24px;max-width:600px;margin:0 auto">
-        <h2 style="color:#58e3ef;margin-bottom:8px">Booking rescheduled</h2>
-        <p>Hi ${booking.name}, your <strong>${label}</strong> has been rescheduled to:</p>
-        <p style="font-size:18px;color:#ffffff;margin:16px 0"><strong>${formatInOwnerTz(newStart)}</strong></p>
-        ${booking.meet_url ? `<p><a href="${booking.meet_url}" style="background:#58e3ef;color:#000612;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">Join Google Meet</a></p>` : ''}
-        <hr style="border-color:#1a2a3a;margin:32px 0"/>
-        <p style="font-size:13px;color:#888">Need to change again? <a href="${manageUrl}" style="color:#58e3ef">Manage your booking</a></p>
-      </div>`;
+    const ctaHtml = booking.meet_url
+      ? `<div style="text-align:center;margin-bottom:32px;">
+          <a href="${booking.meet_url}" style="display:inline-block;padding:14px 36px;background:#58E3EF;border-radius:8px;color:#000612;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">
+            Join Google Meet →
+          </a>
+        </div>`
+      : '';
+
+    const html = buildEmail({
+      eyebrowLabel: 'Booking Rescheduled',
+      heading: 'Your booking has been rescheduled.',
+      bodyHtml: `<p>Hi ${booking.name},</p>
+                 <p>Your <strong style="color:#E8FEFF;">${label}</strong> has been rescheduled to:</p>
+                 <p style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:#58E3EF;margin:16px 0 24px;">${formatInOwnerTz(newStart)}</p>`,
+      ctaHtml,
+      footerHtml: `<p style="font-size:12px;color:rgba(232,254,255,0.25);margin:0;line-height:1.8;">
+                     Need to change again?
+                     <a href="${manageUrl}" style="color:rgba(88,227,239,0.6);">Manage your booking</a>
+                   </p>`,
+    });
     await sendEmail(booking.email, `${label} rescheduled — ${formatInOwnerTz(newStart)}`, html);
 
     return json({ success: true, action: 'rescheduled', newStartAt, newEndAt: newEnd });

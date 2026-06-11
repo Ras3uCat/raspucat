@@ -61,6 +61,14 @@ class _ManageBookingBody extends StatelessWidget {
     if (ctrl.successMessage.value != null) {
       return _SuccessState(message: ctrl.successMessage.value!);
     }
+    if (ctrl.isLoadingDetails.value) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: ESizes.xl),
+          child: CircularProgressIndicator(color: EColors.primary, strokeWidth: 1.5),
+        ),
+      );
+    }
     if (ctrl.errorMessage.value != null && !ctrl.isCancelled.value) {
       return _ErrorState(message: ctrl.errorMessage.value!);
     }
@@ -74,9 +82,12 @@ class _ActiveState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final details = ctrl.bookingDetails.value;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (details != null) _BookingDetailsCard(details: details),
+        if (details != null) const SizedBox(height: ESizes.lg),
         _ActionCard(
           label: 'CANCEL BOOKING',
           description: 'Remove this booking entirely.',
@@ -100,6 +111,62 @@ class _ActiveState extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _BookingDetailsCard extends StatelessWidget {
+  const _BookingDetailsCard({required this.details});
+  final Map<String, dynamic> details;
+
+  @override
+  Widget build(BuildContext context) {
+    final label =
+        details['sessionLabel'] as String? ?? details['sessionType'] as String? ?? 'Session';
+    final formattedTime =
+        details['formattedTime'] as String? ?? details['startAt'] as String? ?? '';
+    final meetUrl = details['meetUrl'] as String?;
+
+    return Container(
+      padding: const EdgeInsets.all(ESizes.lg),
+      decoration: BoxDecoration(
+        color: EColors.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
+        border: Border.all(color: EColors.primary.withValues(alpha: 0.25)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: const TextStyle(
+              color: EColors.primary,
+              fontSize: ESizes.fontSizeLabel,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 2.0,
+            ),
+          ),
+          const SizedBox(height: ESizes.xs),
+          Text(
+            formattedTime,
+            style: const TextStyle(
+              color: EColors.textWhite,
+              fontSize: ESizes.fontSizeMd,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          if (meetUrl != null) ...[
+            const SizedBox(height: ESizes.sm),
+            Text(
+              'Google Meet link included',
+              style: TextStyle(
+                color: EColors.primary.withValues(alpha: 0.7),
+                fontSize: ESizes.fontSizeLabel,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

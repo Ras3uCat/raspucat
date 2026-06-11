@@ -5,6 +5,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { getAvailableSlots, SLOT_DURATION_MS, formatInOwnerTz } from '../_shared/booking-slots.ts';
+import { buildEmail } from '../_shared/email-templates.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -14,6 +15,7 @@ const supabase = createClient(
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'onboarding@resend.dev';
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://raspucat.com';
+const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL') ?? 'ras3ucat@gmail.com';
 
 const SESSION_LABELS: Record<string, string> = {
   discovery_call: 'Discovery Call',
@@ -43,8 +45,12 @@ async function getGoogleAccessToken(): Promise<string> {
       grant_type: 'refresh_token',
     }),
   });
-  const { access_token } = await res.json();
-  return access_token;
+  const data = await res.json();
+  if (!res.ok || !data.access_token) {
+    console.error('Google OAuth token exchange failed:', JSON.stringify(data));
+    throw new Error(`Google token exchange failed: ${data.error ?? 'unknown'} — ${data.error_description ?? ''}`);
+  }
+  return data.access_token;
 }
 
 async function createCalendarEvent(
@@ -90,6 +96,16 @@ async function createCalendarEvent(
   return { googleEventId: event.id ?? null, meetUrl };
 }
 
+async function sendEmail(to: string, subject: string, html: string): Promise<void> {
+  if (!RESEND_API_KEY) return;
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+  });
+  if (!res.ok) console.error('Resend error:', res.status, await res.text());
+}
+
 async function sendConfirmationEmail(
   to: string,
   name: string,
@@ -98,28 +114,56 @@ async function sendConfirmationEmail(
   meetUrl: string | null,
   cancellationToken: string,
 ): Promise<void> {
-  if (!RESEND_API_KEY) return;
   const label = SESSION_LABELS[sessionType] ?? sessionType;
   const formattedTime = formatInOwnerTz(startAt);
   const manageUrl = `${SITE_URL}/booking/manage?token=${cancellationToken}`;
-  const html = `
-    <div style="background:#000612;color:#e0e0e0;font-family:Inter,sans-serif;padding:40px 24px;max-width:600px;margin:0 auto">
-      <h2 style="color:#58e3ef;margin-bottom:8px">Your ${label} is confirmed</h2>
-      <p>Hi ${name},</p>
-      <p>You're booked for a <strong>${label}</strong> on:</p>
-      <p style="font-size:18px;color:#ffffff;margin:16px 0"><strong>${formattedTime}</strong></p>
-      ${meetUrl ? `<p><a href="${meetUrl}" style="background:#58e3ef;color:#000612;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">Join Google Meet</a></p>` : ''}
-      <hr style="border-color:#1a2a3a;margin:32px 0"/>
-      <p style="font-size:13px;color:#888">Need to reschedule or cancel?
-        <a href="${manageUrl}" style="color:#58e3ef">Manage your booking</a>
-      </p>
-    </div>`;
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM_EMAIL, to, subject: `${label} confirmed — ${formattedTime}`, html }),
+
+  const ctaHtml = meetUrl
+    ? `<div style="text-align:center;margin-bottom:32px;">
+        <a href="${meetUrl}" style="display:inline-block;padding:14px 36px;background:#58E3EF;border-radius:8px;color:#000612;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">
+          Join Google Meet →
+        </a>
+      </div>`
+    : '';
+
+  const html = buildEmail({
+    eyebrowLabel: 'Booking Confirmed',
+    heading: `Your ${label} is confirmed.`,
+    bodyHtml: `<p>Hi ${name},</p>
+               <p>You're booked for a <strong style="color:#E8FEFF;">${label}</strong> on:</p>
+               <p style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:#58E3EF;margin:16px 0 24px;">${formattedTime}</p>`,
+    ctaHtml,
+    footerHtml: `<p style="font-size:12px;color:rgba(232,254,255,0.25);margin:0;line-height:1.8;">
+                   Need to reschedule or cancel?
+                   <a href="${manageUrl}" style="color:rgba(88,227,239,0.6);">Manage your booking</a>
+                 </p>`,
   });
-  if (!res.ok) console.error('Resend error:', res.status, await res.text());
+
+  await sendEmail(to, `${label} confirmed — ${formattedTime}`, html);
+}
+
+async function sendAdminNotificationEmail(
+  sessionType: string,
+  guestName: string,
+  guestEmail: string,
+  startAt: Date,
+  message: string | null,
+  meetUrl: string | null,
+): Promise<void> {
+  const label = SESSION_LABELS[sessionType] ?? sessionType;
+  const formattedTime = formatInOwnerTz(startAt);
+
+  const html = buildEmail({
+    eyebrowLabel: 'New Booking',
+    heading: `New ${label} booked.`,
+    bodyHtml: `<p><strong style="color:#E8FEFF;">Name:</strong> ${guestName}</p>
+               <p><strong style="color:#E8FEFF;">Email:</strong> ${guestEmail}</p>
+               <p><strong style="color:#E8FEFF;">When:</strong> <span style="color:#58E3EF;">${formattedTime}</span></p>
+               ${message ? `<p><strong style="color:#E8FEFF;">Message:</strong><br>${message}</p>` : ''}
+               ${meetUrl ? `<p><strong style="color:#E8FEFF;">Meet link:</strong> <a href="${meetUrl}" style="color:#58E3EF;">${meetUrl}</a></p>` : ''}`,
+  });
+
+  await sendEmail(ADMIN_EMAIL, `New booking: ${label} — ${guestName}`, html);
 }
 
 Deno.serve(async (req) => {
@@ -177,6 +221,7 @@ Deno.serve(async (req) => {
     }
 
     await sendConfirmationEmail(email, name, sessionType, startDate, meetUrl, booking.cancellation_token);
+    await sendAdminNotificationEmail(sessionType, name, email, startDate, message, meetUrl);
 
     // If this booking came from an outreach lead, advance them to call_booked
     if (leadId) {
