@@ -47,7 +47,6 @@ class EData {
       description:
           'Cross-platform watchlist app for movies and TV shows with Queue Health scoring, mood-based filtering, AI-powered recommendations, and streaming service tracking.',
       technologies: ['Flutter', 'GetX', 'Supabase', 'Firebase'],
-      liveUrl: 'https://raspucat.com/bingequest',
       playStoreUrl: 'https://play.google.com/store/apps/details?id=com.ras3ucat.binge_quest',
       appStoreUrl: 'https://apps.apple.com/eg/app/bingequest/id6759207637',
       type: ProjectType.app,
@@ -57,6 +56,21 @@ class EData {
         'assets/images/projects/bingequest_ios_2.png',
         'assets/images/projects/bingequest_ios_3.png',
         'assets/images/projects/bingequest_ios_4.png',
+      ],
+    ),
+    ProjectModel(
+      title: 'Tracking Faith',
+      description:
+          'A comparative religion research platform that examines scripture, mythology, and belief systems across world traditions through scholarly analysis and sourced textual comparison.',
+      technologies: ['HTML', 'SCSS', 'JavaScript'],
+      liveUrl: 'https://trackingfaith.com',
+      imagePaths: [
+        'assets/images/projects/tracking_faith_hero_anim.gif',
+        'assets/images/projects/tracking_faith_hero.png',
+        'assets/images/projects/tracking_faith_2.png',
+        'assets/images/projects/tracking_faith_3.png',
+        'assets/images/projects/tracking_faith_4.png',
+        'assets/images/projects/tracking_faith_5.png',
       ],
     ),
     ProjectModel(
