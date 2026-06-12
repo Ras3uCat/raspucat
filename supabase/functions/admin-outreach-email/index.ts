@@ -22,7 +22,7 @@ const supabase = createClient(
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://ras3ucat.com';
 const FROM_EMAIL = 'hello@raspucat.com';
-const FROM_NAME = 'Ryan';
+const FROM_NAME = 'Ryan and Cytarah at Ras3ucat';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -73,7 +73,7 @@ function wrapEmailHtml(bodyHtml: string, leadId: string): string {
     <p><a class="cta" href="${bookingUrl}">Book a free 30-min call →</a></p>
   </div>
   <div class="footer">
-    <p>Ryan · Raspucat Web Studio · Liberty Hill, TX</p>
+    <p>Ryan and Cytarah Richardson · Ras3ucat · Liberty Hill, TX</p>
     <p><a href="${unsubUrl}">Unsubscribe</a> from these emails.</p>
   </div>
 </div></body></html>`;
@@ -277,13 +277,13 @@ Deno.serve(async (req) => {
           .single();
         const step = (existing?.sequence_step ?? 0) + 1;
 
-        const subject = `Quick follow-up for ${lead.company_name}`;
+        const subject = `Following up on ${lead.company_name}`;
         const bodyHtml = `
-<p>Hey ${lead.company_name},</p>
-<p>Sent you a note last week. Making sure it didn't get buried.</p>
-<p>Looked at your site and spotted something worth a conversation.</p>
-<p>Worth 15 minutes? I'll send a link if yes.</p>
-<p>Ryan<br>Raspucat Web Studio</p>
+<p>Hi,</p>
+<p>We wanted to follow up on the note we sent last week in case it got buried.</p>
+<p>We are Ryan and Cytarah with Ras3ucat, and we would still love to connect about how we can help ${lead.company_name} build a stronger online presence.</p>
+<p>If you are interested in learning more, we would be happy to set up a 30-minute call at your convenience.</p>
+<p>Best,<br>Ryan and Cytarah Richardson<br>Ras3ucat</p>
         `.trim();
 
         await supabase.from('outreach_emails').insert({
