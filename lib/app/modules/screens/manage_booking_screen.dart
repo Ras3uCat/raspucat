@@ -30,7 +30,26 @@ class ManageBookingScreen extends GetView<ManageBookingController> {
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: ESizes.spaceBtwSections),
-                  Obx(() => _ManageBookingBody(ctrl: controller)),
+                  Obx(() {
+                    if (controller.successMessage.value != null) {
+                      return _SuccessState(message: controller.successMessage.value!);
+                    }
+                    if (controller.isLoadingDetails.value) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: ESizes.xl),
+                          child: CircularProgressIndicator(
+                            color: EColors.primary,
+                            strokeWidth: 1.5,
+                          ),
+                        ),
+                      );
+                    }
+                    if (controller.errorMessage.value != null && !controller.isCancelled.value) {
+                      return _ErrorState(message: controller.errorMessage.value!);
+                    }
+                    return _ActiveState(ctrl: controller);
+                  }),
                 ],
               ),
             ),
@@ -38,32 +57,6 @@ class ManageBookingScreen extends GetView<ManageBookingController> {
         ),
       ),
     );
-  }
-}
-
-// ─── State router ─────────────────────────────────────────────────────────────
-
-class _ManageBookingBody extends StatelessWidget {
-  const _ManageBookingBody({required this.ctrl});
-  final ManageBookingController ctrl;
-
-  @override
-  Widget build(BuildContext context) {
-    if (ctrl.successMessage.value != null) {
-      return _SuccessState(message: ctrl.successMessage.value!);
-    }
-    if (ctrl.isLoadingDetails.value) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: ESizes.xl),
-          child: CircularProgressIndicator(color: EColors.primary, strokeWidth: 1.5),
-        ),
-      );
-    }
-    if (ctrl.errorMessage.value != null && !ctrl.isCancelled.value) {
-      return _ErrorState(message: ctrl.errorMessage.value!);
-    }
-    return _ActiveState(ctrl: ctrl);
   }
 }
 
