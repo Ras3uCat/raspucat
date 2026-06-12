@@ -130,17 +130,17 @@ class _BookingDetailsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(ESizes.lg),
       decoration: BoxDecoration(
-        color: EColors.primary.withValues(alpha: 0.05),
+        color: EColors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-        border: Border.all(color: EColors.primary.withValues(alpha: 0.25)),
+        border: Border.all(color: EColors.primary.withValues(alpha: 0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label.toUpperCase(),
-            style: const TextStyle(
-              color: EColors.primary,
+            'YOUR BOOKING',
+            style: TextStyle(
+              color: EColors.primary.withValues(alpha: 0.6),
               fontSize: ESizes.fontSizeLabel,
               fontWeight: FontWeight.w600,
               letterSpacing: 2.0,
@@ -148,19 +148,29 @@ class _BookingDetailsCard extends StatelessWidget {
           ),
           const SizedBox(height: ESizes.xs),
           Text(
+            label,
+            style: const TextStyle(
+              color: EColors.primary,
+              fontSize: ESizes.fontSizeMd,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: ESizes.xs),
+          Text(
             formattedTime,
             style: const TextStyle(
               color: EColors.textWhite,
-              fontSize: ESizes.fontSizeMd,
+              fontSize: ESizes.fontSizeSm,
               fontWeight: FontWeight.w500,
             ),
           ),
           if (meetUrl != null) ...[
             const SizedBox(height: ESizes.sm),
             Text(
-              'Google Meet link included',
+              'Google Meet link in your confirmation email',
               style: TextStyle(
-                color: EColors.primary.withValues(alpha: 0.7),
+                color: EColors.primary.withValues(alpha: 0.6),
                 fontSize: ESizes.fontSizeLabel,
               ),
             ),

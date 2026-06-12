@@ -72,10 +72,9 @@ async function createCalendarEvent(
       headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         summary: `${label} — ${guestName}`,
-        description: message ?? '',
+        description: `${message ? message + '\n\n' : ''}Guest email: ${guestEmail}`,
         start: { dateTime: startAt, timeZone: 'UTC' },
         end: { dateTime: endAt, timeZone: 'UTC' },
-        attendees: [{ email: guestEmail, displayName: guestName }],
         conferenceData: {
           createRequest: {
             requestId: bookingId,

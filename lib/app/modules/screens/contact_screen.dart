@@ -118,7 +118,7 @@ class _SuccessMessage extends StatelessWidget {
           const SizedBox(height: ESizes.sm),
           Text(
             meetUrl != null
-                ? 'Expect a response within one business day. Your call has been booked.'
+                ? 'Your call has been booked. Check your email for the confirmation and meeting link.'
                 : 'Expect a response within one business day.',
             style: TextStyle(
               color: EColors.textSecondary,
@@ -127,23 +127,6 @@ class _SuccessMessage extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          if (meetUrl != null) ...[
-            const SizedBox(height: ESizes.md),
-            GestureDetector(
-              onTap: () => EDeviceUtils.launchUrl(meetUrl!),
-              child: Text(
-                'JOIN MEETING',
-                style: TextStyle(
-                  color: EColors.primary,
-                  fontSize: ESizes.fontSizeLabel,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
-                  decoration: TextDecoration.underline,
-                  decorationColor: EColors.primary,
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );
