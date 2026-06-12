@@ -14,6 +14,7 @@ const supabase = createClient(
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
 const FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') ?? 'onboarding@resend.dev';
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://raspucat.com';
+const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL') ?? 'ras3ucat@gmail.com';
 
 const SESSION_LABELS: Record<string, string> = {
   discovery_call: 'Discovery Call',
@@ -97,7 +98,11 @@ async function sendEmail(
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) console.error('Resend error:', res.status, await res.text());
+  if (!res.ok) {
+    const body = await res.text();
+    console.error('Resend error:', res.status, body);
+    throw new Error(`Resend failed ${res.status}: ${body}`);
+  }
 }
 
 Deno.serve(async (req) => {
@@ -151,16 +156,28 @@ Deno.serve(async (req) => {
         }
       }
 
-      const html = buildEmail({
+      const formattedCancelTime = formatInOwnerTz(new Date(booking.start_at));
+
+      const guestHtml = buildEmail({
         eyebrowLabel: 'Booking Cancelled',
         heading: 'Your booking has been cancelled.',
         bodyHtml: `<p>Hi ${booking.name},</p>
                    <p>Your <strong style="color:#E8FEFF;">${label}</strong> on
-                   <span style="color:#58E3EF;">${formatInOwnerTz(new Date(booking.start_at))}</span>
+                   <span style="color:#58E3EF;">${formattedCancelTime}</span>
                    has been cancelled.</p>
                    <p>If you'd like to book a new session, <a href="${SITE_URL}/#contact" style="color:#58E3EF;">visit our contact page</a>.</p>`,
       });
-      await sendEmail(booking.email, `${label} cancelled`, html);
+      await sendEmail(booking.email, `${label} cancelled`, guestHtml);
+
+      const adminHtml = buildEmail({
+        eyebrowLabel: 'Booking Cancelled',
+        heading: `${label} cancelled.`,
+        bodyHtml: `<p><strong style="color:#E8FEFF;">Name:</strong> ${booking.name}</p>
+                   <p><strong style="color:#E8FEFF;">Email:</strong> ${booking.email}</p>
+                   <p><strong style="color:#E8FEFF;">Was scheduled:</strong> <span style="color:#58E3EF;">${formattedCancelTime}</span></p>`,
+      });
+      await sendEmail(ADMIN_EMAIL, `Booking cancelled: ${label} — ${booking.name}`, adminHtml);
+
       return json({ success: true, action: 'cancelled' });
     }
 

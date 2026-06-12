@@ -1,60 +1,5 @@
 part of 'manage_booking_screen.dart';
 
-// ─── Action card shell ────────────────────────────────────────────────────────
-
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({
-    required this.label,
-    required this.description,
-    required this.icon,
-    required this.child,
-  });
-
-  final String label;
-  final String description;
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(ESizes.lg),
-      decoration: BoxDecoration(
-        color: EColors.primary.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-        border: Border.all(color: EColors.primary.withValues(alpha: 0.15)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: EColors.primary, size: ESizes.iconMd),
-              const SizedBox(width: ESizes.sm),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: EColors.primary,
-                  fontSize: ESizes.fontSizeSm,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: ESizes.xs),
-          Text(
-            description,
-            style: const TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
-          ),
-          const SizedBox(height: ESizes.md),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
 // ─── Cancel with confirmation step ───────────────────────────────────────────
 
 class _CancelConfirmButton extends StatefulWidget {
@@ -91,7 +36,7 @@ class _CancelConfirmButtonState extends State<_CancelConfirmButton> {
       children: [
         Text(
           'Are you sure? This cannot be undone.',
-          style: const TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
+          style: TextStyle(color: EColors.textSecondary, fontSize: ESizes.fontSizeLabel),
         ),
         const SizedBox(height: ESizes.sm),
         Row(
@@ -101,7 +46,7 @@ class _CancelConfirmButtonState extends State<_CancelConfirmButton> {
                 onTap: () => setState(() => _confirming = false),
                 padding: const EdgeInsets.symmetric(vertical: ESizes.sm),
                 child: const Text(
-                  'KEEP BOOKING',
+                  'KEEP',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: EColors.primary,
@@ -128,7 +73,7 @@ class _CancelConfirmButtonState extends State<_CancelConfirmButton> {
                           ),
                         )
                       : const Text(
-                          'CONFIRM CANCEL',
+                          'YES, CANCEL',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.redAccent,

@@ -29,15 +29,6 @@ class ManageBookingScreen extends GetView<ManageBookingController> {
                     text: 'MANAGE BOOKING',
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  const SizedBox(height: ESizes.sm),
-                  Text(
-                    'Cancel or reschedule your session below.',
-                    style: TextStyle(
-                      color: EColors.textSecondary,
-                      fontSize: ESizes.fontSizeSm,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
                   const SizedBox(height: ESizes.spaceBtwSections),
                   Obx(() => _ManageBookingBody(ctrl: controller)),
                 ],
@@ -76,6 +67,8 @@ class _ManageBookingBody extends StatelessWidget {
   }
 }
 
+// ─── Active state ─────────────────────────────────────────────────────────────
+
 class _ActiveState extends StatelessWidget {
   const _ActiveState({required this.ctrl});
   final ManageBookingController ctrl;
@@ -87,20 +80,32 @@ class _ActiveState extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (details != null) _BookingDetailsCard(details: details),
-        if (details != null) const SizedBox(height: ESizes.lg),
-        _ActionCard(
-          label: 'CANCEL BOOKING',
-          description: 'Remove this booking entirely.',
-          icon: Icons.cancel_outlined,
-          child: _CancelConfirmButton(ctrl: ctrl),
-        ),
+        const SizedBox(height: ESizes.lg),
+        const _Divider(label: 'CANCEL'),
         const SizedBox(height: ESizes.md),
-        _ActionCard(
-          label: 'RESCHEDULE',
-          description: 'Pick a new date and time.',
-          icon: Icons.calendar_month_outlined,
-          child: _RescheduleSection(ctrl: ctrl),
+        Text(
+          'Remove this booking entirely. You\'ll receive a confirmation email.',
+          style: TextStyle(
+            color: EColors.textSecondary,
+            fontSize: ESizes.fontSizeLabel,
+            height: 1.5,
+          ),
         ),
+        const SizedBox(height: ESizes.sm),
+        _CancelConfirmButton(ctrl: ctrl),
+        const SizedBox(height: ESizes.lg),
+        const _Divider(label: 'RESCHEDULE'),
+        const SizedBox(height: ESizes.md),
+        Text(
+          'Pick a new date and time for this session.',
+          style: TextStyle(
+            color: EColors.textSecondary,
+            fontSize: ESizes.fontSizeLabel,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: ESizes.sm),
+        _RescheduleSection(ctrl: ctrl),
         if (ctrl.errorMessage.value != null)
           Padding(
             padding: const EdgeInsets.only(top: ESizes.md),
@@ -110,6 +115,30 @@ class _ActiveState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
+      ],
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: EColors.primary,
+            fontSize: ESizes.fontSizeLabel,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 2.5,
+          ),
+        ),
+        const SizedBox(width: ESizes.sm),
+        Expanded(child: Divider(color: EColors.primary.withValues(alpha: 0.25), height: 1)),
       ],
     );
   }
@@ -125,56 +154,62 @@ class _BookingDetailsCard extends StatelessWidget {
         details['sessionLabel'] as String? ?? details['sessionType'] as String? ?? 'Session';
     final formattedTime =
         details['formattedTime'] as String? ?? details['startAt'] as String? ?? '';
-    final meetUrl = details['meetUrl'] as String?;
+    final status = details['status'] as String? ?? 'confirmed';
 
     return Container(
       padding: const EdgeInsets.all(ESizes.lg),
       decoration: BoxDecoration(
-        color: EColors.primary.withValues(alpha: 0.08),
+        color: EColors.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-        border: Border.all(color: EColors.primary.withValues(alpha: 0.4)),
+        border: Border.all(color: EColors.primary.withValues(alpha: 0.35)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'YOUR BOOKING',
-            style: TextStyle(
-              color: EColors.primary.withValues(alpha: 0.6),
-              fontSize: ESizes.fontSizeLabel,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 2.0,
-            ),
+          Row(
+            children: [
+              const Icon(Icons.calendar_today_outlined, color: EColors.primary, size: 14),
+              const SizedBox(width: ESizes.xs),
+              Text(
+                label.toUpperCase(),
+                style: const TextStyle(
+                  color: EColors.primary,
+                  fontSize: ESizes.fontSizeLabel,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2.0,
+                ),
+              ),
+              if (status == 'cancelled') ...[
+                const SizedBox(width: ESizes.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Text(
+                    'CANCELLED',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
-          const SizedBox(height: ESizes.xs),
-          Text(
-            label,
-            style: const TextStyle(
-              color: EColors.primary,
-              fontSize: ESizes.fontSizeMd,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: ESizes.xs),
+          const SizedBox(height: ESizes.sm),
           Text(
             formattedTime,
             style: const TextStyle(
-              color: EColors.textWhite,
-              fontSize: ESizes.fontSizeSm,
+              color: Colors.white,
+              fontSize: ESizes.fontSizeMd,
               fontWeight: FontWeight.w500,
+              height: 1.4,
             ),
           ),
-          if (meetUrl != null) ...[
-            const SizedBox(height: ESizes.sm),
-            Text(
-              'Google Meet link in your confirmation email',
-              style: TextStyle(
-                color: EColors.primary.withValues(alpha: 0.6),
-                fontSize: ESizes.fontSizeLabel,
-              ),
-            ),
-          ],
         ],
       ),
     );
@@ -192,9 +227,9 @@ class _SuccessState extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(ESizes.xl),
       decoration: BoxDecoration(
-        color: EColors.primary.withValues(alpha: 0.04),
+        color: EColors.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-        border: Border.all(color: EColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: EColors.primary.withValues(alpha: 0.35)),
       ),
       child: Column(
         children: [
@@ -229,9 +264,9 @@ class _ErrorState extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(ESizes.lg),
       decoration: BoxDecoration(
-        color: Colors.redAccent.withValues(alpha: 0.05),
+        color: Colors.redAccent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(ESizes.borderRadiusMd),
-        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
       ),
       child: Text(
         message,
