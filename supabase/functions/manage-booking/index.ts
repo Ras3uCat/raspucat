@@ -4,7 +4,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { getAvailableSlots, SLOT_DURATION_MS, formatInOwnerTz } from '../_shared/booking-slots.ts';
-import { buildEmail, buildGoogleCalendarUrl, buildIcs, buildCalendarCtaHtml } from '../_shared/email-templates.ts';
+import { buildEmail, buildGoogleCalendarUrl, buildIcs, buildCalendarCtaHtml, toBase64 } from '../_shared/email-templates.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -90,7 +90,7 @@ async function sendEmail(
   if (!RESEND_API_KEY) return;
   const payload: Record<string, unknown> = { from: FROM_EMAIL, to, subject, html };
   if (icsContent) {
-    payload.attachments = [{ filename: 'booking.ics', content: btoa(icsContent) }];
+    payload.attachments = [{ filename: 'booking.ics', content: toBase64(icsContent) }];
   }
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

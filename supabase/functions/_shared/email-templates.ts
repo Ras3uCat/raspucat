@@ -1,6 +1,14 @@
 const LOGO_URL =
   'https://gegwqywgbgzahnftppda.supabase.co/storage/v1/object/public/assets/logos/raspucat_gradient.png';
 
+// btoa() only handles ASCII — encode to UTF-8 bytes first for Unicode content (e.g. em dash in labels).
+export function toBase64(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}
+
 function toGCalDate(iso: string): string {
   return iso.replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
 }

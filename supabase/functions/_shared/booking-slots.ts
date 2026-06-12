@@ -119,6 +119,6 @@ export async function getAvailableSlots(
   return allSlots.filter((slot) => {
     if (slot.getTime() <= now) return false;
     const slotEnd = slot.getTime() + SLOT_DURATION_MS;
-    return !busy.some((r) => slot.getTime() < r.to && slotEnd > r.from);
+    return !busy.some((r) => slot.getTime() < r.to && slotEnd >= r.from);
   });
 }
