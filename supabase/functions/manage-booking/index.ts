@@ -4,7 +4,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { getAvailableSlots, SLOT_DURATION_MS, formatInOwnerTz } from '../_shared/booking-slots.ts';
-import { buildEmail } from '../_shared/email-templates.ts';
+import { buildEmail, buildGoogleCalendarUrl, buildIcs, buildCalendarCtaHtml } from '../_shared/email-templates.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -81,12 +81,21 @@ async function updateCalendarEvent(
   if (!res.ok) console.error('Calendar update error:', res.status, await res.text());
 }
 
-async function sendEmail(to: string, subject: string, html: string): Promise<void> {
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  icsContent?: string,
+): Promise<void> {
   if (!RESEND_API_KEY) return;
+  const payload: Record<string, unknown> = { from: FROM_EMAIL, to, subject, html };
+  if (icsContent) {
+    payload.attachments = [{ filename: 'booking.ics', content: btoa(icsContent) }];
+  }
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) console.error('Resend error:', res.status, await res.text());
 }
@@ -184,13 +193,9 @@ Deno.serve(async (req) => {
     }
 
     const manageUrl = `${SITE_URL}/booking/manage?token=${booking.cancellation_token}`;
-    const ctaHtml = booking.meet_url
-      ? `<div style="text-align:center;margin-bottom:32px;">
-          <a href="${booking.meet_url}" style="display:inline-block;padding:14px 36px;background:#58E3EF;border-radius:8px;color:#000612;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">
-            Join Google Meet →
-          </a>
-        </div>`
-      : '';
+    const description = booking.meet_url ? `Join Google Meet: ${booking.meet_url}` : 'Ras3uCat booking';
+    const googleCalUrl = buildGoogleCalendarUrl(`${label} — Ras3uCat`, newStartAt, newEnd, description);
+    const icsContent = buildIcs(`${label} — Ras3uCat`, newStartAt, newEnd, description);
 
     const html = buildEmail({
       eyebrowLabel: 'Booking Rescheduled',
@@ -198,13 +203,13 @@ Deno.serve(async (req) => {
       bodyHtml: `<p>Hi ${booking.name},</p>
                  <p>Your <strong style="color:#E8FEFF;">${label}</strong> has been rescheduled to:</p>
                  <p style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:#58E3EF;margin:16px 0 24px;">${formatInOwnerTz(newStart)}</p>`,
-      ctaHtml,
+      ctaHtml: buildCalendarCtaHtml(googleCalUrl, booking.meet_url),
       footerHtml: `<p style="font-size:12px;color:rgba(232,254,255,0.25);margin:0;line-height:1.8;">
                      Need to change again?
                      <a href="${manageUrl}" style="color:rgba(88,227,239,0.6);">Manage your booking</a>
                    </p>`,
     });
-    await sendEmail(booking.email, `${label} rescheduled — ${formatInOwnerTz(newStart)}`, html);
+    await sendEmail(booking.email, `${label} rescheduled — ${formatInOwnerTz(newStart)}`, html, icsContent);
 
     return json({ success: true, action: 'rescheduled', newStartAt, newEndAt: newEnd });
   } catch (err) {

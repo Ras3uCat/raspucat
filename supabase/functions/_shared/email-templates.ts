@@ -1,6 +1,65 @@
 const LOGO_URL =
   'https://gegwqywgbgzahnftppda.supabase.co/storage/v1/object/public/assets/logos/raspucat_gradient.png';
 
+function toGCalDate(iso: string): string {
+  return iso.replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+}
+
+export function buildGoogleCalendarUrl(
+  title: string,
+  startIso: string,
+  endIso: string,
+  description: string,
+): string {
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${toGCalDate(startIso)}/${toGCalDate(endIso)}`,
+    details: description,
+  });
+  return `https://calendar.google.com/calendar/render?${params}`;
+}
+
+export function buildIcs(
+  summary: string,
+  startIso: string,
+  endIso: string,
+  description: string,
+): string {
+  const fmt = (s: string) => s.replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Ras3uCat//Booking//EN',
+    'BEGIN:VEVENT',
+    `DTSTART:${fmt(startIso)}`,
+    `DTEND:${fmt(endIso)}`,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description.replace(/\n/g, '\\n')}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ];
+  return lines.join('\r\n');
+}
+
+export function buildCalendarCtaHtml(googleCalUrl: string, meetUrl: string | null): string {
+  const meetButton = meetUrl
+    ? `<a href="${meetUrl}" style="display:inline-block;padding:14px 36px;background:#58E3EF;border-radius:8px;color:#000612;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">
+        Join Google Meet →
+      </a>`
+    : '';
+
+  return `<div style="margin-bottom:32px;">
+    ${meetButton ? `<div style="text-align:center;margin-bottom:16px;">${meetButton}</div>` : ''}
+    <div style="text-align:center;">
+      <a href="${googleCalUrl}" style="display:inline-block;padding:10px 24px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58E3EF;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">
+        + Add to Google Calendar
+      </a>
+      <p style="font-size:11px;color:rgba(232,254,255,0.25);margin:10px 0 0;">Apple / Outlook users: open the attached <strong style="color:rgba(232,254,255,0.4);">booking.ics</strong> file to add to your calendar.</p>
+    </div>
+  </div>`;
+}
+
 export function buildEmail({
   eyebrowLabel,
   heading,

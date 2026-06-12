@@ -5,7 +5,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { getAvailableSlots, SLOT_DURATION_MS, formatInOwnerTz } from '../_shared/booking-slots.ts';
-import { buildEmail } from '../_shared/email-templates.ts';
+import { buildEmail, buildGoogleCalendarUrl, buildIcs, buildCalendarCtaHtml } from '../_shared/email-templates.ts';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -95,12 +95,24 @@ async function createCalendarEvent(
   return { googleEventId: event.id ?? null, meetUrl };
 }
 
-async function sendEmail(to: string, subject: string, html: string): Promise<void> {
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  icsContent?: string,
+): Promise<void> {
   if (!RESEND_API_KEY) return;
+  const payload: Record<string, unknown> = { from: FROM_EMAIL, to, subject, html };
+  if (icsContent) {
+    payload.attachments = [{
+      filename: 'booking.ics',
+      content: btoa(icsContent),
+    }];
+  }
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: FROM_EMAIL, to, subject, html }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) console.error('Resend error:', res.status, await res.text());
 }
@@ -110,20 +122,18 @@ async function sendConfirmationEmail(
   name: string,
   sessionType: string,
   startAt: Date,
+  endAt: string,
   meetUrl: string | null,
   cancellationToken: string,
 ): Promise<void> {
   const label = SESSION_LABELS[sessionType] ?? sessionType;
   const formattedTime = formatInOwnerTz(startAt);
   const manageUrl = `${SITE_URL}/booking/manage?token=${cancellationToken}`;
+  const startIso = startAt.toISOString();
+  const description = meetUrl ? `Join Google Meet: ${meetUrl}` : 'Ras3uCat booking';
 
-  const ctaHtml = meetUrl
-    ? `<div style="text-align:center;margin-bottom:32px;">
-        <a href="${meetUrl}" style="display:inline-block;padding:14px 36px;background:#58E3EF;border-radius:8px;color:#000612;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">
-          Join Google Meet →
-        </a>
-      </div>`
-    : '';
+  const googleCalUrl = buildGoogleCalendarUrl(`${label} — Ras3uCat`, startIso, endAt, description);
+  const icsContent = buildIcs(`${label} — Ras3uCat`, startIso, endAt, description);
 
   const html = buildEmail({
     eyebrowLabel: 'Booking Confirmed',
@@ -131,14 +141,14 @@ async function sendConfirmationEmail(
     bodyHtml: `<p>Hi ${name},</p>
                <p>You're booked for a <strong style="color:#E8FEFF;">${label}</strong> on:</p>
                <p style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:#58E3EF;margin:16px 0 24px;">${formattedTime}</p>`,
-    ctaHtml,
+    ctaHtml: buildCalendarCtaHtml(googleCalUrl, meetUrl),
     footerHtml: `<p style="font-size:12px;color:rgba(232,254,255,0.25);margin:0;line-height:1.8;">
                    Need to reschedule or cancel?
                    <a href="${manageUrl}" style="color:rgba(88,227,239,0.6);">Manage your booking</a>
                  </p>`,
   });
 
-  await sendEmail(to, `${label} confirmed — ${formattedTime}`, html);
+  await sendEmail(to, `${label} confirmed — ${formattedTime}`, html, icsContent);
 }
 
 async function sendAdminNotificationEmail(
@@ -219,7 +229,7 @@ Deno.serve(async (req) => {
       console.error('Calendar integration error (non-fatal):', calErr);
     }
 
-    await sendConfirmationEmail(email, name, sessionType, startDate, meetUrl, booking.cancellation_token);
+    await sendConfirmationEmail(email, name, sessionType, startDate, endAt, meetUrl, booking.cancellation_token);
     await sendAdminNotificationEmail(sessionType, name, email, startDate, message, meetUrl);
 
     // If this booking came from an outreach lead, advance them to call_booked
