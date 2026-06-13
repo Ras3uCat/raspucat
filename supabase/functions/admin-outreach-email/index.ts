@@ -173,6 +173,22 @@ Deno.serve(async (req) => {
       return json({ drafts: data ?? [] });
     }
 
+    if (action === 'send-test') {
+      const { emailId } = body;
+      if (!emailId) return json({ error: 'emailId required.' }, 400);
+      const { data: email, error: fetchErr } = await supabase
+        .from('outreach_emails')
+        .select('*, leads(company_name, id)')
+        .eq('id', emailId)
+        .single();
+      if (fetchErr || !email) return json({ error: 'Draft not found.' }, 404);
+      const lead = email.leads as { company_name: string; id: string } | null;
+      const wrappedHtml = wrapEmailHtml(email.body_html, lead?.id ?? emailId);
+      const resendId = await sendViaResend('ras3ucat@gmail.com', `[TEST] ${email.subject}`, wrappedHtml);
+      if (!resendId) return json({ error: 'Failed to send test email.' }, 500);
+      return json({ success: true, resendId });
+    }
+
     if (action === 'update-draft') {
       const { emailId, subject, bodyHtml } = body;
       if (!emailId) return json({ error: 'emailId required.' }, 400);

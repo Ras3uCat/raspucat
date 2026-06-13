@@ -151,6 +151,15 @@ class AdminOutreachController extends GetxController {
     }
   }
 
+  Future<void> sendTestEmail(String emailId) async {
+    try {
+      await _repo.sendTestEmail(emailId);
+      successMessage.value = 'Test email sent to ras3ucat@gmail.com';
+    } catch (e) {
+      errorMessage.value = 'Failed to send test email: $e';
+    }
+  }
+
   Future<void> sendBatch() async {
     isSending.value = true;
     errorMessage.value = null;

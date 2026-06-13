@@ -13,6 +13,7 @@ abstract class OutreachRepository {
   Future<OutreachEmailModel> updateDraft(String emailId, {String? subject, String? bodyHtml});
   Future<void> deleteDraft(String emailId);
   Future<void> sendEmail(String emailId);
+  Future<void> sendTestEmail(String emailId);
   Future<Map<String, int>> sendBatch();
 
   Future<OutreachSettings?> getSettings();
@@ -122,6 +123,11 @@ class SupabaseOutreachRepository implements OutreachRepository {
   @override
   Future<void> sendEmail(String emailId) async {
     await _invoke('admin-outreach-email', {'action': 'send', 'emailId': emailId});
+  }
+
+  @override
+  Future<void> sendTestEmail(String emailId) async {
+    await _invoke('admin-outreach-email', {'action': 'send-test', 'emailId': emailId});
   }
 
   @override
