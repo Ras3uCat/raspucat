@@ -12,9 +12,12 @@ import 'package:raspucat/utils/constants/colors.dart';
 import 'package:raspucat/utils/constants/sizes.dart';
 
 part '_outreach_header.dart';
+part '_outreach_header_actions.dart';
 part '_outreach_drafts_view.dart';
 part '_outreach_draft_card.dart';
+part '_outreach_email_body_pane.dart';
 part '_outreach_pipeline_view.dart';
+part '_outreach_kanban_view.dart';
 part '_outreach_settings_panel.dart';
 part '_outreach_settings_fields.dart';
 part '_outreach_chip_input.dart';

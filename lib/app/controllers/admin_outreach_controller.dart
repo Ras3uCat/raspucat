@@ -19,6 +19,7 @@ class AdminOutreachController extends GetxController {
   final industryProfiles = RxList<IndustryProfileModel>([]);
   final selectedLead = Rx<LeadModel?>(null);
   final activeSubTab = 0.obs; // 0=Pipeline, 1=Drafts, 2=Settings
+  final pipelineViewMode = 0.obs; // 0=list, 1=kanban
   final isLoading = false.obs;
   final isSending = false.obs;
   final isDiscovering = false.obs;
@@ -112,6 +113,17 @@ class AdminOutreachController extends GetxController {
       errorMessage.value = 'Failed to save draft: $e';
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> updateDraft(String emailId, {String? subject, String? bodyHtml}) async {
+    try {
+      final updated = await _repo.updateDraft(emailId, subject: subject, bodyHtml: bodyHtml);
+      final idx = drafts.indexWhere((d) => d.id == emailId);
+      if (idx != -1) drafts[idx] = updated;
+      successMessage.value = 'Draft updated.';
+    } catch (e) {
+      errorMessage.value = 'Failed to update draft: $e';
     }
   }
 

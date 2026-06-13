@@ -51,32 +51,44 @@ async function sendViaResend(to: string, subject: string, html: string): Promise
   return data.id ?? null;
 }
 
+const LOGO_URL = 'https://gegwqywgbgzahnftppda.supabase.co/storage/v1/object/public/assets/logos/raspucat_gradient.png';
+
 function wrapEmailHtml(bodyHtml: string, leadId: string): string {
   const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
   const unsubUrl = `${supabaseUrl}/functions/v1/public-unsubscribe?id=${leadId}`;
   const bookingUrl = `${SITE_URL}/book?leadId=${leadId}`;
-  return `
-<!DOCTYPE html><html><head><meta charset="utf-8">
-<style>
-  body{margin:0;padding:0;background:#000612;font-family:-apple-system,sans-serif;color:#E8FEFF}
-  .wrap{max-width:580px;margin:0 auto;padding:32px 24px}
-  .content{background:rgba(88,227,239,0.04);border:1px solid rgba(88,227,239,0.12);
-    border-radius:8px;padding:28px 24px;margin-bottom:24px}
-  .cta{display:inline-block;background:#58E3EF;color:#000612;font-weight:600;
-    padding:12px 24px;border-radius:6px;text-decoration:none;margin:16px 0}
-  .footer{font-size:12px;color:rgba(232,255,255,0.4);line-height:1.6}
-  a{color:#58E3EF}
-</style></head><body>
-<div class="wrap">
-  <div class="content">
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&display=swap');</style>
+</head>
+<body style="margin:0;padding:0;background:#000612;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;">
+<div style="max-width:600px;margin:0 auto;padding:40px 24px;">
+  <div style="text-align:center;padding-bottom:28px;border-bottom:1px solid rgba(88,227,239,0.12);">
+    <img src="${LOGO_URL}" alt="Ras3uCat" style="height:56px;width:auto;display:block;margin:0 auto 12px;" />
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;letter-spacing:5px;color:#58E3EF;margin:0 0 6px;text-transform:uppercase;">Ras3uCat</p>
+    <p style="font-size:10px;color:rgba(232,254,255,0.3);letter-spacing:2px;margin:0;text-transform:uppercase;">Designed to engage. Engineered to move. Deployed to perform.</p>
+  </div>
+  <div style="padding:40px 0 32px;">
     ${bodyHtml}
-    <p><a class="cta" href="${bookingUrl}">Book a free 30-min call →</a></p>
+    <div style="text-align:center;margin-top:28px;">
+      <a href="${bookingUrl}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58E3EF;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Book a Free Website Audit &amp; Strategy Session &rarr;</a>
+    </div>
   </div>
-  <div class="footer">
-    <p>Ryan and Cytarah Richardson · Ras3ucat · Liberty Hill, TX</p>
-    <p><a href="${unsubUrl}">Unsubscribe</a> from these emails.</p>
+  <div style="padding-top:28px;border-top:1px solid rgba(88,227,239,0.08);">
+    <p style="color:rgba(232,254,255,0.4);font-size:13px;margin:0 0 4px;">With precision,</p>
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:#58E3EF;margin:0;letter-spacing:1px;">Ryan and Cytarah</p>
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:11px;color:rgba(232,254,255,0.2);margin:4px 0 0;letter-spacing:1px;">Ras3uCat &middot; Liberty Hill, TX &middot; meow@raspucat.com</p>
   </div>
-</div></body></html>`;
+  <div style="text-align:center;padding-top:32px;">
+    <p style="font-size:11px;color:rgba(232,254,255,0.2);margin:0 0 8px;"><a href="${unsubUrl}" style="color:rgba(88,227,239,0.3);text-decoration:none;">Unsubscribe</a></p>
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:rgba(88,227,239,0.2);margin:0;">Sync complete &#9651; M3OW</p>
+  </div>
+</div>
+</body>
+</html>`;
 }
 
 Deno.serve(async (req) => {
@@ -159,6 +171,24 @@ Deno.serve(async (req) => {
       const { data, error } = await query;
       if (error) return json({ error: 'Failed to list drafts.' }, 500);
       return json({ drafts: data ?? [] });
+    }
+
+    if (action === 'update-draft') {
+      const { emailId, subject, bodyHtml } = body;
+      if (!emailId) return json({ error: 'emailId required.' }, 400);
+      const fields: Record<string, unknown> = {};
+      if (subject !== undefined) fields.subject = subject;
+      if (bodyHtml !== undefined) fields.body_html = bodyHtml;
+      if (Object.keys(fields).length === 0) return json({ error: 'Nothing to update.' }, 400);
+      const { data, error } = await supabase
+        .from('outreach_emails')
+        .update(fields)
+        .eq('id', emailId)
+        .is('sent_at', null)
+        .select('*')
+        .single();
+      if (error) return json({ error: 'Failed to update draft.' }, 500);
+      return json({ email: data });
     }
 
     if (action === 'delete-draft') {
@@ -277,13 +307,13 @@ Deno.serve(async (req) => {
           .single();
         const step = (existing?.sequence_step ?? 0) + 1;
 
-        const subject = `Following up on ${lead.company_name}`;
+        const subject = `Following up — ${lead.company_name}`;
         const bodyHtml = `
 <p>Hi,</p>
 <p>We wanted to follow up on the note we sent last week in case it got buried.</p>
-<p>We are Ryan and Cytarah with Ras3ucat, and we would still love to connect about how we can help ${lead.company_name} build a stronger online presence.</p>
-<p>If you are interested in learning more, we would be happy to set up a 30-minute call at your convenience.</p>
-<p>Best,<br>Ryan and Cytarah Richardson<br>Ras3ucat</p>
+<p>We are Cytarah and Ryan with Ras3ucat. Our offer still stands — we would be happy to provide a complimentary website and competitor review for ${lead.company_name} at no cost to you. We will highlight opportunities to improve your online presence, customer experience, and competitive positioning.</p>
+<p>You can simply reply to this email, or book a free Website Audit &amp; Strategy Session at your convenience.</p>
+<p>Best,<br>Ryan and Cytarah Richardson<br>Ras3ucat<br>meow@raspucat.com</p>
         `.trim();
 
         await supabase.from('outreach_emails').insert({

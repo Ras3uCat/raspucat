@@ -34,7 +34,7 @@ class _DraftCardState extends State<_DraftCard> {
             expanded: _expanded,
             onToggle: () => setState(() => _expanded = !_expanded),
           ),
-          if (_expanded) _DraftCardBody(draft: widget.draft),
+          if (_expanded) _DraftCardBody(draft: widget.draft, ctrl: widget.ctrl),
         ],
       ),
     );
@@ -109,8 +109,9 @@ class _DraftCardHeader extends StatelessWidget {
 }
 
 class _DraftCardBody extends StatelessWidget {
-  const _DraftCardBody({required this.draft});
+  const _DraftCardBody({required this.draft, required this.ctrl});
   final OutreachEmailModel draft;
+  final AdminOutreachController ctrl;
 
   @override
   Widget build(BuildContext context) {
@@ -121,62 +122,13 @@ class _DraftCardBody extends StatelessWidget {
         children: [
           const Divider(color: EColors.primary, height: 1),
           const SizedBox(height: ESizes.sm),
-          _EmailBodyPane(bodyHtml: draft.bodyHtml),
+          _EmailBodyPane(draft: draft, ctrl: ctrl),
           if (draft.notes != null) ...[
             const SizedBox(height: ESizes.sm),
             _InternalNotesPane(notes: draft.notes!),
           ],
         ],
       ),
-    );
-  }
-}
-
-class _EmailBodyPane extends StatelessWidget {
-  const _EmailBodyPane({required this.bodyHtml});
-  final String bodyHtml;
-
-  String get _plainText {
-    final el = html.DivElement();
-    el.setInnerHtml(bodyHtml, treeSanitizer: html.NodeTreeSanitizer.trusted);
-    return el.innerText;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          constraints: const BoxConstraints(maxHeight: 300),
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: EColors.primary.withAlpha(8),
-            border: Border.all(color: EColors.primary.withAlpha(31)),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              ESizes.md,
-              ESizes.md,
-              ESizes.xl + ESizes.sm,
-              ESizes.md,
-            ),
-            child: SelectableText(
-              _plainText,
-              style: TextStyle(
-                color: EColors.cyanTintedWhite.withAlpha(220),
-                fontSize: ESizes.fontSizeLabel,
-                height: 1.7,
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 6,
-          right: 6,
-          child: _CopyButton(text: bodyHtml, tooltip: 'Copy HTML'),
-        ),
-      ],
     );
   }
 }
@@ -216,48 +168,6 @@ class _InternalNotesPane extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _CopyButton extends StatefulWidget {
-  const _CopyButton({required this.text, required this.tooltip});
-  final String text;
-  final String tooltip;
-
-  @override
-  State<_CopyButton> createState() => _CopyButtonState();
-}
-
-class _CopyButtonState extends State<_CopyButton> {
-  bool _copied = false;
-
-  Future<void> _copy() async {
-    await Clipboard.setData(ClipboardData(text: widget.text));
-    setState(() => _copied = true);
-    await Future<void>.delayed(const Duration(seconds: 2));
-    if (mounted) setState(() => _copied = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: _copied ? 'Copied!' : widget.tooltip,
-      child: GestureDetector(
-        onTap: _copy,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          decoration: BoxDecoration(
-            color: EColors.primary.withAlpha(30),
-            borderRadius: BorderRadius.circular(3),
-          ),
-          child: Icon(
-            _copied ? Icons.check : Icons.copy_outlined,
-            size: 12,
-            color: EColors.primary,
-          ),
-        ),
       ),
     );
   }

@@ -1,0 +1,265 @@
+part of 'admin_outreach_widget.dart';
+
+String _toHtml(String plainText) {
+  final lines = plainText.split('\n');
+  final buffer = StringBuffer();
+  final bulletLines = <String>[];
+
+  void flushBullets() {
+    if (bulletLines.isEmpty) return;
+    buffer.write('<ul>');
+    for (final b in bulletLines) {
+      buffer.write('<li>${b.trim()}</li>');
+    }
+    buffer.write('</ul>');
+    bulletLines.clear();
+  }
+
+  for (final line in lines) {
+    final trimmed = line.trim();
+    if (trimmed.isEmpty) {
+      flushBullets();
+      continue;
+    }
+    if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+      bulletLines.add(trimmed.substring(2));
+    } else {
+      flushBullets();
+      buffer.write('<p>$trimmed</p>');
+    }
+  }
+  flushBullets();
+  return buffer.toString();
+}
+
+class _EmailBodyPane extends StatefulWidget {
+  const _EmailBodyPane({required this.draft, required this.ctrl});
+
+  final OutreachEmailModel draft;
+  final AdminOutreachController ctrl;
+
+  @override
+  State<_EmailBodyPane> createState() => _EmailBodyPaneState();
+}
+
+class _EmailBodyPaneState extends State<_EmailBodyPane> {
+  bool _editing = false;
+  bool _saving = false;
+  late TextEditingController _textCtrl;
+
+  String get _plainText {
+    final el = html.DivElement();
+    el.setInnerHtml(widget.draft.bodyHtml, treeSanitizer: html.NodeTreeSanitizer.trusted);
+    return el.innerText;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _textCtrl = TextEditingController(text: _plainText);
+  }
+
+  @override
+  void dispose() {
+    _textCtrl.dispose();
+    super.dispose();
+  }
+
+  void _startEdit() {
+    _textCtrl.text = _plainText;
+    setState(() => _editing = true);
+  }
+
+  void _cancel() => setState(() => _editing = false);
+
+  Future<void> _save() async {
+    setState(() => _saving = true);
+    await widget.ctrl.updateDraft(widget.draft.id, bodyHtml: _toHtml(_textCtrl.text));
+    if (mounted) {
+      setState(() {
+        _saving = false;
+        _editing = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Stack(
+          children: [
+            Container(
+              constraints: _editing ? null : const BoxConstraints(maxHeight: 300),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: EColors.primary.withAlpha(8),
+                border: Border.all(
+                  color: _editing ? EColors.primary.withAlpha(80) : EColors.primary.withAlpha(31),
+                ),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: _editing ? _buildEditor() : _buildReadView(),
+            ),
+            Positioned(
+              top: 6,
+              right: 6,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _EditButton(active: _editing, onTap: _editing ? null : _startEdit),
+                  const SizedBox(width: 4),
+                  _CopyButton(text: widget.draft.bodyHtml, tooltip: 'Copy HTML'),
+                ],
+              ),
+            ),
+          ],
+        ),
+        if (_editing) _buildEditActions(),
+      ],
+    );
+  }
+
+  Widget _buildReadView() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(ESizes.md, ESizes.md, ESizes.xl + ESizes.sm, ESizes.md),
+      child: SelectableText(
+        _plainText,
+        style: TextStyle(
+          color: EColors.cyanTintedWhite.withAlpha(220),
+          fontSize: ESizes.fontSizeLabel,
+          height: 1.7,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditor() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(ESizes.md, ESizes.md, ESizes.xl + ESizes.sm, ESizes.md),
+      child: TextField(
+        controller: _textCtrl,
+        maxLines: null,
+        style: TextStyle(
+          color: EColors.cyanTintedWhite.withAlpha(220),
+          fontSize: ESizes.fontSizeLabel,
+          height: 1.7,
+        ),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          isDense: true,
+          contentPadding: EdgeInsets.zero,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditActions() {
+    return Padding(
+      padding: const EdgeInsets.only(top: ESizes.sm),
+      child: Row(
+        children: [
+          if (_saving)
+            const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
+            )
+          else
+            TextButton(
+              onPressed: _save,
+              style: TextButton.styleFrom(
+                foregroundColor: EColors.primary,
+                padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.xs),
+                side: const BorderSide(color: EColors.primary),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text('Save', style: TextStyle(fontSize: ESizes.fontSizeLabel)),
+            ),
+          if (!_saving) ...[
+            const SizedBox(width: ESizes.sm),
+            TextButton(
+              onPressed: _cancel,
+              style: TextButton.styleFrom(
+                foregroundColor: EColors.softGrey,
+                padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.xs),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text('Cancel', style: TextStyle(fontSize: ESizes.fontSizeLabel)),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _EditButton extends StatelessWidget {
+  const _EditButton({required this.active, required this.onTap});
+
+  final bool active;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Edit body',
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(
+            color: active ? EColors.primary.withAlpha(60) : EColors.primary.withAlpha(30),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: const Icon(Icons.edit_outlined, size: 12, color: EColors.primary),
+        ),
+      ),
+    );
+  }
+}
+
+class _CopyButton extends StatefulWidget {
+  const _CopyButton({required this.text, required this.tooltip});
+  final String text;
+  final String tooltip;
+
+  @override
+  State<_CopyButton> createState() => _CopyButtonState();
+}
+
+class _CopyButtonState extends State<_CopyButton> {
+  bool _copied = false;
+
+  Future<void> _copy() async {
+    await Clipboard.setData(ClipboardData(text: widget.text));
+    setState(() => _copied = true);
+    await Future<void>.delayed(const Duration(seconds: 2));
+    if (mounted) setState(() => _copied = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: _copied ? 'Copied!' : widget.tooltip,
+      child: GestureDetector(
+        onTap: _copy,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(
+            color: EColors.primary.withAlpha(30),
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Icon(
+            _copied ? Icons.check : Icons.copy_outlined,
+            size: 12,
+            color: EColors.primary,
+          ),
+        ),
+      ),
+    );
+  }
+}

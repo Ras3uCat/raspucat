@@ -10,6 +10,7 @@ abstract class OutreachRepository {
 
   Future<List<OutreachEmailModel>> listDrafts({String? leadId});
   Future<OutreachEmailModel> createDraft(String leadId, String subject, String bodyHtml);
+  Future<OutreachEmailModel> updateDraft(String emailId, {String? subject, String? bodyHtml});
   Future<void> deleteDraft(String emailId);
   Future<void> sendEmail(String emailId);
   Future<Map<String, int>> sendBatch();
@@ -94,6 +95,21 @@ class SupabaseOutreachRepository implements OutreachRepository {
       'leadId': leadId,
       'subject': subject,
       'bodyHtml': bodyHtml,
+    });
+    return OutreachEmailModel.fromJson(data['email'] as Map<String, dynamic>);
+  }
+
+  @override
+  Future<OutreachEmailModel> updateDraft(
+    String emailId, {
+    String? subject,
+    String? bodyHtml,
+  }) async {
+    final data = await _invoke('admin-outreach-email', {
+      'action': 'update-draft',
+      'emailId': emailId,
+      if (subject != null) 'subject': subject,
+      if (bodyHtml != null) 'bodyHtml': bodyHtml,
     });
     return OutreachEmailModel.fromJson(data['email'] as Map<String, dynamic>);
   }

@@ -343,33 +343,72 @@ Also write `logo_url` directly to `quotes.logo_url` so it's available in `admin-
 
 ## Step 9 — Draft Outreach Email (Outreach Path Only)
 
-Write a personalized cold outreach email. Every line should be specific to this business — not templated.
+Write a personalized outreach email using the tone and structure below. Fill in the placeholders
+with details specific to this business — do not change the structure or voice.
 
 **Subject line (pick one):**
-- `[Company name] — [specific site finding]` (e.g., "River City Ink — 41 on mobile")
-- A question using their industry vocabulary from the ride-along (e.g., "How many walk-ins did you lose last week?")
-- The money map dollar figure reframed as a question (e.g., "Is [Company] leaving $1,400/month on the table?")
-- A benchmark comparison if the gap is striking (e.g., "River City Ink — 24 points below average")
+- `Helping [Company Name] stand out online`
+- `A few ideas for [Company Name]'s website`
+- `[Company Name] — a thought from Ras3ucat`
 
-**Opening line:** Reference one specific thing found on their site. Never open with a compliment.
-Use ride-along vocabulary — call it what they call it, not what a developer would call it.
+**Email body — follow this structure exactly:**
 
-**Body (3–4 sentences max):**
-1. Name the problem using the money map's picked problem + dollar figure
-   (e.g., "Most [industry] shops in [city] lose around $X/month to missed after-hours leads...")
-2. Reference the site audit signal that confirms this is their specific problem — and if a benchmark
-   gap exists, use it: (e.g., "Your site scores 41 on mobile speed — the average [industry] shop
-   scores 65 — and there's no way to book online when a visitor lands.")
-3. One sentence on what you built to solve it — in plain language, no jargon
-4. What the outcome looks like in their terms (more walk-ins, fewer no-shows, less phone tag)
+```
+Hi [Owner Name],
 
-**CTA:** "Book a 15-minute call" — link to `{SITE_URL}/book?leadId={lead_id}`
+We are Cytarah and Ryan, co-owners of Ras3ucat, a small web design and development business
+based in Texas. We focus on helping local businesses create modern websites that reflect the
+quality of their work and help turn more visitors into paying clients.
 
-**Internal notes to extract** (from the planning document — these appear in the `// INTERNAL NOTES` section of the Drafts tab and are never sent to the lead):
-- Subject line reasoning: which option was chosen and why (e.g., "Chose no-show angle over PageSpeed opener — owner feels it daily")
-- Delivery blockers: missing email address, preferred contact channel, any platform details to withhold from the subject
-- Call prep flags: anything to raise in the discovery call that the email doesn't address (e.g., cash-only deposit flow, commission splits)
-- Benchmark hook available: note the strongest comparative stat for use if doing A/B testing
+I came across [Company Name] and was impressed by [one specific genuine observation about
+their work, staff, or reputation — from the site audit or ride-along]. [One sentence showing
+personal connection or appreciation for their industry/craft.]  We appreciate the artistry,
+time, and effort you and your staff put into your craft, and we'd love to help your online
+presence fully showcase the talent in your shop.
+
+As you know, today, a website is often the first impression a potential client has of a
+[industry term for their business]. A modern, mobile-friendly website can help:
+- establish trust
+- highlight [industry-appropriate portfolio/service content]
+- answer common client questions
+- make it easier for people to move forward with booking.
+
+[If applicable to the industry: One feature we believe can make a significant difference for
+[business type] is a booking system that allows clients to submit requests and deposits
+directly to [staff/artists/specialists]. It creates a smoother experience for clients while
+reducing the administrative workload on the shop.]
+
+What makes our process different is that we don't just build websites. We look at what other
+successful [business type] in your market are doing well and identify opportunities to help
+your business stand out. Before we ever make recommendations, we perform a full audit of your:
+- current online presence
+- website performance
+- customer experience
+- local competitors
+
+Our goal isn't to create a website that simply looks good. It's to build a website that works
+as a business tool.
+
+If you're interested, we'd be happy to provide a complimentary website and competitor review
+for your business. We'll highlight opportunities to improve your online presence, customer
+experience, and competitive positioning.
+You can simply reply to this email, or book a free Website Audit & Strategy Session here:
+{SITE_URL}/book?leadId={lead_id}
+
+Best,
+Ryan and Cytarah Richardson
+Ras3ucat
+meow@raspucat.com
+```
+
+**Internal notes to extract** (these appear in the `// INTERNAL NOTES` section of the Drafts
+tab and are NEVER sent to the lead — this is where the research data lives):
+- **Money map figures:** The estimated monthly loss or opportunity dollar figure from the money map (e.g., "Est. $2,400–$6,400/month lost to no-shows"). Use this on the discovery call, not in the email.
+- **Confirmed pain points:** List the top 2–3 pain points identified in the audit (e.g., "No deposit enforcement, PageSpeed 48 vs avg 65, no artist-specific booking")
+- **Benchmark gaps:** Any striking comparative stats (e.g., "PageSpeed 48 vs industry avg 65 — 17 points below")
+- **Subject line reasoning:** Which option was chosen and why
+- **Delivery blockers:** Missing email address, preferred contact channel, any platform details to withhold
+- **Call prep flags:** Anything to raise on the discovery call the email doesn't address (e.g., cash-only deposit flow, commission splits, platform migration concerns)
 
 Call `admin-outreach-email` Edge Function with `action: draft`, passing:
 - `leadId`, `subject`, `bodyHtml`

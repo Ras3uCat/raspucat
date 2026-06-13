@@ -43,6 +43,9 @@ class _OutreachPipelineView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (ctrl.pipelineViewMode.value == 1) {
+        return _OutreachKanbanView(ctrl: ctrl);
+      }
       final leads = ctrl.leadsByStatus;
       if (leads.isEmpty) {
         return const Center(
