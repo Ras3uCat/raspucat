@@ -53,10 +53,13 @@ async function sendViaResend(to: string, subject: string, html: string): Promise
 
 const LOGO_URL = 'https://gegwqywgbgzahnftppda.supabase.co/storage/v1/object/public/assets/logos/raspucat_gradient.png';
 
-function wrapEmailHtml(bodyHtml: string, leadId: string): string {
+function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): string {
   const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
   const unsubUrl = `${supabaseUrl}/functions/v1/public-unsubscribe?id=${leadId}`;
   const bookingUrl = `${SITE_URL}/book?leadId=${leadId}`;
+  const subjectHeader = subject
+    ? `<p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58e3ef;margin:0 0 14px;text-transform:uppercase;">Web Design &amp; Development</p><h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#e8feff;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">${subject}</h1>`
+    : '';
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -64,12 +67,12 @@ function wrapEmailHtml(bodyHtml: string, leadId: string): string {
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&display=swap');
-    p { margin: 0 0 16px; line-height: 1.7; }
+    p { color: rgba(232,254,255,0.65); font-size: 15px; line-height: 1.8; margin: 0 0 16px; }
     ul { margin: 0 0 16px; padding-left: 20px; }
-    li { margin: 0 0 6px; line-height: 1.7; }
+    li { color: rgba(232,254,255,0.65); font-size: 15px; line-height: 1.8; margin: 0 0 6px; }
   </style>
 </head>
-<body style="margin:0;padding:0;background:#000612;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;color:rgba(232,254,255,0.85);">
+<body style="margin:0;padding:0;background:#000612;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;">
 <div style="max-width:600px;margin:0 auto;padding:40px 24px;">
   <div style="text-align:center;padding-bottom:28px;border-bottom:1px solid rgba(88,227,239,0.12);">
     <img src="${LOGO_URL}" alt="Ras3uCat" style="height:56px;width:auto;display:block;margin:0 auto 12px;" />
@@ -77,7 +80,7 @@ function wrapEmailHtml(bodyHtml: string, leadId: string): string {
     <p style="font-size:10px;color:rgba(232,254,255,0.3);letter-spacing:2px;margin:0;text-transform:uppercase;">Designed to engage. Engineered to move. Deployed to perform.</p>
   </div>
   <div style="padding:40px 0 32px;">
-    ${bodyHtml}
+    ${subjectHeader}${bodyHtml}
     <div style="text-align:center;margin-top:28px;">
       <a href="${bookingUrl}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58E3EF;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Book a Free Website Audit &amp; Strategy Session &rarr;</a>
     </div>
@@ -188,7 +191,7 @@ Deno.serve(async (req) => {
         .single();
       if (fetchErr || !email) return json({ error: 'Draft not found.' }, 404);
       const lead = email.leads as { company_name: string; id: string } | null;
-      const wrappedHtml = wrapEmailHtml(email.body_html, lead?.id ?? emailId);
+      const wrappedHtml = wrapEmailHtml(email.body_html, lead?.id ?? emailId, email.subject);
       const resendId = await sendViaResend('ras3ucat@gmail.com', `[TEST] ${email.subject}`, wrappedHtml);
       if (!resendId) return json({ error: 'Failed to send test email.' }, 500);
       return json({ success: true, resendId });
@@ -221,8 +224,7 @@ Deno.serve(async (req) => {
         .eq('id', emailId)
         .single();
       if (fetchErr || !email) return json({ error: 'Draft not found.' }, 404);
-      const subjectHeader = `<p style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:rgba(88,227,239,0.5);letter-spacing:3px;text-transform:uppercase;margin:0 0 10px 0;">Web Design &amp; Development</p><h2 style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:#E8FEFF;margin:0 0 28px 0;line-height:1.3;">${email.subject}</h2>`;
-      return json({ html: wrapEmailHtml(subjectHeader + email.body_html, email.lead_id) });
+      return json({ html: wrapEmailHtml(email.body_html, email.lead_id, email.subject) });
     }
 
     if (action === 'delete-draft') {
@@ -247,7 +249,7 @@ Deno.serve(async (req) => {
       const lead = email.leads as { company_name: string; email: string; id: string } | null;
       if (!lead?.email) return json({ error: 'Lead has no email address.' }, 400);
 
-      const wrappedHtml = wrapEmailHtml(email.body_html, lead.id);
+      const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
       const resendId = await sendViaResend(lead.email, email.subject, wrappedHtml);
 
       const now = new Date().toISOString();
@@ -286,7 +288,7 @@ Deno.serve(async (req) => {
         const lead = email.leads as { company_name: string; email: string; id: string; status: string } | null;
         if (!lead?.email) { failed++; continue; }
 
-        const wrappedHtml = wrapEmailHtml(email.body_html, lead.id);
+        const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
         const resendId = await sendViaResend(lead.email, email.subject, wrappedHtml);
 
         await supabase
