@@ -19,6 +19,7 @@ class AdminOutreachController extends GetxController {
   final industryProfiles = RxList<IndustryProfileModel>([]);
   final selectedLead = Rx<LeadModel?>(null);
   final activeSubTab = 0.obs; // 0=Pipeline, 1=Drafts, 2=Settings
+  final selectedIndustryFilter = RxnString();
   final pipelineViewMode = 0.obs; // 0=list, 1=kanban
   final isLoading = false.obs;
   final isSending = false.obs;
@@ -224,6 +225,12 @@ class AdminOutreachController extends GetxController {
 
   List<OutreachEmailModel> draftsForLead(String leadId) =>
       drafts.where((d) => d.leadId == leadId).toList();
+
+  List<LeadModel> get filteredLeadsByStatus {
+    final filter = selectedIndustryFilter.value;
+    if (filter == null) return leadsByStatus;
+    return leadsByStatus.where((l) => l.industry.toLowerCase() == filter.toLowerCase()).toList();
+  }
 
   Future<void> runDiscovery() async {
     isDiscovering.value = true;

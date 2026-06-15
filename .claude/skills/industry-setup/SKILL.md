@@ -48,19 +48,25 @@ After the Industry Download report is saved, execute the two step 12 commands.
 > "Industry profile saved. Running Supabase sync and benchmark now — the benchmark audits 15
 > live sites and takes ~60 seconds."
 
-Then output both commands for the user to paste (they must run them with `!`):
+Run both commands directly using the Bash tool (substitute real slug, name, and values from Step 1).
+The admin token is stored in project memory — look it up rather than asking the user.
 
-```
-! supabase functions invoke admin-leads --project-ref gegwqywgbgzahnftppda \
-  --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"{slug}","name":"{Full Name}","painPoints":[...],"bookingCtaKeywords":[...],"auditSignals":{...},"researchedAt":"{YYYY-MM-DD}"}'
-
-! curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-lead-discovery \
+**Sync (includes overviewMd so the Overview tab shows content):**
+```bash
+OVERVIEW=$(cat planning/industries/{slug}.md | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
+curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-leads \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZ3dxeXdnYmd6YWhuZnRwcGRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MDIyMDQsImV4cCI6MjA4OTI3ODIwNH0.2DgzGgFAMzb5jxULTDthYs0SPH7zmM8rvkMSOQlY2Og" \
-  -d '{"adminToken":"YOUR_TOKEN","action":"benchmark-industry","slug":"{slug}"}'
+  --data-raw "{\"adminToken\":\"ADMIN_TOKEN\",\"action\":\"sync-industry\",\"slug\":\"{slug}\",\"name\":\"{Full Name}\",\"painPoints\":[...],\"bookingCtaKeywords\":[...],\"auditSignals\":{...},\"researchedAt\":\"{YYYY-MM-DD}\",\"overviewMd\":$OVERVIEW}"
 ```
 
-Replace `YOUR_TOKEN` with the admin token and fill in the actual values from Step 1.
+**Benchmark (~60s):**
+```bash
+curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-lead-discovery \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZ3dxeXdnYmd6YWhuZnRwcGRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MDIyMDQsImV4cCI6MjA4OTI3ODIwNH0.2DgzGgFAMzb5jxULTDthYs0SPH7zmM8rvkMSOQlY2Og" \
+  -d "{\"adminToken\":\"ADMIN_TOKEN\",\"action\":\"benchmark-industry\",\"slug\":\"{slug}\"}"
+```
 
 Wait for the user to confirm both commands ran before continuing to Step 3.
 
