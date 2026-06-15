@@ -160,6 +160,15 @@ class AdminOutreachController extends GetxController {
     }
   }
 
+  Future<String?> getEmailPreview(String emailId) async {
+    try {
+      return await _repo.getEmailPreview(emailId);
+    } catch (e) {
+      errorMessage.value = 'Failed to load preview: $e';
+      return null;
+    }
+  }
+
   Future<void> sendBatch() async {
     isSending.value = true;
     errorMessage.value = null;

@@ -43,9 +43,16 @@ class _EmailBodyPane extends StatefulWidget {
 }
 
 class _EmailBodyPaneState extends State<_EmailBodyPane> {
+  static final _registeredViewTypes = <String>{};
+
   bool _editing = false;
   bool _saving = false;
+  bool _loadingPreview = false;
+  String? _previewHtml;
   late TextEditingController _textCtrl;
+
+  // Changes when _previewHtml changes so HtmlElementView re-renders.
+  String get _viewType => 'email-preview-${widget.draft.id}-${_previewHtml?.hashCode ?? 0}';
 
   String get _plainText {
     final el = html.DivElement();
@@ -53,10 +60,47 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     return el.innerText;
   }
 
+  void _ensureViewRegistered() {
+    final preview = _previewHtml;
+    if (preview == null) return;
+    final type = _viewType;
+    if (_registeredViewTypes.contains(type)) return;
+    _registeredViewTypes.add(type);
+    // ignore: undefined_prefixed_name
+    ui.platformViewRegistry.registerViewFactory(type, (_) {
+      return html.IFrameElement()
+        ..srcdoc = preview
+        ..style.border = 'none'
+        ..style.width = '100%'
+        ..style.height = '100%';
+    });
+  }
+
+  Future<void> _loadPreview() async {
+    if (!mounted) return;
+    setState(() => _loadingPreview = true);
+    final result = await widget.ctrl.getEmailPreview(widget.draft.id);
+    if (!mounted) return;
+    setState(() {
+      _previewHtml = result;
+      _loadingPreview = false;
+    });
+    _ensureViewRegistered();
+  }
+
   @override
   void initState() {
     super.initState();
     _textCtrl = TextEditingController(text: _plainText);
+    _loadPreview();
+  }
+
+  @override
+  void didUpdateWidget(_EmailBodyPane oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.draft.bodyHtml != widget.draft.bodyHtml) {
+      _loadPreview();
+    }
   }
 
   @override
@@ -91,7 +135,6 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
         Stack(
           children: [
             Container(
-              constraints: _editing ? null : const BoxConstraints(maxHeight: 300),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: EColors.primary.withAlpha(8),
@@ -100,7 +143,7 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
                 ),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: _editing ? _buildEditor() : _buildReadView(),
+              child: _editing ? _buildEditor() : _buildPreview(),
             ),
             Positioned(
               top: 6,
@@ -123,18 +166,21 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     );
   }
 
-  Widget _buildReadView() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(ESizes.md, ESizes.md, ESizes.xl + ESizes.sm, ESizes.md),
-      child: SelectableText(
-        _plainText,
-        style: TextStyle(
-          color: EColors.cyanTintedWhite.withAlpha(220),
-          fontSize: ESizes.fontSizeLabel,
-          height: 1.7,
+  Widget _buildPreview() {
+    if (_loadingPreview || _previewHtml == null) {
+      return const SizedBox(
+        height: 200,
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
+          ),
         ),
-      ),
-    );
+      );
+    }
+    _ensureViewRegistered();
+    return SizedBox(height: 700, child: HtmlElementView(viewType: _viewType));
   }
 
   Widget _buildEditor() {

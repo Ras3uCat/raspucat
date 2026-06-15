@@ -207,6 +207,18 @@ Deno.serve(async (req) => {
       return json({ email: data });
     }
 
+    if (action === 'preview') {
+      const { emailId } = body;
+      if (!emailId) return json({ error: 'emailId required.' }, 400);
+      const { data: email, error: fetchErr } = await supabase
+        .from('outreach_emails')
+        .select('body_html, lead_id')
+        .eq('id', emailId)
+        .single();
+      if (fetchErr || !email) return json({ error: 'Draft not found.' }, 404);
+      return json({ html: wrapEmailHtml(email.body_html, email.lead_id) });
+    }
+
     if (action === 'delete-draft') {
       const { emailId } = body;
       if (!emailId) return json({ error: 'emailId required.' }, 400);
