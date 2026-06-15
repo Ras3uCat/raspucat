@@ -60,6 +60,9 @@ function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): stri
   const subjectHeader = subject
     ? `<p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58e3ef;margin:0 0 14px;text-transform:uppercase;">Web Design &amp; Development</p><h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#e8feff;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">${subject}</h1>`
     : '';
+  const bookingButtonHtml = `<div style="text-align:center;margin:28px 0;"><a href="${bookingUrl}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58e3ef;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Book a Free Website Audit &amp; Strategy Session &rarr;</a></div>`;
+  const processedBody = bodyHtml.replace(/<p[^>]*>[^<]*\{BOOKING_LINK\}[^<]*<\/p>/gi, bookingButtonHtml);
+  const hasInlineButton = processedBody !== bodyHtml;
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -80,15 +83,12 @@ function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): stri
     <p style="font-size:10px;color:rgba(232,254,255,0.3);letter-spacing:2px;margin:0;text-transform:uppercase;">Designed to engage. Engineered to move. Deployed to perform.</p>
   </div>
   <div style="padding:40px 0 32px;">
-    ${subjectHeader}${bodyHtml}
-    <div style="text-align:center;margin-top:28px;">
-      <a href="${bookingUrl}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58E3EF;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Book a Free Website Audit &amp; Strategy Session &rarr;</a>
-    </div>
+    ${subjectHeader}${processedBody}${hasInlineButton ? '' : `<div style="text-align:center;margin-top:28px;">${bookingButtonHtml}</div>`}
   </div>
   <div style="padding-top:28px;border-top:1px solid rgba(88,227,239,0.08);">
-    <p style="color:rgba(232,254,255,0.4);font-size:13px;margin:0 0 4px;">With precision,</p>
+    <p style="color:rgba(232,254,255,0.4);font-size:13px;margin:0 0 4px;">Best,</p>
     <p style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:#58E3EF;margin:0;letter-spacing:1px;">Ryan and Cytarah</p>
-    <p style="font-family:'Space Grotesk',sans-serif;font-size:11px;color:rgba(232,254,255,0.2);margin:4px 0 0;letter-spacing:1px;">Ras3uCat &middot; Liberty Hill, TX &middot; meow@raspucat.com</p>
+    <p style="font-family:'Space Grotesk',sans-serif;font-size:11px;color:rgba(232,254,255,0.2);margin:4px 0 0;letter-spacing:1px;">Ras3uCat &middot; <img src="${LOGO_URL}" alt="" style="height:13px;width:auto;vertical-align:middle;display:inline-block;margin:0 1px;" /> &middot; meow@raspucat.com</p>
   </div>
   <div style="text-align:center;padding-top:32px;">
     <p style="font-size:11px;color:rgba(232,254,255,0.2);margin:0 0 8px;"><a href="${unsubUrl}" style="color:rgba(88,227,239,0.3);text-decoration:none;">Unsubscribe</a></p>
