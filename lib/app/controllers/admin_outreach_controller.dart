@@ -230,7 +230,7 @@ class AdminOutreachController extends GetxController {
     errorMessage.value = null;
     try {
       final result = await _repo.runDiscovery().timeout(
-        const Duration(seconds: 120),
+        const Duration(seconds: 300),
         onTimeout: () =>
             throw Exception('Discovery timed out — try again or reduce target cities.'),
       );

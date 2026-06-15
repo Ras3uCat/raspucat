@@ -61,8 +61,12 @@ function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): stri
     ? `<p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58e3ef;margin:0 0 14px;text-transform:uppercase;">Web Design &amp; Development</p><h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#e8feff;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">${subject}</h1>`
     : '';
   const bookingButtonHtml = `<div style="text-align:center;margin:28px 0;"><a href="${bookingUrl}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58e3ef;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Book a Free Website Audit &amp; Strategy Session &rarr;</a></div>`;
-  const processedBody = bodyHtml.replace(/<p[^>]*>[^<]*\{BOOKING_LINK\}[^<]*<\/p>/gi, bookingButtonHtml);
-  const hasInlineButton = processedBody !== bodyHtml;
+  // Strip sign-off block — footer already contains attribution
+  const stripped = bodyHtml
+    .replace(/<p[^>]*>\s*Best,\s*<\/p>\s*<p[^>]*>\s*Ryan and Cytarah Richardson\s*<\/p>\s*<p[^>]*>\s*Ras3?u?[Cc]at\s*<\/p>\s*<p[^>]*>\s*meow@raspucat\.com\s*<\/p>/gi, '')
+    .replace(/<p[^>]*>\s*Best,(<br\s*\/?>)\s*Ryan and Cytarah Richardson\1\s*Ras3?u?[Cc]at\1\s*meow@raspucat\.com\s*<\/p>/gi, '');
+  const processedBody = stripped.replace(/<p[^>]*>[^<]*\{BOOKING_LINK\}[^<]*<\/p>/gi, bookingButtonHtml);
+  const hasInlineButton = processedBody !== stripped;
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -349,7 +353,6 @@ Deno.serve(async (req) => {
 <p>We wanted to follow up on the note we sent last week in case it got buried.</p>
 <p>We are Cytarah and Ryan with Ras3ucat. Our offer still stands — we would be happy to provide a complimentary website and competitor review for ${lead.company_name} at no cost to you. We will highlight opportunities to improve your online presence, customer experience, and competitive positioning.</p>
 <p>You can simply reply to this email, or book a free Website Audit &amp; Strategy Session at your convenience.</p>
-<p>Best,<br>Ryan and Cytarah Richardson<br>Ras3ucat<br>meow@raspucat.com</p>
         `.trim();
 
         await supabase.from('outreach_emails').insert({

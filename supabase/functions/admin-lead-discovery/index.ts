@@ -167,25 +167,32 @@ async function findExisting(lead: RawLead): Promise<{ id: string; sources: strin
     const { data } = await supabase.from('leads').select('*').eq('yelp_id', lead.yelp_id).single();
     if (data) return data as { id: string; sources: string[]; [key: string]: unknown };
   }
-  // 3. phone
+  // 3. phone — fetch only id+phone for rows in same city to keep the scan small
   if (lead.phone) {
     const norm = normPhone(lead.phone);
     if (norm.length === 10) {
-      const { data: rows } = await supabase.from('leads').select('*').not('phone', 'is', null);
+      const { data: rows } = await supabase.from('leads')
+        .select('id, phone, sources, company_name, industry, city, state, website, email, rating, review_count, google_place_id, yelp_id, angi_url, website_audit, score, decision_maker_name, decision_maker_title')
+        .eq('city', lead.city ?? '')
+        .not('phone', 'is', null);
       const match = rows?.find((r) => r.phone && normPhone(r.phone) === norm);
       if (match) return match as { id: string; sources: string[]; [key: string]: unknown };
     }
   }
-  // 4. website domain
+  // 4. website domain — scope to city to avoid full-table scan
   if (lead.website) {
     const dom = normDomain(lead.website);
-    const { data: rows } = await supabase.from('leads').select('*').not('website', 'is', null);
+    const { data: rows } = await supabase.from('leads')
+      .select('id, website, sources, company_name, industry, city, state, phone, email, rating, review_count, google_place_id, yelp_id, angi_url, website_audit, score, decision_maker_name, decision_maker_title')
+      .eq('city', lead.city ?? '')
+      .not('website', 'is', null);
     const match = rows?.find((r) => r.website && normDomain(r.website) === dom);
     if (match) return match as { id: string; sources: string[]; [key: string]: unknown };
   }
   // 5. name + city
   const normN = normName(lead.company_name);
-  const { data: rows } = await supabase.from('leads').select('*')
+  const { data: rows } = await supabase.from('leads')
+    .select('id, company_name, sources, industry, city, state, phone, website, email, rating, review_count, google_place_id, yelp_id, angi_url, website_audit, score, decision_maker_name, decision_maker_title')
     .eq('city', lead.city ?? '')
     .not('company_name', 'is', null);
   const match = rows?.find((r) => r.company_name && normName(r.company_name) === normN);
