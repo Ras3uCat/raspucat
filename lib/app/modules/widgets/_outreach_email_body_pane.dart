@@ -66,8 +66,7 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     final type = _viewType;
     if (_registeredViewTypes.contains(type)) return;
     _registeredViewTypes.add(type);
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(type, (_) {
+    ui_web.platformViewRegistry.registerViewFactory(type, (_) {
       return html.IFrameElement()
         ..srcdoc = preview
         ..style.border = 'none'
