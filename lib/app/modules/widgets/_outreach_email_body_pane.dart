@@ -131,34 +131,27 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Stack(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: EColors.primary.withAlpha(8),
-                border: Border.all(
-                  color: _editing ? EColors.primary.withAlpha(80) : EColors.primary.withAlpha(31),
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: _editing ? _buildEditor() : _buildPreview(),
-            ),
-            Positioned(
-              top: 6,
-              right: 6,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _EditButton(active: _editing, onTap: _editing ? null : _startEdit),
-                  const SizedBox(width: 4),
-                  _TestSendButton(draft: widget.draft, ctrl: widget.ctrl),
-                  const SizedBox(width: 4),
-                  _CopyButton(text: widget.draft.bodyHtml, tooltip: 'Copy HTML'),
-                ],
-              ),
-            ),
+            _EditButton(active: _editing, onTap: _editing ? null : _startEdit),
+            const SizedBox(width: 4),
+            _TestSendButton(draft: widget.draft, ctrl: widget.ctrl),
+            const SizedBox(width: 4),
+            _CopyButton(text: widget.draft.bodyHtml, tooltip: 'Copy HTML'),
           ],
+        ),
+        const SizedBox(height: 4),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: EColors.primary.withAlpha(8),
+            border: Border.all(
+              color: _editing ? EColors.primary.withAlpha(80) : EColors.primary.withAlpha(31),
+            ),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: _editing ? _buildEditor() : _buildPreview(),
         ),
         if (_editing) _buildEditActions(),
       ],
