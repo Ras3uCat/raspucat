@@ -760,30 +760,10 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Audit up to 5 new leads per run to stay within memory limits.
-    // The cron's audit-websites action handles the remainder on subsequent runs.
-    let audited = 0;
-    const { data: toAudit } = await supabase
-      .from('leads')
-      .select('id, website, industry, email, phone, rating, review_count, sources')
-      .in('id', upsertedIds)
-      .not('website', 'is', null)
-      .limit(5);
-
-    for (const lead of toAudit ?? []) {
-      const profile = findProfile(lead.industry, industryProfiles);
-      const audit = await auditWebsite(lead.website, profile);
-      const score = calculateScore(
-        { email: lead.email, phone: lead.phone, website: lead.website, rating: lead.rating, review_count: lead.review_count, sources: lead.sources ?? [] },
-        profile,
-        audit,
-      );
-      await supabase.from('leads').update({ website_audit: audit, score }).eq('id', lead.id);
-      audited++;
-    }
-
-    // Skip inline Apollo/Hunter enrichment — the audit-websites + enrich-apollo
-    // actions handle this in separate passes to avoid memory limits.
+    // Website auditing and enrichment are handled by the background audit-websites
+    // and enrich-apollo actions fired by the controller after this call returns.
+    // Running them inline here causes the function to exceed Supabase's ~150s limit.
+    const audited = 0;
 
     // Update settings
     const now = new Date().toISOString();
