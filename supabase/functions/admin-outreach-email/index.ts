@@ -62,9 +62,14 @@ function wrapEmailHtml(bodyHtml: string, leadId: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <style>@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&display=swap');</style>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Inter:wght@400;500&display=swap');
+    p { margin: 0 0 16px; line-height: 1.7; }
+    ul { margin: 0 0 16px; padding-left: 20px; }
+    li { margin: 0 0 6px; line-height: 1.7; }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#000612;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;">
+<body style="margin:0;padding:0;background:#000612;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;color:rgba(232,254,255,0.85);">
 <div style="max-width:600px;margin:0 auto;padding:40px 24px;">
   <div style="text-align:center;padding-bottom:28px;border-bottom:1px solid rgba(88,227,239,0.12);">
     <img src="${LOGO_URL}" alt="Ras3uCat" style="height:56px;width:auto;display:block;margin:0 auto 12px;" />
@@ -212,11 +217,12 @@ Deno.serve(async (req) => {
       if (!emailId) return json({ error: 'emailId required.' }, 400);
       const { data: email, error: fetchErr } = await supabase
         .from('outreach_emails')
-        .select('body_html, lead_id')
+        .select('body_html, lead_id, subject')
         .eq('id', emailId)
         .single();
       if (fetchErr || !email) return json({ error: 'Draft not found.' }, 404);
-      return json({ html: wrapEmailHtml(email.body_html, email.lead_id) });
+      const subjectHeader = `<p style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:rgba(88,227,239,0.5);letter-spacing:3px;text-transform:uppercase;margin:0 0 10px 0;">Web Design &amp; Development</p><h2 style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:#E8FEFF;margin:0 0 28px 0;line-height:1.3;">${email.subject}</h2>`;
+      return json({ html: wrapEmailHtml(subjectHeader + email.body_html, email.lead_id) });
     }
 
     if (action === 'delete-draft') {
