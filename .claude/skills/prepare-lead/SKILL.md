@@ -351,9 +351,19 @@ Templates tab in the admin panel).
 1. Substitute `{FIRST_NAME}` → lead's `decision_maker_name` first word (or `[Name]` if null)
 2. Substitute `{COMPANY}` → lead's `company_name`
 3. Leave `{BOOKING_LINK}` and `{DEMO_LINK}` as-is — they become CTA buttons when sent
-4. Use the substituted text as `bodyHtml` (the template is already in plain-text format;
-   pass it through `_toHtml` to wrap paragraphs in `<p>` tags before saving)
-5. Use `email_subject_template.replace('{COMPANY}', company_name)` as the subject
+4. **Pain point paragraph — conditional update:**
+   Look at the top 2 confirmed pain points from this lead's site audit (Step 1) and the
+   benchmark gap analysis (Step 2). If the audit surfaced something *specific and striking*
+   for this lead (e.g., PageSpeed 31 vs. industry avg 65, no booking CTA when 80% of peers
+   have one, DIY platform when competitors have custom builds), replace the generic pain point
+   paragraph in the template with a 1–2 sentence version tailored to what was actually found.
+   Use the lead's industry vocabulary from the ride-along (Step 2).
+   **If nothing specific stands out beyond the generic template, leave the paragraph unchanged.**
+   The bar for replacing it: would the owner immediately think "how did they know that?" Yes →
+   replace. Mildly relevant → leave it.
+5. Use the (possibly updated) substituted text as `bodyHtml` (the template is in plain-text
+   format; it will be HTML-converted at save time)
+6. Use `email_subject_template.replace('{COMPANY}', company_name)` as the subject
 
 **If no stored template exists** (industry profile missing or template not yet generated),
 write a personalized email using the structure below as a fallback:
