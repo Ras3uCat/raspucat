@@ -94,7 +94,7 @@ You can also explore a live demo of what we build, the full experience and admin
   }
 
   void _saveDraft() {
-    widget.ctrl.saveDraft(widget.lead.id, _subject.text.trim(), _body.text.trim());
+    widget.ctrl.saveDraft(widget.lead.id, _subject.text.trim(), _toHtml(_body.text.trim()));
     Navigator.of(context).pop();
   }
 

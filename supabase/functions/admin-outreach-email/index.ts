@@ -22,7 +22,7 @@ const supabase = createClient(
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://ras3ucat.com';
 const FROM_EMAIL = 'hello@raspucat.com';
-const FROM_NAME = 'Ryan and Cytarah at Ras3ucat';
+const FROM_NAME = 'Ras3ucat';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -65,11 +65,15 @@ function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): stri
   const stripped = bodyHtml
     .replace(/<p[^>]*>\s*Best,\s*<\/p>\s*<p[^>]*>\s*Ryan and Cytarah Richardson\s*<\/p>\s*<p[^>]*>\s*Ras3?u?[Cc]at\s*<\/p>\s*<p[^>]*>\s*meow@raspucat\.com\s*<\/p>/gi, '')
     .replace(/<p[^>]*>\s*Best,(<br\s*\/?>)\s*Ryan and Cytarah Richardson\1\s*Ras3?u?[Cc]at\1\s*meow@raspucat\.com\s*<\/p>/gi, '');
-  const processedBody = stripped.replace(/<p[^>]*>[^<]*\{BOOKING_LINK\}[^<]*<\/p>/gi, bookingButtonHtml);
+  const processedBody = stripped
+    .replace(/<p[^>]*>[^<]*\{BOOKING_LINK\}[^<]*<\/p>/gi, bookingButtonHtml)
+    .replace(/\{BOOKING_LINK\}/gi, bookingButtonHtml);
   const hasInlineButton = processedBody !== stripped;
   const DEMO_URL = 'https://demo.raspucat.com';
   const demoButtonHtml = `<div style="text-align:center;margin:28px 0;"><a href="${DEMO_URL}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58e3ef;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Explore the Demo &rarr;</a></div>`;
-  const finalBody = processedBody.replace(/<p[^>]*>[^<]*\{DEMO_LINK\}[^<]*<\/p>/gi, demoButtonHtml);
+  const finalBody = processedBody
+    .replace(/<p[^>]*>[^<]*\{DEMO_LINK\}[^<]*<\/p>/gi, demoButtonHtml)
+    .replace(/\{DEMO_LINK\}/gi, demoButtonHtml);
   return `<!DOCTYPE html>
 <html>
 <head>
