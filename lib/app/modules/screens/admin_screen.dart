@@ -165,6 +165,30 @@ class _DashboardHeader extends StatelessWidget {
                 onPressed: () => ctrl.showPipeline.value = !ctrl.showPipeline.value,
               ),
             ),
+          ] else if (selectedTab == 1) ...[
+            NeonButton(
+              onTap: Get.find<AdminAppProjectsController>().fetchAll,
+              padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
+              enableOverlay: false,
+              child: const Icon(Icons.refresh, color: EColors.primary, size: 18),
+            ),
+            const SizedBox(width: ESizes.xs),
+          ] else if (selectedTab == 2) ...[
+            NeonButton(
+              onTap: Get.find<AdminAvailabilityController>().loadAvailability,
+              padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
+              enableOverlay: false,
+              child: const Icon(Icons.refresh, color: EColors.primary, size: 18),
+            ),
+            const SizedBox(width: ESizes.xs),
+          ] else ...[
+            NeonButton(
+              onTap: Get.find<AdminOutreachController>().loadSettings,
+              padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.sm),
+              enableOverlay: false,
+              child: const Icon(Icons.refresh, color: EColors.primary, size: 18),
+            ),
+            const SizedBox(width: ESizes.xs),
           ],
           TextButton(
             onPressed: ctrl.logout,

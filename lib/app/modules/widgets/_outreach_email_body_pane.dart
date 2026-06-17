@@ -55,9 +55,15 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
   String get _viewType => 'email-preview-${widget.draft.id}-${_previewHtml?.hashCode ?? 0}';
 
   String get _plainText {
-    final el = html.DivElement();
-    el.setInnerHtml(widget.draft.bodyHtml, treeSanitizer: html.NodeTreeSanitizer.trusted);
-    return el.innerText;
+    String body = widget.draft.bodyHtml;
+    // Convert block-level elements to predictable newlines before stripping tags,
+    // so the editor always shows visible blank lines between paragraphs.
+    body = body.replaceAll(RegExp(r'</p>', caseSensitive: false), '\n\n');
+    body = body.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n');
+    body = body.replaceAll(RegExp(r'<li[^>]*>', caseSensitive: false), '- ');
+    body = body.replaceAll(RegExp(r'</li>', caseSensitive: false), '\n');
+    body = body.replaceAll(RegExp(r'<[^>]+>'), '');
+    return body.trim().replaceAll(RegExp(r'\n{3,}'), '\n\n');
   }
 
   void _ensureViewRegistered() {
@@ -76,7 +82,7 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
   }
 
   Future<void> _loadPreview() async {
-    if (!mounted) return;
+    if (!mounted || _loadingPreview) return;
     setState(() => _loadingPreview = true);
     final result = await widget.ctrl.getEmailPreview(widget.draft.id);
     if (!mounted) return;
@@ -118,12 +124,12 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
   Future<void> _save() async {
     setState(() => _saving = true);
     await widget.ctrl.updateDraft(widget.draft.id, bodyHtml: _toHtml(_textCtrl.text));
-    if (mounted) {
-      setState(() {
-        _saving = false;
-        _editing = false;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _saving = false;
+      _editing = false;
+    });
+    _loadPreview();
   }
 
   @override
@@ -159,7 +165,7 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
   }
 
   Widget _buildPreview() {
-    if (_loadingPreview || _previewHtml == null) {
+    if (_loadingPreview) {
       return const SizedBox(
         height: 200,
         child: Center(
@@ -167,6 +173,20 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
             width: 20,
             height: 20,
             child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
+          ),
+        ),
+      );
+    }
+    if (_previewHtml == null) {
+      // Preview fetch failed — render body text directly so content is never blank.
+      return Padding(
+        padding: const EdgeInsets.all(ESizes.md),
+        child: SelectableText(
+          widget.draft.bodyHtml.isEmpty ? '(empty)' : widget.draft.bodyHtml,
+          style: const TextStyle(
+            color: EColors.cyanTintedWhite,
+            fontSize: ESizes.fontSizeSm,
+            height: 1.6,
           ),
         ),
       );
