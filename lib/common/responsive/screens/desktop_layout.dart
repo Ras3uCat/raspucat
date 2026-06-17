@@ -1,3 +1,4 @@
+import 'package:raspucat/app/modules/screens/demo_section.dart';
 import 'package:raspucat/app/modules/screens/landing_controller.dart';
 import 'package:raspucat/app/modules/screens/projects_screen.dart';
 import 'package:raspucat/common/widgets/cursor_overlay.dart';
@@ -10,6 +11,7 @@ List<Widget> get _staticScreens => [
   HomeScreen(),
   const AboutScreen(),
   ProjectsScreen(),
+  const DemoSection(),
   const PlansScreen(),
 ];
 

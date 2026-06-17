@@ -48,16 +48,41 @@ After the Industry Download report is saved, execute the two step 12 commands.
 > "Industry profile saved. Running Supabase sync and benchmark now — the benchmark audits 15
 > live sites and takes ~60 seconds."
 
-Run both commands directly using the Bash tool (substitute real slug, name, and values from Step 1).
-The admin token is stored in project memory — look it up rather than asking the user.
+Run both commands directly using the Bash tool. Substitute the real slug and admin token (from
+project memory) — all other values are read automatically from the saved .md file.
 
-**Sync (includes overviewMd so the Overview tab shows content):**
+**Sync** — reads painPoints, bookingCtaKeywords, auditSignals, and overviewMd directly from the
+file so nothing can be accidentally omitted:
 ```bash
-OVERVIEW=$(cat planning/industries/{slug}.md | python3 -c "import json,sys; print(json.dumps(sys.stdin.read()))")
+python3 << 'PYEOF' > /tmp/{slug}_sync.json
+import json, yaml, re
+
+slug = '{slug}'
+admin_token = 'ADMIN_TOKEN'
+
+with open(f'planning/industries/{slug}.md') as f:
+    content = f.read()
+
+fm_match = re.search(r'^---\n(.*?)\n---', content, re.DOTALL)
+fm = yaml.safe_load(fm_match.group(1)) if fm_match else {}
+
+payload = {
+    'adminToken': admin_token,
+    'action': 'sync-industry',
+    'slug': slug,
+    'name': fm.get('name', slug),
+    'painPoints': fm.get('pain_points', []),
+    'bookingCtaKeywords': fm.get('booking_cta_keywords', []),
+    'auditSignals': fm.get('audit_signals', {}),
+    'researchedAt': str(fm.get('researched_at', '')),
+    'overviewMd': content,
+}
+print(json.dumps(payload))
+PYEOF
 curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-leads \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZ3dxeXdnYmd6YWhuZnRwcGRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MDIyMDQsImV4cCI6MjA4OTI3ODIwNH0.2DgzGgFAMzb5jxULTDthYs0SPH7zmM8rvkMSOQlY2Og" \
-  --data-raw "{\"adminToken\":\"ADMIN_TOKEN\",\"action\":\"sync-industry\",\"slug\":\"{slug}\",\"name\":\"{Full Name}\",\"painPoints\":[...],\"bookingCtaKeywords\":[...],\"auditSignals\":{...},\"researchedAt\":\"{YYYY-MM-DD}\",\"overviewMd\":$OVERVIEW}"
+  --data @/tmp/{slug}_sync.json
 ```
 
 **Benchmark (~60s):**
@@ -68,7 +93,7 @@ curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-lead
   -d "{\"adminToken\":\"ADMIN_TOKEN\",\"action\":\"benchmark-industry\",\"slug\":\"{slug}\"}"
 ```
 
-Wait for the user to confirm both commands ran before continuing to Step 3.
+Wait for both commands to complete before continuing to Step 3.
 
 ---
 
