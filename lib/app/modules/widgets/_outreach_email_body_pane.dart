@@ -33,10 +33,17 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
 
   // Builds preview HTML locally from the draft's bodyHtml — no edge function call.
   String get _previewHtmlContent {
-    final body = widget.draft.bodyHtml.trim().isEmpty
-        ? '<p style="color:rgba(232,254,255,0.3);font-style:italic;">'
-              '(No content yet — use Edit above to add your message.)</p>'
-        : widget.draft.bodyHtml;
+    final raw = widget.draft.bodyHtml.trim();
+    final String body;
+    if (raw.isEmpty) {
+      body =
+          '<p style="color:rgba(232,254,255,0.3);font-style:italic;">'
+          '(No content yet — use Edit above to add your message.)</p>';
+    } else if (RegExp(r'</?(?:p|ul|ol|li|div|h[1-6]|br)\b', caseSensitive: false).hasMatch(raw)) {
+      body = raw; // Already has block-level HTML — render as-is.
+    } else {
+      body = _toHtml(raw); // Plain text — convert to <p> paragraphs first.
+    }
     return '''<!DOCTYPE html>
 <html>
 <head>
