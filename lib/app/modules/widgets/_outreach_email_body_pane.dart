@@ -1,37 +1,5 @@
 part of 'admin_outreach_widget.dart';
 
-String _toHtml(String plainText) {
-  final lines = plainText.split('\n');
-  final buffer = StringBuffer();
-  final bulletLines = <String>[];
-
-  void flushBullets() {
-    if (bulletLines.isEmpty) return;
-    buffer.write('<ul>');
-    for (final b in bulletLines) {
-      buffer.write('<li>${b.trim()}</li>');
-    }
-    buffer.write('</ul>');
-    bulletLines.clear();
-  }
-
-  for (final line in lines) {
-    final trimmed = line.trim();
-    if (trimmed.isEmpty) {
-      flushBullets();
-      continue;
-    }
-    if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
-      bulletLines.add(trimmed.substring(2));
-    } else {
-      flushBullets();
-      buffer.write('<p>$trimmed</p>');
-    }
-  }
-  flushBullets();
-  return buffer.toString();
-}
-
 class _EmailBodyPane extends StatefulWidget {
   const _EmailBodyPane({required this.draft, required this.ctrl});
 
@@ -93,10 +61,13 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     _ensureViewRegistered();
   }
 
+  void _onTextChanged() => setState(() {});
+
   @override
   void initState() {
     super.initState();
     _textCtrl = TextEditingController(text: _plainText);
+    _textCtrl.addListener(_onTextChanged);
     _loadPreview();
   }
 
@@ -110,6 +81,7 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
 
   @override
   void dispose() {
+    _textCtrl.removeListener(_onTextChanged);
     _textCtrl.dispose();
     super.dispose();
   }
@@ -178,16 +150,38 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
       );
     }
     if (_previewHtml == null) {
-      // Preview fetch failed — render body text directly so content is never blank.
+      // Preview fetch failed — show parsed body + retry so content is never blank.
       return Padding(
         padding: const EdgeInsets.all(ESizes.md),
-        child: SelectableText(
-          widget.draft.bodyHtml.isEmpty ? '(empty)' : widget.draft.bodyHtml,
-          style: const TextStyle(
-            color: EColors.cyanTintedWhite,
-            fontSize: ESizes.fontSizeSm,
-            height: 1.6,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Preview unavailable',
+                  style: TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: _loadPreview,
+                  child: const Text(
+                    'Retry',
+                    style: TextStyle(
+                      color: EColors.primary,
+                      fontSize: ESizes.fontSizeLabel,
+                      decoration: TextDecoration.underline,
+                      decorationColor: EColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (_plainText.trim().isNotEmpty) ...[
+              const SizedBox(height: ESizes.md),
+              _EmailBodyLivePreview(text: _plainText),
+            ],
+          ],
         ),
       );
     }
@@ -196,22 +190,62 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
   }
 
   Widget _buildEditor() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(ESizes.md, ESizes.md, ESizes.xl + ESizes.sm, ESizes.md),
-      child: TextField(
-        controller: _textCtrl,
-        maxLines: null,
-        style: TextStyle(
-          color: EColors.cyanTintedWhite.withAlpha(220),
-          fontSize: ESizes.fontSizeLabel,
-          height: 1.7,
+    final hasContent = _textCtrl.text.trim().isNotEmpty;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            ESizes.md,
+            ESizes.md,
+            ESizes.xl + ESizes.sm,
+            ESizes.md,
+          ),
+          child: TextField(
+            controller: _textCtrl,
+            maxLines: null,
+            style: TextStyle(
+              color: EColors.cyanTintedWhite.withAlpha(220),
+              fontSize: ESizes.fontSizeLabel,
+              height: 1.7,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Write your email body here.\nUse a blank line between paragraphs.',
+              hintStyle: TextStyle(
+                color: EColors.softGrey.withAlpha(100),
+                fontSize: ESizes.fontSizeLabel,
+                height: 1.7,
+              ),
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
         ),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          isDense: true,
-          contentPadding: EdgeInsets.zero,
-        ),
-      ),
+        if (hasContent) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: ESizes.md, vertical: ESizes.xs),
+            decoration: BoxDecoration(
+              color: EColors.primary.withAlpha(15),
+              border: Border(top: BorderSide(color: EColors.primary.withAlpha(40))),
+            ),
+            child: const Text(
+              '// AS SENT',
+              style: TextStyle(
+                color: EColors.primary,
+                fontSize: ESizes.fontSizeLabel,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(ESizes.md),
+            child: _EmailBodyLivePreview(text: _textCtrl.text),
+          ),
+        ],
+      ],
     );
   }
 
