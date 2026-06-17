@@ -15,12 +15,9 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
 
   bool _editing = false;
   bool _saving = false;
-  bool _loadingPreview = false;
-  String? _previewHtml;
+  // viewType is kept as a field — computed once per bodyHtml value.
+  String _viewType = '';
   late TextEditingController _textCtrl;
-
-  // Changes when _previewHtml changes so HtmlElementView re-renders.
-  String get _viewType => 'email-preview-${widget.draft.id}-${_previewHtml?.hashCode ?? 0}';
 
   String get _plainText {
     String body = widget.draft.bodyHtml;
@@ -34,31 +31,50 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     return body.trim().replaceAll(RegExp(r'\n{3,}'), '\n\n');
   }
 
-  void _ensureViewRegistered() {
-    final preview = _previewHtml;
-    if (preview == null) return;
-    final type = _viewType;
-    if (_registeredViewTypes.contains(type)) return;
-    _registeredViewTypes.add(type);
-    ui_web.platformViewRegistry.registerViewFactory(type, (_) {
-      return html.IFrameElement()
-        ..srcdoc = preview
-        ..style.border = 'none'
-        ..style.width = '100%'
-        ..style.height = '100%';
-    });
+  // Builds preview HTML locally from the draft's bodyHtml — no edge function call.
+  String get _previewHtmlContent {
+    final body = widget.draft.bodyHtml.trim().isEmpty
+        ? '<p style="color:rgba(232,254,255,0.3);font-style:italic;">'
+              '(No content yet — use Edit above to add your message.)</p>'
+        : widget.draft.bodyHtml;
+    return '''<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+  body{margin:0;padding:0;background:#000612;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased;}
+  .body{max-width:600px;margin:0 auto;padding:32px 24px;}
+  p{color:rgba(232,254,255,0.65);font-size:15px;line-height:1.8;margin:0 0 16px;}
+  ul{margin:0 0 16px;padding-left:20px;}
+  li{color:rgba(232,254,255,0.65);font-size:15px;line-height:1.8;margin:0 0 6px;}
+  .note{font-size:11px;color:rgba(232,254,255,0.2);margin-top:32px;border-top:1px solid rgba(88,227,239,0.08);padding-top:16px;}
+</style>
+</head>
+<body>
+<div class="body">
+  $body
+  <p class="note">Branded header &amp; footer applied when sent.</p>
+</div>
+</body>
+</html>''';
   }
 
-  Future<void> _loadPreview() async {
-    if (!mounted || _loadingPreview) return;
-    setState(() => _loadingPreview = true);
-    final result = await widget.ctrl.getEmailPreview(widget.draft.id);
-    if (!mounted) return;
-    setState(() {
-      _previewHtml = result;
-      _loadingPreview = false;
-    });
-    _ensureViewRegistered();
+  // Registers a platform view factory for the current bodyHtml and updates _viewType.
+  void _syncPreview() {
+    final previewHtml = _previewHtmlContent;
+    final type = 'email-preview-${widget.draft.id}-${previewHtml.hashCode}';
+    if (!_registeredViewTypes.contains(type)) {
+      _registeredViewTypes.add(type);
+      ui_web.platformViewRegistry.registerViewFactory(type, (_) {
+        return html.IFrameElement()
+          ..srcdoc = previewHtml
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%';
+      });
+    }
+    if (_viewType != type) setState(() => _viewType = type);
   }
 
   void _onTextChanged() => setState(() {});
@@ -68,14 +84,14 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
     super.initState();
     _textCtrl = TextEditingController(text: _plainText);
     _textCtrl.addListener(_onTextChanged);
-    _loadPreview();
+    _syncPreview();
   }
 
   @override
   void didUpdateWidget(_EmailBodyPane oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.draft.bodyHtml != widget.draft.bodyHtml) {
-      _loadPreview();
+      _syncPreview();
     }
   }
 
@@ -101,7 +117,8 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
       _saving = false;
       _editing = false;
     });
-    _loadPreview();
+    // _syncPreview() is called automatically via didUpdateWidget when the
+    // reactive draft updates after updateDraft completes.
   }
 
   @override
@@ -137,56 +154,8 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
   }
 
   Widget _buildPreview() {
-    if (_loadingPreview) {
-      return const SizedBox(
-        height: 200,
-        child: Center(
-          child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 1.5, color: EColors.primary),
-          ),
-        ),
-      );
-    }
-    if (_previewHtml == null) {
-      // Preview fetch failed — show parsed body + retry so content is never blank.
-      return Padding(
-        padding: const EdgeInsets.all(ESizes.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Preview unavailable',
-                  style: TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
-                ),
-                const Spacer(),
-                GestureDetector(
-                  onTap: _loadPreview,
-                  child: const Text(
-                    'Retry',
-                    style: TextStyle(
-                      color: EColors.primary,
-                      fontSize: ESizes.fontSizeLabel,
-                      decoration: TextDecoration.underline,
-                      decorationColor: EColors.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            if (_plainText.trim().isNotEmpty) ...[
-              const SizedBox(height: ESizes.md),
-              _EmailBodyLivePreview(text: _plainText),
-            ],
-          ],
-        ),
-      );
-    }
-    _ensureViewRegistered();
-    return SizedBox(height: 700, child: HtmlElementView(viewType: _viewType));
+    if (_viewType.isEmpty) return const SizedBox(height: 100);
+    return SizedBox(height: 500, child: HtmlElementView(viewType: _viewType));
   }
 
   Widget _buildEditor() {
