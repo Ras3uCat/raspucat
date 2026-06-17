@@ -67,6 +67,9 @@ function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): stri
     .replace(/<p[^>]*>\s*Best,(<br\s*\/?>)\s*Ryan and Cytarah Richardson\1\s*Ras3?u?[Cc]at\1\s*meow@raspucat\.com\s*<\/p>/gi, '');
   const processedBody = stripped.replace(/<p[^>]*>[^<]*\{BOOKING_LINK\}[^<]*<\/p>/gi, bookingButtonHtml);
   const hasInlineButton = processedBody !== stripped;
+  const DEMO_URL = 'https://demo.raspucat.com';
+  const demoButtonHtml = `<div style="text-align:center;margin:28px 0;"><a href="${DEMO_URL}" style="display:inline-block;padding:14px 36px;border:1px solid rgba(88,227,239,0.4);border-radius:8px;color:#58e3ef;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;text-decoration:none;text-transform:uppercase;">Explore the Demo &rarr;</a></div>`;
+  const finalBody = processedBody.replace(/<p[^>]*>[^<]*\{DEMO_LINK\}[^<]*<\/p>/gi, demoButtonHtml);
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -87,7 +90,7 @@ function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): stri
     <p style="font-size:10px;color:rgba(232,254,255,0.3);letter-spacing:2px;margin:0;text-transform:uppercase;">Designed to engage. Engineered to move. Deployed to perform.</p>
   </div>
   <div style="padding:40px 0 32px;">
-    ${subjectHeader}${processedBody}${hasInlineButton ? '' : `<div style="text-align:center;margin-top:28px;">${bookingButtonHtml}</div>`}
+    ${subjectHeader}${finalBody}${hasInlineButton ? '' : `<div style="text-align:center;margin-top:28px;">${bookingButtonHtml}</div>`}
   </div>
   <div style="padding-top:28px;border-top:1px solid rgba(88,227,239,0.08);">
     <p style="color:rgba(232,254,255,0.4);font-size:13px;margin:0 0 4px;">Best,</p>

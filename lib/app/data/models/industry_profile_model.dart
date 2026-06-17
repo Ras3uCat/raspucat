@@ -40,6 +40,8 @@ class IndustryProfileModel {
     this.moneyMapMd,
     this.clientLocatorMd,
     this.overviewMd,
+    this.emailSubjectTemplate,
+    this.emailBodyTemplate,
   });
 
   final String slug;
@@ -52,6 +54,8 @@ class IndustryProfileModel {
   final String? moneyMapMd;
   final String? clientLocatorMd;
   final String? overviewMd;
+  final String? emailSubjectTemplate;
+  final String? emailBodyTemplate;
 
   factory IndustryProfileModel.fromJson(Map<String, dynamic> json) {
     final signals = json['audit_signals'] as Map<String, dynamic>?;
@@ -69,6 +73,8 @@ class IndustryProfileModel {
       moneyMapMd: json['money_map_md'] as String?,
       clientLocatorMd: json['client_locator_md'] as String?,
       overviewMd: json['overview_md'] as String?,
+      emailSubjectTemplate: json['email_subject_template'] as String?,
+      emailBodyTemplate: json['email_body_template'] as String?,
     );
   }
 
@@ -82,5 +88,35 @@ class IndustryProfileModel {
     if (moneyMapMd != null) 'moneyMapMd': moneyMapMd,
     if (clientLocatorMd != null) 'clientLocatorMd': clientLocatorMd,
     if (overviewMd != null) 'overviewMd': overviewMd,
+    if (emailSubjectTemplate != null) 'emailSubjectTemplate': emailSubjectTemplate,
+    if (emailBodyTemplate != null) 'emailBodyTemplate': emailBodyTemplate,
   };
+
+  IndustryProfileModel copyWith({
+    String? slug,
+    String? name,
+    List<String>? painPoints,
+    List<String>? bookingCtaKeywords,
+    DateTime? researchedAt,
+    IndustryBenchmark? benchmark,
+    String? rideAlongMd,
+    String? moneyMapMd,
+    String? clientLocatorMd,
+    String? overviewMd,
+    String? emailSubjectTemplate,
+    String? emailBodyTemplate,
+  }) => IndustryProfileModel(
+    slug: slug ?? this.slug,
+    name: name ?? this.name,
+    painPoints: painPoints ?? this.painPoints,
+    bookingCtaKeywords: bookingCtaKeywords ?? this.bookingCtaKeywords,
+    researchedAt: researchedAt ?? this.researchedAt,
+    benchmark: benchmark ?? this.benchmark,
+    rideAlongMd: rideAlongMd ?? this.rideAlongMd,
+    moneyMapMd: moneyMapMd ?? this.moneyMapMd,
+    clientLocatorMd: clientLocatorMd ?? this.clientLocatorMd,
+    overviewMd: overviewMd ?? this.overviewMd,
+    emailSubjectTemplate: emailSubjectTemplate ?? this.emailSubjectTemplate,
+    emailBodyTemplate: emailBodyTemplate ?? this.emailBodyTemplate,
+  );
 }

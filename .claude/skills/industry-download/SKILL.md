@@ -109,7 +109,9 @@ Based on everything above, recommend:
 ## After Generating the Report
 
 **11. Save to disk.** Write the full report to `planning/industries/{slug}.md` using this exact
-frontmatter block at the top (before any markdown content). Derive the values from the report:
+frontmatter block at the top (before any markdown content). Derive the values from the report.
+Include `email_subject_template` and `email_body_template` — generate them as part of this step
+using the research data (language from Section 4, top pain point from Section 3 #1).
 
 ```
 ---
@@ -136,17 +138,40 @@ audit_signals:
     - []  # 3–5 terms that should appear on any legitimate site in this industry
   red_flags:
     - []  # HTML/content patterns that indicate website neglect in this industry
+email_subject_template: "Quick question about {COMPANY}'s website"
+email_body_template: |
+  Hi {FIRST_NAME},
+
+  We are Cytarah and Ryan, co-owners of Raspucat. We build custom websites that combine modern
+  design and smart functionality, tailored specifically to the businesses behind them.
+
+  [Industry-specific 2-sentence connection using verbatim language from Section 4 + personal angle]
+
+  [1-2 sentence pain point using the top item from Section 3, in their language]
+
+  We've already put together a complimentary research package for your business containing a
+  brand brief, competitor analysis, and brand alignment review tailored to {COMPANY}.
+
+  If interested, we'd love to walk you through what we found. You can simply reply to this
+  email, or book a free Website Audit & Strategy Session here:
+  {BOOKING_LINK}
+
+  You can also explore a live demo of what we build, the full experience and admin pages included:
+  {DEMO_LINK}
 ---
 ```
 
+The `[bracketed]` sections in `email_body_template` must be replaced with real content from
+the report — they are not literal text. The placeholders `{FIRST_NAME}`, `{COMPANY}`,
+`{BOOKING_LINK}`, `{DEMO_LINK}` must remain as-is; they are substituted at send time.
+
 **12. After saving, show these two commands** (paste both in sequence). The first syncs the
-profile to Supabase; the second samples 15 real websites in this industry and stores aggregate
-benchmark stats (avg PageSpeed, % on DIY platforms, % with booking CTA) so lead scoring becomes
-relative rather than absolute. Replace `YOUR_TOKEN` with the admin token.
+full profile (including the email template) to Supabase; the second samples 15 real websites
+and stores benchmark stats. Replace `YOUR_TOKEN` with the admin token.
 
 ```bash
 ! supabase functions invoke admin-leads --project-ref gegwqywgbgzahnftppda \
-  --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"{slug}","name":"{Full Name}","painPoints":[{pain_points as JSON array}],"bookingCtaKeywords":[{keywords as JSON array}],"auditSignals":{audit_signals as JSON object},"researchedAt":"{YYYY-MM-DD}"}'
+  --body '{"adminToken":"YOUR_TOKEN","action":"sync-industry","slug":"{slug}","name":"{Full Name}","painPoints":[{pain_points as JSON array}],"bookingCtaKeywords":[{keywords as JSON array}],"auditSignals":{audit_signals as JSON object},"researchedAt":"{YYYY-MM-DD}","emailSubjectTemplate":"{email_subject_template}","emailBodyTemplate":"{email_body_template as escaped JSON string}"}'
 
 ! curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-lead-discovery \
   -H "Content-Type: application/json" \

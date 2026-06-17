@@ -35,6 +35,23 @@ audit_signals:
     - no mobile-responsive layout
     - stock photography instead of real event photos
     - missing Google review widget
+email_subject_template: "Quick question about {COMPANY}'s website"
+email_body_template: |
+  Hi {FIRST_NAME},
+
+  We are Cytarah and Ryan, co-owners of Raspucat. We build custom websites that combine modern design and smart functionality, tailored specifically to the businesses behind them.
+
+  We came across {COMPANY} and were immediately drawn in — the kind of venue couples discover during late-night planning sessions and show each other the next morning. We have a deep appreciation for what goes into creating days people carry with them for the rest of their lives.
+
+  One thing that stood out: most couples tour five to ten venues before committing, and that research happens online before they ever submit an inquiry. A website that instantly communicates your atmosphere, available dates, and what sets {COMPANY} apart turns browsers into qualified inquiries — and cuts the ghost rate significantly.
+
+  We've already put together a complimentary research package for your venue containing a brand brief, competitor analysis, and brand alignment review tailored to {COMPANY}.
+
+  If interested, we'd love to walk you through what we found. You can simply reply to this email, or book a free Website Audit & Strategy Session here:
+  {BOOKING_LINK}
+
+  You can also explore a live demo of what we build, the full experience and admin pages included:
+  {DEMO_LINK}
 ---
 
 # Wedding Venues — Industry Download

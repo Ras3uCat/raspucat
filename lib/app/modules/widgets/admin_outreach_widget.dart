@@ -33,6 +33,8 @@ part '_lead_detail_sections.dart';
 part '_lead_detail_actions.dart';
 part '_lead_form_dialog.dart';
 part '_outreach_compose_panel.dart';
+part '_outreach_compose_form.dart';
+part '_outreach_template_card.dart';
 part '_outreach_industries_view.dart';
 part '_outreach_industries_card.dart';
 part '_outreach_industries_tabs.dart';

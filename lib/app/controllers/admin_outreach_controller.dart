@@ -258,6 +258,21 @@ class AdminOutreachController extends GetxController {
     }
   }
 
+  Future<void> updateIndustryTemplate(String slug, String subject, String body) async {
+    try {
+      await _repo.updateIndustryTemplate(slug, subject, body);
+      final idx = industryProfiles.indexWhere((p) => p.slug == slug);
+      if (idx != -1) {
+        industryProfiles[idx] = industryProfiles[idx].copyWith(
+          emailSubjectTemplate: subject,
+          emailBodyTemplate: body,
+        );
+      }
+    } catch (e) {
+      errorMessage.value = 'Failed to save template: $e';
+    }
+  }
+
   Future<void> loadIndustryProfiles() async {
     try {
       final profiles = await _repo.listIndustryProfiles();

@@ -343,62 +343,41 @@ Also write `logo_url` directly to `quotes.logo_url` so it's available in `admin-
 
 ## Step 9 — Draft Outreach Email (Outreach Path Only)
 
-Write a personalized outreach email using the tone and structure below. Fill in the placeholders
-with details specific to this business — do not change the structure or voice.
+**Check for an industry template first.** The industry profile loaded in Step 2 may have
+`email_body_template` and `email_subject_template` stored (set via `/industry-setup` or the
+Templates tab in the admin panel).
 
-**Subject line (pick one):**
-- `Helping [Company Name] stand out online`
-- `A few ideas for [Company Name]'s website`
-- `[Company Name] — a thought from Ras3ucat`
+**If a stored template exists:**
+1. Substitute `{FIRST_NAME}` → lead's `decision_maker_name` first word (or `[Name]` if null)
+2. Substitute `{COMPANY}` → lead's `company_name`
+3. Leave `{BOOKING_LINK}` and `{DEMO_LINK}` as-is — they become CTA buttons when sent
+4. Use the substituted text as `bodyHtml` (the template is already in plain-text format;
+   pass it through `_toHtml` to wrap paragraphs in `<p>` tags before saving)
+5. Use `email_subject_template.replace('{COMPANY}', company_name)` as the subject
 
-**Email body — follow this structure exactly:**
+**If no stored template exists** (industry profile missing or template not yet generated),
+write a personalized email using the structure below as a fallback:
 
 ```
-Hi [Owner Name],
+Hi [First Name],
 
-We are Cytarah and Ryan, co-owners of Ras3ucat, a small web design and development business
-based in Texas. We focus on helping local businesses create modern websites that reflect the
-quality of their work and help turn more visitors into paying clients.
+We are Cytarah and Ryan, co-owners of Raspucat. We build custom websites that combine modern
+design and smart functionality, tailored specifically to the businesses behind them.
 
-I came across [Company Name] and was impressed by [one specific genuine observation about
-their work, staff, or reputation — from the site audit or ride-along]. [One sentence showing
-personal connection or appreciation for their industry/craft.]  We appreciate the artistry,
-time, and effort you and your staff put into your craft, and we'd love to help your online
-presence fully showcase the talent in your shop.
+[Industry-specific 2-sentence connection using language and pain points from the industry
+profile loaded in Step 2. Use verbatim phrases from the Language Dictionary section.]
 
-As you know, today, a website is often the first impression a potential client has of a
-[industry term for their business]. A modern, mobile-friendly website can help:
-- establish trust
-- highlight [industry-appropriate portfolio/service content]
-- answer common client questions
-- make it easier for people to move forward with booking.
+[1-2 sentences on the top pain point specific to this lead's audit results.]
 
-[If applicable to the industry: One feature we believe can make a significant difference for
-[business type] is a booking system that allows clients to submit requests and deposits
-directly to [staff/artists/specialists]. It creates a smoother experience for clients while
-reducing the administrative workload on the shop.]
+We've already put together a complimentary research package for your business containing a
+brand brief, competitor analysis, and brand alignment review tailored to [Company Name].
 
-What makes our process different is that we don't just build websites. We look at what other
-successful [business type] in your market are doing well and identify opportunities to help
-your business stand out. Before we ever make recommendations, we perform a full audit of your:
-- current online presence
-- website performance
-- customer experience
-- local competitors
+If interested, we'd love to walk you through what we found. You can simply reply to this
+email, or book a free Website Audit & Strategy Session here:
+{BOOKING_LINK}
 
-Our goal isn't to create a website that simply looks good. It's to build a website that works
-as a business tool.
-
-If you're interested, we'd be happy to provide a complimentary website and competitor review
-for your business. We'll highlight opportunities to improve your online presence, customer
-experience, and competitive positioning.
-You can simply reply to this email, or book a free Website Audit & Strategy Session here:
-{SITE_URL}/book?leadId={lead_id}
-
-Best,
-Ryan and Cytarah Richardson
-Ras3ucat
-meow@raspucat.com
+You can also explore a live demo of what we build, the full experience and admin pages included:
+{DEMO_LINK}
 ```
 
 **Internal notes to extract** (these appear in the `// INTERNAL NOTES` section of the Drafts

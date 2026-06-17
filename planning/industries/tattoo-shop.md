@@ -39,6 +39,23 @@ audit_signals:
     - squarespace/wix portfolio with no booking link
     - last blog post older than 12 months
     - no mobile-responsive portfolio grid
+email_subject_template: "Quick question about {COMPANY}'s website"
+email_body_template: |
+  Hi {FIRST_NAME},
+
+  We are Cytarah and Ryan, co-owners of Raspucat. We build custom websites that combine modern design and smart functionality, tailored specifically to the businesses behind them.
+
+  We came across {COMPANY} and were instantly impressed by your artists' work. We've been getting tattooed across three continents, so we have a real appreciation for the craft and we'd love to help your online presence showcase the talent in your shop.
+
+  One thing that stood out: a booking system that lets clients submit requests and deposits directly to individual artists would be smoother for clients and create less admin for the shop, but that's just one way we could improve your day-to-day.
+
+  We've already put together a complimentary research package for your shop containing a brand brief, competitor analysis, and brand alignment review tailored to {COMPANY}.
+
+  If interested, we'd love to walk you through what we found. You can simply reply to this email, or book a free Website Audit & Strategy Session here:
+  {BOOKING_LINK}
+
+  You can also explore a live demo of what we build, the full experience and admin pages included:
+  {DEMO_LINK}
 ---
 
 # Industry Download — Tattoo Shop

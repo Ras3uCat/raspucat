@@ -7,7 +7,9 @@
 //   create            { companyName, industry, city?, state?, website?, phone?, email?, notes?, source? }
 //   update            { leadId, ...fields }
 //   delete            { leadId }
-//   sync-industry     { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt }
+//   sync-industry          { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt,
+//                            emailSubjectTemplate?, emailBodyTemplate? }
+//   update-industry-template { slug, emailSubjectTemplate?, emailBodyTemplate? }
 //   list-industries   {}
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -197,7 +199,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'sync-industry') {
-      const { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt, overviewMd, rideAlongMd, moneyMapMd, clientLocatorMd } = body;
+      const { slug, name, painPoints, bookingCtaKeywords, auditSignals, researchedAt, overviewMd, rideAlongMd, moneyMapMd, clientLocatorMd, emailSubjectTemplate, emailBodyTemplate } = body;
       if (!slug || !name) return json({ error: 'slug and name required.' }, 400);
 
       // Preserve existing benchmark if the incoming auditSignals doesn't include one
@@ -228,6 +230,8 @@ Deno.serve(async (req) => {
           ...(rideAlongMd !== undefined && { ride_along_md: rideAlongMd }),
           ...(moneyMapMd !== undefined && { money_map_md: moneyMapMd }),
           ...(clientLocatorMd !== undefined && { client_locator_md: clientLocatorMd }),
+          ...(emailSubjectTemplate !== undefined && { email_subject_template: emailSubjectTemplate }),
+          ...(emailBodyTemplate !== undefined && { email_body_template: emailBodyTemplate }),
         }, { onConflict: 'slug' })
         .select('*')
         .single();
@@ -242,7 +246,7 @@ Deno.serve(async (req) => {
     if (action === 'list-industries') {
       const { data, error } = await supabase
         .from('industry_profiles')
-        .select('slug, name, pain_points, booking_cta_keywords, audit_signals, researched_at, overview_md, ride_along_md, money_map_md, client_locator_md')
+        .select('slug, name, pain_points, booking_cta_keywords, audit_signals, researched_at, overview_md, ride_along_md, money_map_md, client_locator_md, email_subject_template, email_body_template')
         .order('name', { ascending: true });
 
       if (error) {
@@ -250,6 +254,22 @@ Deno.serve(async (req) => {
         return json({ error: 'Failed to list industry profiles.' }, 500);
       }
       return json({ profiles: data ?? [] });
+    }
+
+    if (action === 'update-industry-template') {
+      const { slug, emailSubjectTemplate: subject, emailBodyTemplate: bodyTmpl } = body;
+      if (!slug) return json({ error: 'slug required.' }, 400);
+      const fields: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (subject !== undefined) fields.email_subject_template = subject;
+      if (bodyTmpl !== undefined) fields.email_body_template = bodyTmpl;
+      const { data, error } = await supabase
+        .from('industry_profiles')
+        .update(fields)
+        .eq('slug', slug)
+        .select('slug, name, pain_points, booking_cta_keywords, audit_signals, researched_at, overview_md, ride_along_md, money_map_md, client_locator_md, email_subject_template, email_body_template')
+        .single();
+      if (error) return json({ error: 'Failed to update industry template.' }, 500);
+      return json({ profile: data });
     }
 
     return json({ error: `Unknown action: ${action}` }, 400);

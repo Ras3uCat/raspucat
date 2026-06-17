@@ -24,6 +24,7 @@ abstract class OutreachRepository {
   Future<void> runDiscoveryAction(String action);
   Future<List<IndustryProfileModel>> listIndustryProfiles();
   Future<IndustryProfileModel> syncIndustryProfile(IndustryProfileModel profile);
+  Future<void> updateIndustryTemplate(String slug, String subject, String body);
   Future<LeadModel> syncLeadReports(
     String leadId, {
     String? blueprintMd,
@@ -193,6 +194,16 @@ class SupabaseOutreachRepository implements OutreachRepository {
   Future<IndustryProfileModel> syncIndustryProfile(IndustryProfileModel profile) async {
     final data = await _invoke('admin-leads', {'action': 'sync-industry', ...profile.toJson()});
     return IndustryProfileModel.fromJson(data['profile'] as Map<String, dynamic>);
+  }
+
+  @override
+  Future<void> updateIndustryTemplate(String slug, String subject, String body) async {
+    await _invoke('admin-leads', {
+      'action': 'update-industry-template',
+      'slug': slug,
+      'emailSubjectTemplate': subject,
+      'emailBodyTemplate': body,
+    });
   }
 
   @override

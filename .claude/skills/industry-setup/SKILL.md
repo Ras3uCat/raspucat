@@ -77,6 +77,11 @@ payload = {
     'researchedAt': str(fm.get('researched_at', '')),
     'overviewMd': content,
 }
+# Include template fields only when present — missing keys leave DB values untouched
+if fm.get('email_subject_template'):
+    payload['emailSubjectTemplate'] = fm['email_subject_template']
+if fm.get('email_body_template'):
+    payload['emailBodyTemplate'] = fm['email_body_template']
 print(json.dumps(payload))
 PYEOF
 curl -s -X POST https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-leads \
