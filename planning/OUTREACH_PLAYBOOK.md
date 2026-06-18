@@ -99,6 +99,17 @@ Use the **search bar** at the top of the pipeline to filter by company name.
 - Decision maker name visible (click to open — shows in Contact section)
 - Multi-source badges (G + A = seen on both platforms)
 
+**What to do with low-score leads:**
+- Score 40–59: worth preparing only if 2+ strong pain points are visible. Use judgment.
+- Score <40: skip. These typically have few auditable pain points or no decision maker contact found.
+
+**If no decision maker email is found:** the Contact section shows "No email found." Manual options:
+- Check their website's Contact or Team page
+- Look up the decision maker on LinkedIn
+- Check the Apollo org page (if org enrichment ran)
+
+Once you have an email, enter it manually in the Contact section — the lead becomes eligible for `/prepare-lead`.
+
 ### Clicking into a lead
 
 Click any row to open the detail panel. Shows:
@@ -120,7 +131,7 @@ Click any row to open the detail panel. Shows:
 ```
 
 Claude pulls the full lead record automatically via Supabase MCP — no copy-paste needed.
-Then runs a 7-step flow:
+Then runs an 8-step flow:
 
 1. Enhanced website audit (platform, PageSpeed, logo, colors, fonts, contact info)
 2. Industry research (loads existing profile, or runs Phase 1 if missing)
@@ -128,7 +139,8 @@ Then runs a 7-step flow:
 4. Brand brief report — pre-filled from site audit signals
 5. Competitor intel — 3–5 competitors in the same city, audited
 6. Brand alignment report — visual direction based on competitors + audit
-7. Draft outreach email — written to the Drafts queue (NOT sent — awaits your approval)
+7. Discovery pre-population — blueprint and industry data pre-loaded into the discovery script so questions arrive pre-filled
+8. Draft outreach email — written to the Drafts queue (NOT sent — awaits your approval)
 
 **Output files saved to** `planning/leads/mccullough-heating/`:
 - `blueprint.md`
@@ -148,7 +160,7 @@ Review it:
 - Subject line references a specific finding from their site
 - Opening line calls out one specific visible problem (not a generic claim)
 - Body is 3–4 sentences max: problem cost → what you built → outcome
-- CTA: "Book a 15-minute call" → your booking link
+- CTA: "Book a 15-minute call" → booking link (auto-inserted via `{BOOKING_LINK}`)
 
 **To send:** click the send icon on the draft row.
 **To edit:** click the draft to open the compose panel, edit, then send.
@@ -163,6 +175,26 @@ automatically. You review, edit if needed, then send.
 - Follow-up drafts are written using the industry email template for that lead's industry,
   not a generic message — set or edit templates in Settings under each industry chip
 
+**Email template variables** (available in both subject and body fields):
+- `{COMPANY}` — lead's company name
+- `{FIRST_NAME}` — decision maker's first name (falls back to "there" if not found)
+- `{BOOKING_LINK}` — renders as a full CTA button linking to `raspucat.com/book?leadId={id}`. When the prospect clicks it and books, lead status auto-changes to `call_booked`.
+- `{DEMO_LINK}` — renders as a button linking to demo.raspucat.com
+
+A working template needs at minimum `{COMPANY}` and `{BOOKING_LINK}`.
+
+**Handling bounced and unsubscribed leads:**
+
+`bounced` — hard bounce, email address is invalid:
+- Add a note in the lead detail panel explaining the bounce
+- Search the company's Contact/Team page, LinkedIn, or Apollo for the correct email
+- If found: update the Contact section email field and re-prepare a draft
+- If not found: set status to `closed_lost`, note "invalid email"
+
+`unsubscribed` — prospect opted out via the unsubscribe link:
+- Do not contact again — set status to `closed_lost`
+- These are automatically excluded from future follow-up drafts
+
 ---
 
 ## PHASE 6 — When They Reply
@@ -171,6 +203,12 @@ automatically. You review, edit if needed, then send.
 
 Lead status changes to `replied`. Click the lead row to open the detail panel and read
 the reply in the email thread.
+
+**How replies are captured automatically:** replies sent to `meow@raspucat.com` are
+intercepted by a Cloudflare Email Worker, parsed, and forwarded to the
+`inbound-outreach-reply` edge function. That function matches the sender's email to
+the lead record, updates the thread with `reply_body` and `replied_at`, extracts any
+phone number from the reply text, and flips status to `replied`. No manual action needed.
 
 Their response is data. What they focus on, the numbers they volunteer, their tone —
 all of this sharpens the discovery script and closer deck.
@@ -276,7 +314,7 @@ kickoff. See `.claude/skills/convert-lead/SKILL.md` for the full checklist.
 | `prospect` | Discovered, not yet contacted | Auto — on discovery |
 | `contacted` | First email sent | Auto — on send |
 | `replied` | They responded | Auto — on reply capture |
-| `call_booked` | Confirmation call scheduled | Auto — when prospect books via /book link in email; or set manually |
+| `call_booked` | Confirmation call scheduled | Auto — when prospect clicks `{BOOKING_LINK}` in the email and books at `raspucat.com/book?leadId={id}`; or set manually |
 | `proposal_sent` | Deck/proposal sent or presented | Manual |
 | `closed_won` | Signed | Manual |
 | `closed_lost` | Passed | Manual |
@@ -314,6 +352,11 @@ WHEN THEY REPLY — admin panel shows status: replied
 /prepare-reply [company name]
 → custom plan + proposal + discovery script + closer deck
 
+Sync to Admin Panel:
+! ./scripts/sync-lead-reports.sh {lead-id} {client-slug} $ADMIN_TOKEN \
+    --custom-plan planning/leads/{client-slug}/custom-plan.md \
+    --proposal    planning/leads/{client-slug}/proposal.html
+
 CONFIRMATION CALL
 Present closer deck → confirm numbers → close
 
@@ -335,10 +378,11 @@ Send proposal.html → update status → closed_won
 | `/prepare-lead` | Score ≥ 60, pre-email | Pulls lead from Supabase via MCP automatically. |
 | `/prepare-reply` | After lead replies | Pulls lead + reply body automatically. Generates all 4 pre-call files. |
 | `/convert-lead` | Lead signs — ready to become a client | Full checklist: Stripe, client record, email provisioning, project kickoff. |
-| `/blueprint-builder` | When you have a call transcript | Standalone — converts a transcript into a build spec. |
+| `/blueprint-builder` | After Phase 7 — refine the build spec with confirmed call details | Converts a call transcript into a refined build spec. Run after the confirmation call to update the blueprint before project kickoff. |
 | `/discovery-script` | At `call_booked` — want sharper questions | Admin panel "Copy Discovery Script Prompt" fills in context. |
 | `/closer-deck` | After the call — final version with confirmed numbers | Admin panel "Copy Closer Deck Prompt" fills in context. Paste call notes. |
 | `/seo-strategy` | Client needs SEO | Full site audit or per-service optimization. |
+| `/scroll-stop-builder` | Client site needs scroll-driven video | Builds Apple-style scroll-triggered video animation components using FFmpeg + canvas. Produces extraction scripts and integration-ready component code. |
 
 ---
 
