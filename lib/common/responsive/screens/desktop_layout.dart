@@ -10,9 +10,9 @@ import 'package:raspucat/utils/constants/exports.dart';
 List<Widget> get _staticScreens => [
   HomeScreen(),
   const AboutScreen(),
-  ProjectsScreen(),
-  const DemoSection(),
-  const PlansScreen(),
+  KeyedSubtree(key: EScrollController.projectsKey, child: ProjectsScreen()),
+  KeyedSubtree(key: EScrollController.demoKey, child: const DemoSection()),
+  KeyedSubtree(key: EScrollController.plansKey, child: const PlansScreen()),
 ];
 
 class DesktopLayout extends StatelessWidget {
@@ -62,7 +62,7 @@ class DesktopLayout extends StatelessWidget {
                       // Priority 7: HowItWorksPanels (6 panels).
                       const HowItWorksPanels(),
 
-                      const ContactScreen(),
+                      KeyedSubtree(key: EScrollController.contactKey, child: const ContactScreen()),
                       const SiteFooter(),
                     ],
                   ),

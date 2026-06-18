@@ -48,11 +48,33 @@ class DemoSection extends StatelessWidget {
               ),
               const SizedBox(height: ESizes.md),
               Text(
-                'Experience the full booking flow, admin dashboard,\nand artist portal — exactly as your clients will.',
+                'Experience the full booking flow, admin dashboard,\nand artist portal, exactly as your clients will.',
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(color: EColors.textSecondary),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: ESizes.spaceBtwSections),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
+                    border: Border.all(color: EColors.primary.withValues(alpha: 0.3), width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: EColors.primary.withValues(alpha: 0.15),
+                        blurRadius: 32,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/images/demo_preview.png',
+                    width: 900,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
               const SizedBox(height: ESizes.spaceBtwSections),
               AnimatedOnView(

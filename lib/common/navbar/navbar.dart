@@ -5,28 +5,28 @@ class ENavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenH = MediaQuery.of(context).size.height;
     final scrollCtrl = EScrollController.instance;
 
-    // Section order depends on EEnv.showPlans:
-    //   with plans:    Home(0) About(1) Projects(2) Plans(3) HowItWorks(4) Contact(5)
-    //   without plans: Home(0) About(1) Projects(2) HowItWorks(3) Contact(4)
-    final contactIndex = EEnv.showPlans ? 5 : 4;
     final items = [
       NavItemData(
         label: 'Projects',
-        onTap: () => scrollCtrl.scrollTo(screenH * 2),
+        onTap: () => scrollCtrl.scrollToKey(EScrollController.projectsKey),
         icon: Icons.grid_view_rounded,
+      ),
+      NavItemData(
+        label: 'Demo',
+        onTap: () => scrollCtrl.scrollToKey(EScrollController.demoKey),
+        icon: Icons.play_circle_outline_rounded,
       ),
       if (EEnv.showPlans)
         NavItemData(
           label: 'Plans',
-          onTap: () => scrollCtrl.scrollTo(screenH * 3),
+          onTap: () => scrollCtrl.scrollToKey(EScrollController.plansKey),
           icon: Icons.tune_rounded,
         ),
       NavItemData(
         label: 'Contact',
-        onTap: () => scrollCtrl.scrollTo(screenH * contactIndex),
+        onTap: () => scrollCtrl.scrollToKey(EScrollController.contactKey),
         icon: Icons.send_rounded,
       ),
     ];
