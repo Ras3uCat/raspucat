@@ -47,7 +47,7 @@ const RESOURCES = {"legal/bingequest/index.html": "29b2c6c54908d878e614bb4948dc8
 "icons/Icon-maskable-192.png": "980913cbf3e887c423c356b7d23428aa",
 "icons/Icon-192.png": "67c3c79c88cbde325b4a44796f45a27f",
 "404.html": "d6f85ac73e83fb6cd6d44ca0e1f01557",
-"flutter_bootstrap.js": "0a1314e1319626f945429567775f1e14",
+"flutter_bootstrap.js": "b8531746f1f8148cee578879f252746b",
 "canvaskit/skwasm.wasm": "39dd80367a4e71582d234948adc521c0",
 "canvaskit/skwasm.js.symbols": "e72c79950c8a8483d826a7f0560573a1",
 "canvaskit/chromium/canvaskit.js": "8191e843020c832c9cf8852a4b909d4c",
