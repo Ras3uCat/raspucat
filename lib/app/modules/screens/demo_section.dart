@@ -91,7 +91,7 @@ class _DemoSectionState extends State<DemoSection> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
                         child: Image.asset(
-                          'assets/images/demo_preview.png',
+                          'assets/images/demo_preview.gif',
                           width: 620,
                           fit: BoxFit.cover,
                         ),

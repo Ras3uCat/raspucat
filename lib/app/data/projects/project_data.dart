@@ -11,9 +11,8 @@ class EData {
       githubUrl: 'https://github.com/rmr32/raspucat',
       liveUrl: 'https://raspucat.com',
       imagePaths: [
+        'assets/images/projects/raspucat_hero.gif',
         'assets/images/logos/raspucat_gradient.png',
-        // 'assets/images/logos/raspucat_black.svg',
-        // 'assets/images/logos/raspucat_white.svg',
       ],
     ),
     ProjectModel(
@@ -72,14 +71,6 @@ class EData {
         'assets/images/projects/tracking_faith_4.png',
         'assets/images/projects/tracking_faith_5.png',
       ],
-    ),
-    ProjectModel(
-      title: 'DarkArc',
-      description: 'Throw simulation game with realistic physics and gameplay.',
-      technologies: ['Flutter', 'GetX', 'Firebase'],
-      // githubUrl: 'https://github.com/yourusername/ecommerce',
-      // liveUrl: 'https://reddotentertainment.com',
-      imagePaths: [],
     ),
   ];
 }
