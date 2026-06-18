@@ -81,7 +81,7 @@ class AvailabilityRule {
     dayOfWeek: (json['day_of_week'] as num).toInt(),
     startTime: json['start_time'] as String,
     endTime: json['end_time'] as String,
-    enabled: json['enabled'] as bool? ?? true,
+    enabled: (json['is_active'] ?? json['enabled']) as bool? ?? true,
   );
 
   Map<String, dynamic> toJson() => {
@@ -110,8 +110,8 @@ class AvailabilityBlock {
 
   factory AvailabilityBlock.fromJson(Map<String, dynamic> json) => AvailabilityBlock(
     id: json['id'] as String,
-    from: DateTime.parse(json['from'] as String),
-    until: DateTime.parse(json['until'] as String),
+    from: DateTime.parse((json['blocked_from'] ?? json['from']) as String),
+    until: DateTime.parse((json['blocked_until'] ?? json['until']) as String),
     reason: json['reason'] as String?,
   );
 

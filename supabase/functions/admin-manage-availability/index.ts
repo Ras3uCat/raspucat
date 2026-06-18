@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'set-rules') {
-      const { rules } = body as { rules: Array<{ day_of_week: number; start_time: string; end_time: string }> };
+      const { rules } = body as { rules: Array<{ day_of_week: number; start_time: string; end_time: string; enabled?: boolean }> };
       if (!Array.isArray(rules)) return json({ error: 'rules array required.' }, 400);
 
       // Replace all rules atomically
@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
           day_of_week: r.day_of_week,
           start_time: r.start_time,
           end_time: r.end_time,
-          is_active: true,
+          is_active: r.enabled !== false,
         }));
         const { error } = await supabase.from('availability_rules').insert(rows);
         if (error) {
