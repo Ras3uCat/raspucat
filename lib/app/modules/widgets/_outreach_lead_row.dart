@@ -36,14 +36,32 @@ class _LeadRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    lead.companyName,
-                    style: const TextStyle(
-                      color: EColors.cyanTintedWhite,
-                      fontSize: ESizes.fontSizeSm,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          lead.companyName,
+                          style: const TextStyle(
+                            color: EColors.cyanTintedWhite,
+                            fontSize: ESizes.fontSizeSm,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (lead.hasReports) ...[
+                        const SizedBox(width: 5),
+                        Tooltip(
+                          message: 'Research prepared',
+                          child: Icon(
+                            Icons.article_outlined,
+                            size: 13,
+                            color: EColors.primary.withAlpha(180),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   if (lead.sources.isNotEmpty) ...[
                     const SizedBox(height: 3),
