@@ -55,7 +55,10 @@ ask you to run the two `!` commands before continuing.
 
 3. Under **DISCOVERY** — set runs/week (2 recommended)
 
-4. Click **Save Settings**
+4. Under **FOLLOW-UP** — set **Follow-up days** (default: 3). This is how many days after
+   the last contact before an automated follow-up draft is created.
+
+5. Click **Save Settings**
 
 The benchmark stats appear under each industry profile:
 `Avg speed: 41 · 62% on DIY · 18% have booking CTA · n=15 · 2026-05-28`
@@ -86,6 +89,10 @@ Each lead row shows:
 - **Pain point tags** — amber chips: `No booking`, `Slow site`, `Wix/DIY site`, etc.
 - **Status** — current stage in the pipeline
 - **Last contact** — relative time since last email
+  - Amber dot = overdue for follow-up (`next_followup_at` has passed, lead not closed)
+  - Faint date below = upcoming follow-up scheduled
+
+Use the **search bar** at the top of the pipeline to filter by company name.
 
 **Prioritize leads with:**
 - Score ≥ 60 with 2+ pain point tags
@@ -152,6 +159,10 @@ After sending: lead status automatically changes to `contacted`.
 has passed and creates a new draft — it appears in the Drafts tab. Nothing sends
 automatically. You review, edit if needed, then send.
 
+- Follow-up timing is controlled by **Follow-up days** in Settings (Phase 2, step 4)
+- Follow-up drafts are written using the industry email template for that lead's industry,
+  not a generic message — set or edit templates in Settings under each industry chip
+
 ---
 
 ## PHASE 6 — When They Reply
@@ -181,10 +192,19 @@ copy-paste needed. Runs a 6-step flow:
 6. Closer deck — 6-slide HTML presentation with real numbers from the custom plan
 
 **Output files saved to** `planning/leads/mccullough-heating/`:
-- `custom-plan.md` — plan tier, modules, setup total, monthly fee
+- `custom-plan.md` — pre-call plan recommendation (tier, modules, real pricing)
 - `proposal.html` — full written scope of work (send post-call)
 - `discovery-script.md` — call question sequence
 - `closer-deck.md` — 6-slide presentation
+
+**After generation, sync to the Admin Panel:**
+```
+! ./scripts/sync-lead-reports.sh {lead-id} {client-slug} $ADMIN_TOKEN \
+    --custom-plan planning/leads/{client-slug}/custom-plan.md \
+    --proposal    planning/leads/{client-slug}/proposal.html
+```
+These appear in Admin Panel → lead detail → **Reports** tab (Custom Plan + Proposal tabs).
+`$ADMIN_TOKEN` is in your `.env.local` as `ADMIN_TOKEN`.
 
 **Summary printed to Claude Code:**
 ```
@@ -237,6 +257,16 @@ Update the lead status:
 The `proposal.html` from `/prepare-reply` is a complete, print-ready written scope of
 work. Open it in Chrome, export as PDF, and email it as a follow-up within 24 hours.
 
+**When they sign — convert the lead to a client:**
+
+```
+/convert-lead McCullough Heating & Air
+```
+
+This skill walks through every step required to move a signed lead into an active client
+account: Stripe subscription, Supabase client record, email provisioning, and project
+kickoff. See `.claude/skills/convert-lead/SKILL.md` for the full checklist.
+
 ---
 
 ## Status Reference
@@ -250,8 +280,13 @@ work. Open it in Chrome, export as PDF, and email it as a follow-up within 24 ho
 | `proposal_sent` | Deck/proposal sent or presented | Manual |
 | `closed_won` | Signed | Manual |
 | `closed_lost` | Passed | Manual |
-| `bounced` | Hard bounce — email invalid | Auto — Resend webhook |
-| `unsubscribed` | Opted out | Auto — unsubscribe link in email |
+| `bounced` | Hard bounce — email invalid | Auto — Resend webhook (`resend-outreach-webhook`) |
+| `unsubscribed` | Opted out | Auto — Resend webhook |
+
+Email tracking (via `resend-outreach-webhook`):
+- `opened_at` — set on first open of a sent email
+- `clicked_at` — set on first link click in a sent email
+- Both are per-email fields on `outreach_emails`, visible in the lead's email thread
 
 ---
 
@@ -299,6 +334,7 @@ Send proposal.html → update status → closed_won
 | `/client-locator` | Advanced — refresh single file | Solo run to update prospecting platforms. |
 | `/prepare-lead` | Score ≥ 60, pre-email | Pulls lead from Supabase via MCP automatically. |
 | `/prepare-reply` | After lead replies | Pulls lead + reply body automatically. Generates all 4 pre-call files. |
+| `/convert-lead` | Lead signs — ready to become a client | Full checklist: Stripe, client record, email provisioning, project kickoff. |
 | `/blueprint-builder` | When you have a call transcript | Standalone — converts a transcript into a build spec. |
 | `/discovery-script` | At `call_booked` — want sharper questions | Admin panel "Copy Discovery Script Prompt" fills in context. |
 | `/closer-deck` | After the call — final version with confirmed numbers | Admin panel "Copy Closer Deck Prompt" fills in context. Paste call notes. |
@@ -324,8 +360,8 @@ planning/
         ├── competitor_report.html
         ├── brand_alignment.md
         ├── brand_alignment_report.html
-        ├── custom-plan.md
-        ├── proposal.html
+        ├── custom-plan.md          ← pre-call recommendation → syncs to Admin "Custom Plan" tab
+        ├── proposal.html           ← send post-call → syncs to Admin "Proposal" tab
         ├── discovery-script.md
         └── closer-deck.md
 ```
@@ -341,3 +377,5 @@ planning/
 - Send the proposal AFTER the call once numbers are confirmed on the call
 - `proposal.html`, `competitor_report.html`, `brand_brief_report.html`, and
   `brand_alignment_report.html` are all print-ready — open in Chrome → export PDF
+- Test emails (sent to ras3ucat@gmail.com) do NOT record a `resend_id` — open tracking
+  only works for real emails sent to leads
