@@ -13,7 +13,6 @@
 //                     targetIndustries?, targetCities? }
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
-import { Webhook } from 'https://esm.sh/svix@1?target=deno&no-check';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -115,55 +114,6 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
-    const url = new URL(req.url);
-    const queryAction = url.searchParams.get('action');
-
-    // 035: Resend webhook bypasses adminToken — verifies svix signature instead
-    if (queryAction === 'resend-webhook') {
-      const webhookSecret = Deno.env.get('RESEND_WEBHOOK_SECRET');
-      if (!webhookSecret) return json({ error: 'Missing webhook secret.' }, 500);
-
-      const svixId = req.headers.get('svix-id') ?? '';
-      const svixTimestamp = req.headers.get('svix-timestamp') ?? '';
-      const svixSignature = req.headers.get('svix-signature') ?? '';
-      const rawBody = await req.text();
-
-      try {
-        const wh = new Webhook(webhookSecret);
-        wh.verify(rawBody, { 'svix-id': svixId, 'svix-timestamp': svixTimestamp, 'svix-signature': svixSignature });
-      } catch {
-        return json({ error: 'Invalid signature.' }, 401);
-      }
-
-      const { data: existingEvt } = await supabase
-        .from('outreach_webhook_events')
-        .select('id')
-        .eq('svix_id', svixId)
-        .maybeSingle();
-      if (existingEvt) return json({ received: true });
-
-      try {
-        const payload = JSON.parse(rawBody) as { type: string; data?: { email_id?: string } };
-        const { type, data } = payload;
-        const resendId = data?.email_id;
-        if (resendId) {
-          const now = new Date().toISOString();
-          if (type === 'email.opened') {
-            await supabase.from('outreach_emails')
-              .update({ opened_at: now }).eq('resend_id', resendId).is('opened_at', null);
-          } else if (type === 'email.clicked') {
-            await supabase.from('outreach_emails')
-              .update({ clicked_at: now }).eq('resend_id', resendId).is('clicked_at', null);
-          }
-        }
-        await supabase.from('outreach_webhook_events').insert({ svix_id: svixId, event_type: type });
-      } catch (err) {
-        console.error('resend-webhook processing error:', err);
-      }
-
-      return json({ received: true });
-    }
-
     const body = await req.json();
     const { adminToken, action } = body;
 
