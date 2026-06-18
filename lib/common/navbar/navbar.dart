@@ -18,12 +18,11 @@ class ENavBar extends StatelessWidget {
         onTap: () => scrollCtrl.scrollToKey(EScrollController.demoKey),
         icon: Icons.play_circle_outline_rounded,
       ),
-      if (EEnv.showPlans)
-        NavItemData(
-          label: 'Plans',
-          onTap: () => scrollCtrl.scrollToKey(EScrollController.plansKey),
-          icon: Icons.tune_rounded,
-        ),
+      NavItemData(
+        label: 'Plans',
+        onTap: () => scrollCtrl.scrollToKey(EScrollController.plansKey),
+        icon: Icons.tune_rounded,
+      ),
       NavItemData(
         label: 'Contact',
         onTap: () => scrollCtrl.scrollToKey(EScrollController.contactKey),

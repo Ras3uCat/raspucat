@@ -1,10 +1,16 @@
 import 'package:raspucat/common/widgets/magnetic_widget.dart';
 import 'package:raspucat/utils/constants/exports.dart';
 
-class DemoSection extends StatelessWidget {
+class DemoSection extends StatefulWidget {
   const DemoSection({super.key});
 
+  @override
+  State<DemoSection> createState() => _DemoSectionState();
+}
+
+class _DemoSectionState extends State<DemoSection> {
   static const _demoUrl = 'https://demo.raspucat.com';
+  bool _imageHovered = false;
 
   Future<void> _openDemo() async {
     final uri = Uri.parse(_demoUrl);
@@ -55,24 +61,42 @@ class DemoSection extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: ESizes.spaceBtwSections),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
-                    border: Border.all(color: EColors.primary.withValues(alpha: 0.3), width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: EColors.primary.withValues(alpha: 0.15),
-                        blurRadius: 32,
-                        spreadRadius: 2,
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                onEnter: (_) => setState(() => _imageHovered = true),
+                onExit: (_) => setState(() => _imageHovered = false),
+                child: GestureDetector(
+                  onTap: _openDemo,
+                  child: AnimatedScale(
+                    scale: _imageHovered ? 1.025 : 1.0,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOut,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
+                        border: Border.all(
+                          color: EColors.primary.withValues(alpha: _imageHovered ? 0.7 : 0.3),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: EColors.primary.withValues(alpha: _imageHovered ? 0.35 : 0.15),
+                            blurRadius: _imageHovered ? 48 : 32,
+                            spreadRadius: _imageHovered ? 4 : 2,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Image.asset(
-                    'assets/images/demo_preview.png',
-                    width: 900,
-                    fit: BoxFit.cover,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(ESizes.borderRadiusLg),
+                        child: Image.asset(
+                          'assets/images/demo_preview.png',
+                          width: 620,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
