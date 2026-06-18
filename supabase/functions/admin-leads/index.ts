@@ -130,8 +130,13 @@ Deno.serve(async (req) => {
         mapped[keyMap[k] ?? k] = v;
       }
 
-      // Recalculate score if contact fields changed
-      if (mapped.email !== undefined || mapped.website !== undefined || mapped.phone !== undefined) {
+      // Recalculate score if any score-relevant field changed (041: industry now included)
+      const scoreFieldsChanged =
+        mapped.email !== undefined ||
+        mapped.website !== undefined ||
+        mapped.phone !== undefined ||
+        mapped.industry !== undefined;
+      if (scoreFieldsChanged) {
         const { data: existing } = await supabase
           .from('leads')
           .select('email, website, phone, industry')
@@ -139,10 +144,10 @@ Deno.serve(async (req) => {
           .single();
         if (existing) {
           mapped.score = calculateScore({
-            email: (mapped.email ?? existing.email) as string,
-            website: (mapped.website ?? existing.website) as string,
-            phone: (mapped.phone ?? existing.phone) as string,
-            industry: existing.industry as string,
+            email:    (mapped.email    ?? existing.email)    as string,
+            website:  (mapped.website  ?? existing.website)  as string,
+            phone:    (mapped.phone    ?? existing.phone)     as string,
+            industry: (mapped.industry ?? existing.industry) as string,
           });
         }
       }
@@ -172,15 +177,18 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'sync-reports') {
-      const { leadId, blueprintMd, brandBriefHtml, competitorHtml, brandAlignmentHtml, customPlanMd } = body;
+      const { leadId, blueprintMd, brandBriefHtml, competitorHtml, brandAlignmentHtml,
+              customPlanDraftMd, customPlanMd, proposalHtml } = body;
       if (!leadId) return json({ error: 'leadId required.' }, 400);
 
       const fields: Record<string, unknown> = {};
-      if (blueprintMd !== undefined) fields.blueprint_md = blueprintMd;
-      if (brandBriefHtml !== undefined) fields.brand_brief_html = brandBriefHtml;
-      if (competitorHtml !== undefined) fields.competitor_html = competitorHtml;
+      if (blueprintMd !== undefined)      fields.blueprint_md = blueprintMd;
+      if (brandBriefHtml !== undefined)   fields.brand_brief_html = brandBriefHtml;
+      if (competitorHtml !== undefined)   fields.competitor_html = competitorHtml;
       if (brandAlignmentHtml !== undefined) fields.brand_alignment_html = brandAlignmentHtml;
-      if (customPlanMd !== undefined) fields.custom_plan_md = customPlanMd;
+      if (customPlanDraftMd !== undefined) fields.custom_plan_draft_md = customPlanDraftMd;
+      if (customPlanMd !== undefined)     fields.custom_plan_md = customPlanMd;
+      if (proposalHtml !== undefined)     fields.proposal_html = proposalHtml;
 
       if (Object.keys(fields).length === 0) return json({ error: 'No report fields provided.' }, 400);
 
@@ -188,7 +196,7 @@ Deno.serve(async (req) => {
         .from('leads')
         .update(fields)
         .eq('id', leadId)
-        .select('id, blueprint_md, brand_brief_html, competitor_html, brand_alignment_html, custom_plan_md')
+        .select('id, blueprint_md, brand_brief_html, competitor_html, brand_alignment_html, custom_plan_draft_md, custom_plan_md, proposal_html')
         .single();
 
       if (error) {

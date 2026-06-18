@@ -20,8 +20,12 @@ class _LeadDetailReportsState extends State<_LeadDetailReports> {
       _ReportTab(label: 'Competitor', content: widget.lead.competitorHtml!, isHtml: true),
     if (widget.lead.brandAlignmentHtml != null)
       _ReportTab(label: 'Brand Alignment', content: widget.lead.brandAlignmentHtml!, isHtml: true),
+    if (widget.lead.customPlanDraftMd != null)
+      _ReportTab(label: 'Plan Draft', content: widget.lead.customPlanDraftMd!),
     if (widget.lead.customPlanMd != null)
       _ReportTab(label: 'Custom Plan', content: widget.lead.customPlanMd!),
+    if (widget.lead.proposalHtml != null)
+      _ReportTab(label: 'Proposal', content: widget.lead.proposalHtml!, isHtml: true),
   ];
 
   @override

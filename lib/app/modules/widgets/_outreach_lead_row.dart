@@ -107,9 +107,31 @@ class _LeadRow extends StatelessWidget {
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                _relativeTime(lead.lastContactedAt),
-                style: const TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _relativeTime(lead.lastContactedAt),
+                    style: const TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeLabel),
+                  ),
+                  if (lead.isOverdue && !lead.isClosed) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: EColors.overdueAmber,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ] else if (lead.nextFollowupAt != null && !lead.isClosed) ...[
+                    const SizedBox(width: 6),
+                    Text(
+                      _formatFollowupDate(lead.nextFollowupAt!),
+                      style: TextStyle(color: EColors.cyanTintedWhite.withAlpha(102), fontSize: 11),
+                    ),
+                  ],
+                ],
               ),
             ),
             SizedBox(
@@ -187,4 +209,24 @@ void _showLeadDetailPanel(BuildContext context, AdminOutreachController ctrl) {
     context: context,
     builder: (_) => _LeadDetailPanel(ctrl: ctrl),
   );
+}
+
+String _formatFollowupDate(DateTime dt) {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  final month = months[dt.month - 1];
+  final sameYear = dt.year == DateTime.now().year;
+  return sameYear ? '$month ${dt.day}' : '$month ${dt.day}, ${dt.year}';
 }

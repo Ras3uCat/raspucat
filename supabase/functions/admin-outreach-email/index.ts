@@ -13,6 +13,7 @@
 //                     targetIndustries?, targetCities? }
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { Webhook } from 'https://esm.sh/svix@1?target=deno&no-check';
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL')!,
@@ -114,6 +115,55 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
+    const url = new URL(req.url);
+    const queryAction = url.searchParams.get('action');
+
+    // 035: Resend webhook bypasses adminToken — verifies svix signature instead
+    if (queryAction === 'resend-webhook') {
+      const webhookSecret = Deno.env.get('RESEND_WEBHOOK_SECRET');
+      if (!webhookSecret) return json({ error: 'Missing webhook secret.' }, 500);
+
+      const svixId = req.headers.get('svix-id') ?? '';
+      const svixTimestamp = req.headers.get('svix-timestamp') ?? '';
+      const svixSignature = req.headers.get('svix-signature') ?? '';
+      const rawBody = await req.text();
+
+      try {
+        const wh = new Webhook(webhookSecret);
+        wh.verify(rawBody, { 'svix-id': svixId, 'svix-timestamp': svixTimestamp, 'svix-signature': svixSignature });
+      } catch {
+        return json({ error: 'Invalid signature.' }, 401);
+      }
+
+      const { data: existingEvt } = await supabase
+        .from('outreach_webhook_events')
+        .select('id')
+        .eq('svix_id', svixId)
+        .maybeSingle();
+      if (existingEvt) return json({ received: true });
+
+      try {
+        const payload = JSON.parse(rawBody) as { type: string; data?: { email_id?: string } };
+        const { type, data } = payload;
+        const resendId = data?.email_id;
+        if (resendId) {
+          const now = new Date().toISOString();
+          if (type === 'email.opened') {
+            await supabase.from('outreach_emails')
+              .update({ opened_at: now }).eq('resend_id', resendId).is('opened_at', null);
+          } else if (type === 'email.clicked') {
+            await supabase.from('outreach_emails')
+              .update({ clicked_at: now }).eq('resend_id', resendId).is('clicked_at', null);
+          }
+        }
+        await supabase.from('outreach_webhook_events').insert({ svix_id: svixId, event_type: type });
+      } catch (err) {
+        console.error('resend-webhook processing error:', err);
+      }
+
+      return json({ received: true });
+    }
+
     const body = await req.json();
     const { adminToken, action } = body;
 
@@ -263,6 +313,10 @@ Deno.serve(async (req) => {
       const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
       const resendId = await sendViaResend(lead.email, email.subject, wrappedHtml);
 
+      const { data: sendSettings } = await supabase
+        .from('outreach_settings').select('follow_up_days').limit(1).maybeSingle();
+      const sendFollowUpDays = Math.max(1, sendSettings?.follow_up_days ?? 3);
+
       const now = new Date().toISOString();
       await supabase
         .from('outreach_emails')
@@ -273,7 +327,7 @@ Deno.serve(async (req) => {
         .update({
           status: 'contacted',
           last_contacted_at: now,
-          next_followup_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+          next_followup_at: new Date(Date.now() + sendFollowUpDays * 24 * 60 * 60 * 1000).toISOString(),
         })
         .eq('id', lead.id)
         .eq('status', 'prospect');
@@ -282,22 +336,29 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'send-batch') {
+      const { data: batchSettings } = await supabase
+        .from('outreach_settings').select('follow_up_days').limit(1).maybeSingle();
+      const batchFollowUpDays = Math.max(1, batchSettings?.follow_up_days ?? 3);
+
       const { data: drafts, error } = await supabase
         .from('outreach_emails')
         .select('*, leads(company_name, email, id, status)')
         .is('sent_at', null)
+        .is('resend_id', null)
         .order('created_at', { ascending: true });
 
       if (error || !drafts) return json({ error: 'Failed to fetch drafts.' }, 500);
 
       let sent = 0;
       let failed = 0;
+      let skipped = 0;
       const now = new Date().toISOString();
-      const followupAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+      const followupAt = new Date(Date.now() + batchFollowUpDays * 24 * 60 * 60 * 1000).toISOString();
 
       for (const email of drafts) {
         const lead = email.leads as { company_name: string; email: string; id: string; status: string } | null;
         if (!lead?.email) { failed++; continue; }
+        if (email.resend_id) { skipped++; continue; }
 
         const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
         const resendId = await sendViaResend(lead.email, email.subject, wrappedHtml);
@@ -315,7 +376,7 @@ Deno.serve(async (req) => {
         }
         sent++;
       }
-      return json({ sent, failed });
+      return json({ sent, failed, skipped });
     }
 
     if (action === 'auto-draft-followups') {
@@ -324,9 +385,14 @@ Deno.serve(async (req) => {
       const followUpDays = settings?.follow_up_days ?? 3;
       const maxFollowUps = settings?.max_follow_ups ?? 3;
 
+      // 033: load industry templates once before the loop
+      const { data: industryProfiles } = await supabase
+        .from('industry_profiles')
+        .select('slug, name, email_subject_template, email_body_template');
+
       const { data: leads, error: leadsErr } = await supabase
         .from('leads')
-        .select('id, company_name, email, industry, city, website')
+        .select('id, company_name, email, industry, city, website, decision_maker_name')
         .eq('status', 'contacted')
         .lte('next_followup_at', new Date().toISOString())
         .not('email', 'is', null);
@@ -354,13 +420,31 @@ Deno.serve(async (req) => {
           .single();
         const step = (existing?.sequence_step ?? 0) + 1;
 
-        const subject = `Following up — ${lead.company_name}`;
-        const bodyHtml = `
+        // 033: resolve industry template; fall back to generic copy when unset or empty
+        const industryKey = lead.industry?.toLowerCase() ?? '';
+        const profile = industryKey
+          ? (industryProfiles ?? []).find(
+              (p: { slug: string; name: string; email_subject_template?: string; email_body_template?: string }) =>
+                p.name.toLowerCase() === industryKey || p.slug.toLowerCase() === industryKey
+            )
+          : undefined;
+        const firstName = (lead.decision_maker_name ?? '').split(' ')[0] || '[Name]';
+        const company = lead.company_name ?? '[Company]';
+
+        const subject = profile?.email_subject_template
+          ? `Re: ${profile.email_subject_template.replace('{COMPANY}', company)}`
+          : `Following up — ${company}`;
+
+        const bodyHtml = profile?.email_body_template
+          ? profile.email_body_template
+              .replace(/\{FIRST_NAME\}/g, firstName)
+              .replace(/\{COMPANY\}/g, company)
+          : `
 <p>Hi,</p>
 <p>We wanted to follow up on the note we sent last week in case it got buried.</p>
 <p>We are Cytarah and Ryan with Ras3ucat. Our offer still stands — we would be happy to provide a complimentary website and competitor review for ${lead.company_name} at no cost to you. We will highlight opportunities to improve your online presence, customer experience, and competitive positioning.</p>
 <p>You can simply reply to this email, or book a free Website Audit &amp; Strategy Session at your convenience.</p>
-        `.trim();
+          `.trim();
 
         await supabase.from('outreach_emails').insert({
           lead_id: lead.id,

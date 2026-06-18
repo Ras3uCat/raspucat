@@ -36,22 +36,63 @@ String _relativeTime(DateTime? dt) {
   return '${diff.inMinutes}m ago';
 }
 
-class _OutreachPipelineView extends StatelessWidget {
+class _OutreachPipelineView extends StatefulWidget {
   const _OutreachPipelineView({required this.ctrl});
   final AdminOutreachController ctrl;
 
   @override
+  State<_OutreachPipelineView> createState() => _OutreachPipelineViewState();
+}
+
+class _OutreachPipelineViewState extends State<_OutreachPipelineView> {
+  final _search = TextEditingController();
+  // Local RxString keeps the Obx subscribed to search changes without touching the controller
+  final _query = ''.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    _search.addListener(() => _query.value = _search.text.toLowerCase());
+  }
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (ctrl.pipelineViewMode.value == 1) {
-        return _OutreachKanbanView(ctrl: ctrl);
+      final query = _query.value;
+      if (widget.ctrl.pipelineViewMode.value == 1) {
+        return _OutreachKanbanView(ctrl: widget.ctrl, searchQuery: query);
       }
-      final leads = ctrl.filteredLeadsByStatus;
+      final leads = widget.ctrl.filteredLeadsByStatus
+          .where((l) => query.isEmpty || l.companyName.toLowerCase().contains(query))
+          .toList();
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _IndustryFilterBar(ctrl: ctrl),
-          if (leads.isEmpty)
+          _IndustryFilterBar(ctrl: widget.ctrl),
+          _PipelineSearchField(
+            search: _search,
+            query: query,
+            onClear: () {
+              _search.clear();
+              _query.value = '';
+            },
+          ),
+          if (leads.isEmpty && query.isNotEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  "No companies match '$query'",
+                  style: const TextStyle(color: EColors.softGrey, fontSize: ESizes.fontSizeSm),
+                ),
+              ),
+            )
+          else if (leads.isEmpty)
             const Expanded(
               child: Center(
                 child: Text(
@@ -70,7 +111,7 @@ class _OutreachPipelineView extends StatelessWidget {
                     _PipelineTableHeader(),
                     const SizedBox(height: ESizes.sm),
                     ...leads.asMap().entries.map(
-                      (e) => _LeadRow(lead: e.value, ctrl: ctrl, index: e.key + 1),
+                      (e) => _LeadRow(lead: e.value, ctrl: widget.ctrl, index: e.key + 1),
                     ),
                   ],
                 ),
@@ -79,6 +120,52 @@ class _OutreachPipelineView extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+class _PipelineSearchField extends StatelessWidget {
+  const _PipelineSearchField({required this.search, required this.query, required this.onClear});
+  final TextEditingController search;
+  final String query;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(ESizes.lg, ESizes.sm, ESizes.lg, 0),
+      child: SizedBox(
+        width: ESizes.searchFieldWidth,
+        child: TextField(
+          controller: search,
+          style: const TextStyle(color: EColors.cyanTintedWhite, fontSize: ESizes.fontSizeLabel),
+          decoration: InputDecoration(
+            hintText: 'Search companies...',
+            hintStyle: TextStyle(
+              color: EColors.softGrey.withAlpha(153),
+              fontSize: ESizes.fontSizeLabel,
+            ),
+            suffixIcon: query.isNotEmpty
+                ? GestureDetector(
+                    onTap: onClear,
+                    child: const Icon(Icons.close, color: EColors.softGrey, size: 14),
+                  )
+                : null,
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+              borderSide: BorderSide(color: EColors.primary.withAlpha(50)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ESizes.borderRadiusSM),
+              borderSide: const BorderSide(color: EColors.primary),
+            ),
+            filled: true,
+            fillColor: EColors.primary.withAlpha(8),
+          ),
+        ),
+      ),
+    );
   }
 }
 

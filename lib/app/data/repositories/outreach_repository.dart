@@ -31,7 +31,9 @@ abstract class OutreachRepository {
     String? brandBriefHtml,
     String? competitorHtml,
     String? brandAlignmentHtml,
+    String? customPlanDraftMd,
     String? customPlanMd,
+    String? proposalHtml,
   });
 }
 
@@ -213,7 +215,9 @@ class SupabaseOutreachRepository implements OutreachRepository {
     String? brandBriefHtml,
     String? competitorHtml,
     String? brandAlignmentHtml,
+    String? customPlanDraftMd,
     String? customPlanMd,
+    String? proposalHtml,
   }) async {
     final data = await _invoke('admin-leads', {
       'action': 'sync-reports',
@@ -222,7 +226,9 @@ class SupabaseOutreachRepository implements OutreachRepository {
       if (brandBriefHtml != null) 'brandBriefHtml': brandBriefHtml,
       if (competitorHtml != null) 'competitorHtml': competitorHtml,
       if (brandAlignmentHtml != null) 'brandAlignmentHtml': brandAlignmentHtml,
+      if (customPlanDraftMd != null) 'customPlanDraftMd': customPlanDraftMd,
       if (customPlanMd != null) 'customPlanMd': customPlanMd,
+      if (proposalHtml != null) 'proposalHtml': proposalHtml,
     });
     return LeadModel.fromJson(data['lead'] as Map<String, dynamic>);
   }

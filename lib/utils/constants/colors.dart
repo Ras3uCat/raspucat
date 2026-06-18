@@ -100,6 +100,7 @@ class EColors {
   static const Color success = Colors.green;
   static const Color warning = Colors.yellow;
   static const Color info = Color(0xFF4B68FF);
+  static const Color overdueAmber = Color(0xFFF0A500);
 
   // Neutral Shades
   static const Color black = Colors.black;

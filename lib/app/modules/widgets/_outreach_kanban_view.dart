@@ -11,13 +11,17 @@ const _kKanbanColumns = [
 ];
 
 class _OutreachKanbanView extends StatelessWidget {
-  const _OutreachKanbanView({required this.ctrl});
+  const _OutreachKanbanView({required this.ctrl, this.searchQuery = ''});
   final AdminOutreachController ctrl;
+  final String searchQuery;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final leads = ctrl.leads;
+      final allLeads = ctrl.leads;
+      final leads = searchQuery.isEmpty
+          ? allLeads
+          : allLeads.where((l) => l.companyName.toLowerCase().contains(searchQuery)).toList();
       return ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: true),
         child: SingleChildScrollView(
@@ -180,6 +184,32 @@ class _KanbanCard extends StatelessWidget {
               Text(
                 _relativeTime(lead.lastContactedAt),
                 style: TextStyle(color: EColors.softGrey.withAlpha(128), fontSize: 10),
+              ),
+            ],
+            if (lead.isOverdue && !lead.isClosed) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(
+                      color: EColors.overdueAmber,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    'overdue',
+                    style: const TextStyle(color: EColors.overdueAmber, fontSize: 10),
+                  ),
+                ],
+              ),
+            ] else if (lead.nextFollowupAt != null && !lead.isClosed) ...[
+              const SizedBox(height: 4),
+              Text(
+                _formatFollowupDate(lead.nextFollowupAt!),
+                style: TextStyle(color: EColors.cyanTintedWhite.withAlpha(102), fontSize: 10),
               ),
             ],
           ],

@@ -145,6 +145,9 @@ class ESizes {
   /// FONTS
   ///
   ///
+  /// --- Input Widths --- ///
+  static const double searchFieldWidth = 200.0;
+
   /// --- Font Sizes --- ///
   static const double fontSizeSm = 14.0;
   static const double fontSizeMd = 16.0;

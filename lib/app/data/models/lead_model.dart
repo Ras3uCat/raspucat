@@ -26,7 +26,9 @@ class LeadModel {
     this.brandBriefHtml,
     this.competitorHtml,
     this.brandAlignmentHtml,
+    this.customPlanDraftMd,
     this.customPlanMd,
+    this.proposalHtml,
   });
 
   final String id;
@@ -57,14 +59,18 @@ class LeadModel {
   final String? brandBriefHtml;
   final String? competitorHtml;
   final String? brandAlignmentHtml;
+  final String? customPlanDraftMd;
   final String? customPlanMd;
+  final String? proposalHtml;
 
   bool get hasReports =>
       blueprintMd != null ||
       brandBriefHtml != null ||
       competitorHtml != null ||
       brandAlignmentHtml != null ||
-      customPlanMd != null;
+      customPlanDraftMd != null ||
+      customPlanMd != null ||
+      proposalHtml != null;
 
   factory LeadModel.fromJson(Map<String, dynamic> json) => LeadModel(
     id: json['id'] as String,
@@ -97,7 +103,9 @@ class LeadModel {
     brandBriefHtml: json['brand_brief_html'] as String?,
     competitorHtml: json['competitor_html'] as String?,
     brandAlignmentHtml: json['brand_alignment_html'] as String?,
+    customPlanDraftMd: json['custom_plan_draft_md'] as String?,
     customPlanMd: json['custom_plan_md'] as String?,
+    proposalHtml: json['proposal_html'] as String?,
   );
 
   LeadModel copyWith({
@@ -146,7 +154,9 @@ class LeadModel {
     brandBriefHtml: brandBriefHtml,
     competitorHtml: competitorHtml,
     brandAlignmentHtml: brandAlignmentHtml,
+    customPlanDraftMd: customPlanDraftMd,
     customPlanMd: customPlanMd,
+    proposalHtml: proposalHtml,
   );
 
   String get locationDisplay {
@@ -156,6 +166,7 @@ class LeadModel {
   }
 
   bool get isOverdue => nextFollowupAt != null && nextFollowupAt!.isBefore(DateTime.now());
+  bool get isClosed => status == 'closed_won' || status == 'closed_lost';
 
   List<String> get painPointMatches {
     final matches = websiteAudit?['painPointMatches'];

@@ -311,7 +311,7 @@ Blueprint, Brand Brief, Competitor, Brand Alignment, and Custom Plan.
 
 If the script isn't available, output individual `! curl` commands using the `sync-reports`
 action on `https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-leads` with fields
-`blueprintMd`, `brandBriefHtml`, `competitorHtml`, `brandAlignmentHtml`, `customPlanMd`.
+`blueprintMd`, `brandBriefHtml`, `competitorHtml`, `brandAlignmentHtml`, `customPlanDraftMd`.
 
 ---
 

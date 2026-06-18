@@ -28,7 +28,7 @@ Query Supabase for:
 - The full industry profile: `pain_points`, `ride_along_md`, `money_map_md`, `client_locator_md`
 - The blueprint from `planning/leads/{client-slug}/blueprint.md` if it exists
 
-The reply body is captured automatically when inbound email arrives via Cloudflare Email Worker. If `reply_body` is null, tell the user: "Reply body not yet captured — check that Cloudflare email routing is active, or paste their reply directly."
+The reply body is captured automatically when inbound email arrives via Resend inbound webhook. If `reply_body` is null, tell the user: "Reply body not yet captured — check that Resend inbound webhook is configured, or paste their reply directly."
 
 Once all data is loaded, extract and hold these reference points for every step that follows:
 
@@ -172,6 +172,22 @@ Closer Deck:       planning/leads/{client-slug}/closer-deck.md
   Cost figure:     $[X]/month
   Confirm on call: [1-2 numbers still unverified]
 ```
+
+---
+
+## Step 8 — Sync Outputs to Admin Panel
+
+Run the following command to push `custom-plan.md` and `proposal.html` to Supabase so they appear in the Admin Panel → lead detail → Reports tab:
+
+```
+! ./scripts/sync-lead-reports.sh {lead-id} {client-slug} $ADMIN_TOKEN \
+    --custom-plan planning/leads/{client-slug}/custom-plan.md \
+    --proposal    planning/leads/{client-slug}/proposal.html
+```
+
+`$ADMIN_TOKEN` is the value stored in your `.env.local` as `ADMIN_TOKEN`.
+
+> **Note:** `custom-plan.md` (post-call confirmed plan) syncs to the **Custom Plan** tab. It is separate from `custom-plan-draft.md` (pre-call internal estimate), which appears under **Plan Draft**. Do not confuse the two.
 
 ---
 
