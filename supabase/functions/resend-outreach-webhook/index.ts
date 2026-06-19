@@ -76,10 +76,16 @@ Deno.serve(async (req) => {
         .eq('resend_id', emailId)
         .single();
       if (email?.lead_id) {
-        await supabase
-          .from('leads')
-          .update({ status: 'bounced', notes: 'Email bounced.' })
-          .eq('id', email.lead_id);
+        await Promise.all([
+          supabase
+            .from('leads')
+            .update({ status: 'prospect', last_contacted_at: null, next_followup_at: null, last_bounce_at: now })
+            .eq('id', email.lead_id),
+          supabase
+            .from('outreach_emails')
+            .update({ sent_at: null, resend_id: null })
+            .eq('resend_id', emailId),
+        ]);
       }
     } else if (type === 'email.unsubscribed' && emailId) {
       const { data: email } = await supabase

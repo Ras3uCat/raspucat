@@ -61,6 +61,20 @@ class _LeadRow extends StatelessWidget {
                           ),
                         ),
                       ],
+                      if (lead.lastBounceAt != null) ...[
+                        const SizedBox(width: 5),
+                        Tooltip(
+                          message: 'Last email bounced',
+                          child: Container(
+                            width: 7,
+                            height: 7,
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   if (lead.sources.isNotEmpty) ...[

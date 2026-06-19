@@ -17,6 +17,7 @@ class LeadModel {
     this.notes,
     this.lastContactedAt,
     this.nextFollowupAt,
+    this.lastBounceAt,
     this.decisionMakerName,
     this.decisionMakerTitle,
     this.rating,
@@ -48,6 +49,7 @@ class LeadModel {
   final String? notes;
   final DateTime? lastContactedAt;
   final DateTime? nextFollowupAt;
+  final DateTime? lastBounceAt;
   final String? decisionMakerName;
   final String? decisionMakerTitle;
   final double? rating;
@@ -93,6 +95,9 @@ class LeadModel {
         : null,
     nextFollowupAt: json['next_followup_at'] != null
         ? DateTime.parse(json['next_followup_at'] as String)
+        : null,
+    lastBounceAt: json['last_bounce_at'] != null
+        ? DateTime.parse(json['last_bounce_at'] as String)
         : null,
     decisionMakerName: json['decision_maker_name'] as String?,
     decisionMakerTitle: json['decision_maker_title'] as String?,
