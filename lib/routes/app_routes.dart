@@ -7,6 +7,7 @@ import 'package:raspucat/app/modules/screens/portal_screen.dart';
 import 'package:raspucat/app/modules/screens/portal_login_screen.dart';
 import 'package:raspucat/app/modules/screens/book_screen.dart';
 import 'package:raspucat/app/modules/screens/manage_booking_screen.dart';
+import 'package:raspucat/app/modules/screens/unsubscribe_screen.dart';
 import 'package:raspucat/app/modules/widgets/portal_auth_middleware.dart';
 import 'package:raspucat/app/controllers/portal_controller.dart';
 import 'package:raspucat/app/controllers/manage_booking_controller.dart';
@@ -38,6 +39,7 @@ class AppRoutes {
       }),
     ),
     GetPage(name: ERoutes.appProjectLanding, page: () => const AppProjectLandingScreen()),
+    GetPage(name: ERoutes.unsubscribe, page: () => const UnsubscribeScreen()),
   ];
 }
 

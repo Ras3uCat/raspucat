@@ -10,4 +10,5 @@ class ERoutes {
   static const appProjectLanding = '/:slug';
   static const manageBooking = '/booking/manage';
   static const book = '/book';
+  static const unsubscribe = '/unsubscribe';
 }

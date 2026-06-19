@@ -20,7 +20,7 @@ const supabase = createClient(
 );
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://ras3ucat.com';
+const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://raspucat.com';
 const FROM_EMAIL = 'hello@raspucat.com';
 const FROM_NAME = 'Ras3ucat';
 
@@ -54,8 +54,7 @@ async function sendViaResend(to: string, subject: string, html: string): Promise
 const LOGO_URL = 'https://gegwqywgbgzahnftppda.supabase.co/storage/v1/object/public/assets/logos/raspucat_gradient.png';
 
 function wrapEmailHtml(bodyHtml: string, leadId: string, subject?: string): string {
-  const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-  const unsubUrl = `${supabaseUrl}/functions/v1/public-unsubscribe?id=${leadId}`;
+  const unsubUrl = `${SITE_URL}/unsubscribe?id=${leadId}`;
   const bookingUrl = `${SITE_URL}/book?leadId=${leadId}`;
   const subjectHeader = subject
     ? `<p style="font-family:'Space Grotesk',sans-serif;font-size:10px;letter-spacing:3px;color:#58e3ef;margin:0 0 14px;text-transform:uppercase;">Web Design &amp; Development</p><h1 style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:#e8feff;margin:0 0 20px;line-height:1.3;letter-spacing:0.5px;">${subject}</h1>`
@@ -262,6 +261,7 @@ Deno.serve(async (req) => {
 
       const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
       const resendId = await sendViaResend(lead.email, email.subject, wrappedHtml);
+      if (!resendId) return json({ error: 'Failed to send email via Resend.' }, 500);
 
       const { data: sendSettings } = await supabase
         .from('outreach_settings').select('follow_up_days').limit(1).maybeSingle();
@@ -312,6 +312,8 @@ Deno.serve(async (req) => {
 
         const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
         const resendId = await sendViaResend(lead.email, email.subject, wrappedHtml);
+
+        if (!resendId) { failed++; continue; }
 
         await supabase
           .from('outreach_emails')
