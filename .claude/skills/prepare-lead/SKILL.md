@@ -380,7 +380,7 @@ profile loaded in Step 2. Use verbatim phrases from the Language Dictionary sect
 [1-2 sentences on the top pain point specific to this lead's audit results.]
 
 We've already put together a complimentary research package for your business containing a
-brand brief, competitor analysis, and brand alignment review tailored to [Company Name].
+brand brief, competitor analysis, and brand alignment review tailored to {COMPANY}.
 
 If interested, we'd love to walk you through what we found. You can simply reply to this
 email, or book a free Website Audit & Strategy Session here:
