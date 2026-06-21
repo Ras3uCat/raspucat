@@ -79,13 +79,19 @@ Deno.serve(async (req) => {
         await Promise.all([
           supabase
             .from('leads')
-            .update({ status: 'prospect', last_contacted_at: null, next_followup_at: null, last_bounce_at: now })
+            .update({ status: 'prospect', last_contacted_at: null, next_followup_at: null })
             .eq('id', email.lead_id),
           supabase
             .from('outreach_emails')
             .update({ sent_at: null, resend_id: null })
             .eq('resend_id', emailId),
         ]);
+        // Non-critical — column added in migration 20260619000000
+        supabase
+          .from('leads')
+          .update({ last_bounce_at: now })
+          .eq('id', email.lead_id)
+          .then(() => {});
       }
     } else if (type === 'email.unsubscribed' && emailId) {
       const { data: email } = await supabase
