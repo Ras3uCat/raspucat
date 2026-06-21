@@ -38,7 +38,7 @@ class _UnsubscribeScreenState extends State<UnsubscribeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EColors.background,
+      backgroundColor: EColors.backgroundDark,
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 440),
