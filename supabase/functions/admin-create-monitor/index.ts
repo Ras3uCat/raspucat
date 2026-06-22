@@ -63,7 +63,6 @@ Deno.serve(async (req) => {
       type: '1', // HTTP
       url: siteUrl,
       friendly_name: `Raspucat: ${siteUrl}`,
-      alert_contacts: '', // configured globally in UptimeRobot dashboard
     });
 
     const resp = await fetch('https://api.uptimerobot.com/v2/newMonitor', {
