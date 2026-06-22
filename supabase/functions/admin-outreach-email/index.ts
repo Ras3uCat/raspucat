@@ -385,7 +385,7 @@ Deno.serve(async (req) => {
 
         const subject = profile?.email_subject_template
           ? `Re: ${profile.email_subject_template.replace('{COMPANY}', company)}`
-          : `Following up — ${company}`;
+          : `Following up, ${company}`;
 
         const bodyHtml = profile?.email_body_template
           ? profile.email_body_template
@@ -394,7 +394,7 @@ Deno.serve(async (req) => {
           : `
 <p>Hi,</p>
 <p>We wanted to follow up on the note we sent last week in case it got buried.</p>
-<p>We are Cytarah and Ryan with Ras3ucat. Our offer still stands — we would be happy to provide a complimentary website and competitor review for ${lead.company_name} at no cost to you. We will highlight opportunities to improve your online presence, customer experience, and competitive positioning.</p>
+<p>We are Cytarah and Ryan with Ras3ucat. Our offer still stands, and we would be happy to provide a complimentary website and competitor review for ${lead.company_name} at no cost to you. We will highlight opportunities to improve your online presence, customer experience, and competitive positioning.</p>
 <p>You can simply reply to this email, or book a free Website Audit &amp; Strategy Session at your convenience.</p>
           `.trim();
 

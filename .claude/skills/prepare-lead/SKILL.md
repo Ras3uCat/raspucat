@@ -94,8 +94,8 @@ Load the benchmark object from the industry profile. If present, extract:
 - `sample_size` + `sampled_at` — for credibility framing
 
 Use these benchmarks to contextualize the lead's site audit findings:
-- If their PageSpeed is below `avg_pagespeed`: flag the gap (e.g., "41 vs. industry avg 65 — 24 points below")
-- If `pct_with_booking_cta` is high (> 60%) and this site lacks one: call it out as an outlier ("most shops in this space have online booking — yours doesn't")
+- If their PageSpeed is below `avg_pagespeed`: flag the gap (e.g., "41 vs. industry avg 65, 24 points below")
+- If `pct_with_booking_cta` is high (> 60%) and this site lacks one: call it out as an outlier ("most shops in this space have online booking, but yours doesn't")
 - If `pct_diy_platform` is low (< 30%) and this site IS on a DIY platform: they stand out badly among peers
 - If benchmark is missing: note it and proceed without comparison framing
 
@@ -347,6 +347,8 @@ Also write `logo_url` directly to `quotes.logo_url` so it's available in `admin-
 `email_body_template` and `email_subject_template` stored (set via `/industry-setup` or the
 Templates tab in the admin panel).
 
+**Writing rule:** Never use em dashes (—) in email body copy. Use commas or rephrase instead.
+
 **If a stored template exists:**
 1. Substitute `{FIRST_NAME}` → lead's `decision_maker_name` first word (or `[Name]` if null)
 2. Substitute `{COMPANY}` → lead's `company_name`
@@ -394,7 +396,7 @@ You can also explore a live demo of what we build, the full experience and admin
 tab and are NEVER sent to the lead — this is where the research data lives):
 - **Money map figures:** The estimated monthly loss or opportunity dollar figure from the money map (e.g., "Est. $2,400–$6,400/month lost to no-shows"). Use this on the discovery call, not in the email.
 - **Confirmed pain points:** List the top 2–3 pain points identified in the audit (e.g., "No deposit enforcement, PageSpeed 48 vs avg 65, no artist-specific booking")
-- **Benchmark gaps:** Any striking comparative stats (e.g., "PageSpeed 48 vs industry avg 65 — 17 points below")
+- **Benchmark gaps:** Any striking comparative stats (e.g., "PageSpeed 48 vs industry avg 65, 17 points below")
 - **Subject line reasoning:** Which option was chosen and why
 - **Delivery blockers:** Missing email address, preferred contact channel, any platform details to withhold
 - **Call prep flags:** Anything to raise on the discovery call the email doesn't address (e.g., cash-only deposit flow, commission splits, platform migration concerns)
