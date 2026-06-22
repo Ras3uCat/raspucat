@@ -149,7 +149,7 @@ const deliverySteps = [
   ),
   DeliveryStepDef(
     key: 'uptime_robot_active',
-    label: 'UptimeRobot monitor active',
+    label: 'Site monitoring active (direct ping)',
     phase: 'Post-Deploy',
     isAuto: true,
   ),

@@ -1,9 +1,8 @@
 // Edge Function: admin-register-site
 // Called by deliver.sh after deploy, or when admin manually saves site_url.
 // 1. Writes site_url to the quote (idempotent)
-// 2. Calls admin-create-monitor to start UptimeRobot monitoring
-// 3. Auto-populates portal_deliverables based on quote modules
-// 4. Auto-checks site_registered + uptime_robot_active delivery steps
+// 2. Auto-populates portal_deliverables based on quote modules
+// 3. Auto-checks site_registered + uptime_robot_active delivery steps
 // Protected by ADMIN_PASSWORD.
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -80,20 +79,6 @@ Deno.serve(async (req) => {
     if (clientSlug) updatePayload.client_slug = clientSlug;
     await supabase.from('quotes').update(updatePayload).eq('id', quoteId);
 
-    // Create UptimeRobot monitor (fire-and-forget internally but we await for the monitor_id)
-    let monitorCreated = false;
-    try {
-      const monitorResp = await fetch(`${SUPABASE_URL}/functions/v1/admin-create-monitor`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quoteId, siteUrl, adminToken }),
-      });
-      const monitorJson = await monitorResp.json();
-      monitorCreated = !!monitorJson.monitor_id;
-    } catch (err) {
-      console.error('admin-register-site: admin-create-monitor failed:', err);
-    }
-
     // Auto-populate portal_deliverables
     const modules: string[] = quote.modules ?? [];
     const deliverables: Array<{ quote_id: string; label: string; value: string; type: string }> = [
@@ -135,20 +120,18 @@ Deno.serve(async (req) => {
       checked_by: 'system',
     });
 
-    // Auto-check uptime_robot_active if monitor was created
-    if (monitorCreated) {
-      await callInternalFn('admin-delivery-progress', {
-        adminToken,
-        quoteId,
-        action: 'upsert',
-        step: 'uptime_robot_active',
-        checked: true,
-        checked_by: 'system',
-      });
-    }
+    // Auto-check uptime_robot_active — direct ping crons monitor all sites with a URL
+    await callInternalFn('admin-delivery-progress', {
+      adminToken,
+      quoteId,
+      action: 'upsert',
+      step: 'uptime_robot_active',
+      checked: true,
+      checked_by: 'system',
+    });
 
     return new Response(
-      JSON.stringify({ success: true, monitorCreated, deliverablesAdded: deliverables.length }),
+      JSON.stringify({ success: true, deliverablesAdded: deliverables.length }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (err) {

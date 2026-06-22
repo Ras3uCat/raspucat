@@ -106,15 +106,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Deactivate UptimeRobot monitor (fire-and-forget, non-fatal)
-    if (quote.uptimerobot_monitor_id) {
-      fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/admin-deactivate-monitor`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quoteId, adminToken }),
-      }).catch((err) => console.error('admin-deactivate-monitor call failed:', err));
-    }
-
     // Cancel subscription in Stripe
     await stripe.subscriptions.cancel(quote.stripe_subscription_id);
 
