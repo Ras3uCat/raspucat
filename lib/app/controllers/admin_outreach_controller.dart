@@ -15,6 +15,7 @@ class AdminOutreachController extends GetxController {
 
   final leads = RxList<LeadModel>([]);
   final drafts = RxList<OutreachEmailModel>([]);
+  final sentEmails = RxList<OutreachEmailModel>([]);
   final settings = Rx<OutreachSettings>(OutreachSettings.defaults);
   final industryProfiles = RxList<IndustryProfileModel>([]);
   final selectedLead = Rx<LeadModel?>(null);
@@ -38,12 +39,14 @@ class AdminOutreachController extends GetxController {
         _repo.listDrafts(),
         _repo.getSettings(),
         _repo.listIndustryProfiles(),
+        _repo.listSent(),
       ]);
       leads.assignAll(results[0] as List<LeadModel>);
       drafts.assignAll(results[1] as List<OutreachEmailModel>);
       final s = results[2] as OutreachSettings?;
       if (s != null) settings.value = s;
       industryProfiles.assignAll(results[3] as List<IndustryProfileModel>);
+      sentEmails.assignAll(results[4] as List<OutreachEmailModel>);
     } catch (e) {
       errorMessage.value = 'Failed to load outreach data: $e';
     } finally {
@@ -137,13 +140,22 @@ class AdminOutreachController extends GetxController {
     }
   }
 
+  Future<void> reloadSent() async {
+    try {
+      final result = await _repo.listSent();
+      sentEmails.assignAll(result);
+    } catch (e) {
+      errorMessage.value = 'Failed to reload sent emails: $e';
+    }
+  }
+
   Future<void> sendEmail(String emailId) async {
     isSending.value = true;
     errorMessage.value = null;
     try {
       await _repo.sendEmail(emailId);
       drafts.removeWhere((d) => d.id == emailId);
-      await reloadLeads();
+      await Future.wait([reloadLeads(), reloadSent()]);
       successMessage.value = 'Email sent.';
     } catch (e) {
       errorMessage.value = 'Failed to send email: $e';
@@ -178,7 +190,7 @@ class AdminOutreachController extends GetxController {
       final sent = result['sent'] ?? 0;
       final failed = result['failed'] ?? 0;
       drafts.clear();
-      await reloadLeads();
+      await Future.wait([reloadLeads(), reloadSent()]);
       successMessage.value =
           'Sent $sent email${sent == 1 ? '' : 's'}${failed > 0 ? ', $failed failed' : ''}.';
     } catch (e) {

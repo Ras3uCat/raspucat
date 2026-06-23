@@ -17,6 +17,7 @@ part '_outreach_header.dart';
 part '_outreach_header_actions.dart';
 part '_outreach_drafts_view.dart';
 part '_outreach_draft_card.dart';
+part '_outreach_sent_card.dart';
 part '_outreach_email_body_pane.dart';
 part '_outreach_email_live_preview.dart';
 part '_outreach_body_buttons.dart';

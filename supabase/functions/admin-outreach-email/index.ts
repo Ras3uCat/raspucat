@@ -418,6 +418,20 @@ Deno.serve(async (req) => {
       return json({ drafted, skipped });
     }
 
+    if (action === 'list-sent') {
+      const { leadId } = body;
+      let query = supabase
+        .from('outreach_emails')
+        .select('id, lead_id, subject, body_html, notes, sequence_step, created_at, resend_id, sent_at, opened_at, clicked_at, replied_at')
+        .not('sent_at', 'is', null)
+        .order('sent_at', { ascending: false })
+        .limit(50);
+      if (leadId) query = query.eq('lead_id', leadId);
+      const { data, error } = await query;
+      if (error) return json({ error: 'Failed to list sent emails.' }, 500);
+      return json({ emails: data ?? [] });
+    }
+
     return json({ error: `Unknown action: ${action}` }, 400);
   } catch (err) {
     console.error('admin-outreach-email error:', err);

@@ -9,7 +9,7 @@ class _OutreachDraftsView extends StatefulWidget {
 }
 
 class _OutreachDraftsViewState extends State<_OutreachDraftsView> {
-  bool _showTemplates = false;
+  int _tab = 0; // 0=Drafts, 1=Sent, 2=Templates
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +21,11 @@ class _OutreachDraftsViewState extends State<_OutreachDraftsView> {
           _buildHeader(),
           const SizedBox(height: ESizes.md),
           Expanded(
-            child: _showTemplates
-                ? _TemplatesList(ctrl: widget.ctrl)
-                : _DraftsList(ctrl: widget.ctrl),
+            child: switch (_tab) {
+              1 => _SentList(ctrl: widget.ctrl),
+              2 => _TemplatesList(ctrl: widget.ctrl),
+              _ => _DraftsList(ctrl: widget.ctrl),
+            },
           ),
         ],
       ),
@@ -35,17 +37,23 @@ class _OutreachDraftsViewState extends State<_OutreachDraftsView> {
       children: [
         _DraftsTabButton(
           label: '// DRAFTS',
-          selected: !_showTemplates,
-          onTap: () => setState(() => _showTemplates = false),
+          selected: _tab == 0,
+          onTap: () => setState(() => _tab = 0),
         ),
-        const SizedBox(width: ESizes.md),
+        const SizedBox(width: ESizes.sm),
+        _DraftsTabButton(
+          label: '// SENT',
+          selected: _tab == 1,
+          onTap: () => setState(() => _tab = 1),
+        ),
+        const SizedBox(width: ESizes.sm),
         _DraftsTabButton(
           label: '// TEMPLATES',
-          selected: _showTemplates,
-          onTap: () => setState(() => _showTemplates = true),
+          selected: _tab == 2,
+          onTap: () => setState(() => _tab = 2),
         ),
         const Spacer(),
-        if (!_showTemplates)
+        if (_tab == 0)
           Obx(
             () => widget.ctrl.isSending.value
                 ? const SizedBox(
