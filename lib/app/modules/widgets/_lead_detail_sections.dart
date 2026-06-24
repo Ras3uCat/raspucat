@@ -103,14 +103,28 @@ class _ContactRow extends StatelessWidget {
           Icon(icon, color: EColors.primary, size: 14),
           const SizedBox(width: ESizes.sm),
           Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: isLink ? EColors.primary : EColors.cyanTintedWhite,
-                fontSize: ESizes.fontSizeLabel,
-                decoration: isLink ? TextDecoration.underline : null,
-              ),
-            ),
+            child: isLink
+                ? MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => html.window.open(value, '_blank'),
+                      child: Text(
+                        value,
+                        style: const TextStyle(
+                          color: EColors.primary,
+                          fontSize: ESizes.fontSizeLabel,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  )
+                : Text(
+                    value,
+                    style: const TextStyle(
+                      color: EColors.cyanTintedWhite,
+                      fontSize: ESizes.fontSizeLabel,
+                    ),
+                  ),
           ),
           IconButton(
             icon: const Icon(Icons.copy, size: 12, color: EColors.softGrey),
