@@ -21,6 +21,8 @@ shift 3
 
 BASE_URL="https://gegwqywgbgzahnftppda.supabase.co/functions/v1/admin-leads"
 ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZ3dxeXdnYmd6YWhuZnRwcGRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3MDIyMDQsImV4cCI6MjA4OTI3ODIwNH0.2DgzGgFAMzb5jxULTDthYs0SPH7zmM8rvkMSOQlY2Og"
+# System DNS (via getent) fails to resolve the Supabase subdomain; use --resolve to bypass
+SUPABASE_RESOLVE="gegwqywgbgzahnftppda.supabase.co:443:172.64.149.246"
 
 CUSTOM_PLAN_PATH=""
 PROPOSAL_PATH=""
@@ -88,7 +90,7 @@ print(json.dumps(body), file=sys.stdout)
 JSON_BODY=$(echo "$BODY" | tail -1)
 echo "$BODY" | head -n -1
 
-RESPONSE=$(curl -s -X POST "$BASE_URL" \
+RESPONSE=$(curl -s --resolve "$SUPABASE_RESOLVE" -X POST "$BASE_URL" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $ANON_KEY" \
   -d "$JSON_BODY")
