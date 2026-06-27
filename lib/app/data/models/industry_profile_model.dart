@@ -18,12 +18,12 @@ class IndustryBenchmark {
   final String sampledAt;
 
   factory IndustryBenchmark.fromJson(Map<String, dynamic> json) => IndustryBenchmark(
-    sampleSize: (json['sample_size'] as num).toInt(),
-    avgPagespeed: json['avg_pagespeed'] != null ? (json['avg_pagespeed'] as num).toInt() : null,
-    pctWithBookingCta: (json['pct_with_booking_cta'] as num).toDouble(),
-    pctDiyPlatform: (json['pct_diy_platform'] as num).toDouble(),
-    pctHttps: (json['pct_https'] as num).toDouble(),
-    pctMobileViewport: (json['pct_mobile_viewport'] as num).toDouble(),
+    sampleSize: (json['sample_size'] as num?)?.toInt() ?? 0,
+    avgPagespeed: (json['avg_pagespeed'] as num?)?.toInt(),
+    pctWithBookingCta: (json['pct_with_booking_cta'] as num?)?.toDouble() ?? 0.0,
+    pctDiyPlatform: (json['pct_diy_platform'] as num?)?.toDouble() ?? 0.0,
+    pctHttps: (json['pct_https'] as num?)?.toDouble() ?? 0.0,
+    pctMobileViewport: (json['pct_mobile_viewport'] as num?)?.toDouble() ?? 0.0,
     sampledAt: json['sampled_at'] as String,
   );
 }

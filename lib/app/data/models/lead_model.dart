@@ -217,7 +217,7 @@ class OutreachEmailModel {
     leadId: json['lead_id'] as String,
     subject: json['subject'] as String,
     bodyHtml: json['body_html'] as String,
-    sequenceStep: (json['sequence_step'] as num).toInt(),
+    sequenceStep: (json['sequence_step'] as num?)?.toInt() ?? 1,
     createdAt: DateTime.parse(json['created_at'] as String),
     notes: json['notes'] as String?,
     resendId: json['resend_id'] as String?,
@@ -257,10 +257,10 @@ class OutreachSettings {
 
   factory OutreachSettings.fromJson(Map<String, dynamic> json) => OutreachSettings(
     id: json['id'] as String,
-    emailsPerRun: (json['emails_per_run'] as num).toInt(),
-    runsPerWeek: (json['runs_per_week'] as num).toInt(),
-    followUpDays: (json['follow_up_days'] as num).toInt(),
-    maxFollowUps: (json['max_follow_ups'] as num).toInt(),
+    emailsPerRun: (json['emails_per_run'] as num?)?.toInt() ?? 3,
+    runsPerWeek: (json['runs_per_week'] as num?)?.toInt() ?? 2,
+    followUpDays: (json['follow_up_days'] as num?)?.toInt() ?? 3,
+    maxFollowUps: (json['max_follow_ups'] as num?)?.toInt() ?? 2,
     targetIndustries: (json['target_industries'] as List<dynamic>? ?? [])
         .map((e) => e as String)
         .toList(),
