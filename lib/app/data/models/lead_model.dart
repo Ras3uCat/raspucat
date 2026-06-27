@@ -78,7 +78,7 @@ class LeadModel {
     id: json['id'] as String,
     companyName: json['company_name'] as String,
     industry: json['industry'] as String,
-    score: (json['score'] as num).toInt(),
+    score: (json['score'] as num?)?.toInt() ?? 0,
     status: json['status'] as String,
     source: json['source'] as String? ?? 'manual',
     createdAt: DateTime.parse(json['created_at'] as String),
