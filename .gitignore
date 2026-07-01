@@ -49,3 +49,8 @@ app.*.map.json
 .env.*
 !.env.example
 run.sh
+
+# Client lead intel and Supabase CLI cache — never public, never tracked
+planning/leads/
+supabase/.temp/
+cloudflare/email-worker/supabase/.temp/
