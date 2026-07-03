@@ -16,20 +16,6 @@
   -->
   <base href="$FLUTTER_BASE_HREF">
 
-  <script>
-    // GitHub Pages SPA: restores the path encoded by 404.html before Flutter boots.
-    (function(l) {
-      if (l.search[1] === '/') {
-        var decoded = l.search.slice(1).split('&').map(function(s) {
-          return s.replace(/~and~/g, '&');
-        });
-        window.history.replaceState(null, null,
-          decoded[0] + (decoded[1] ? '?' + decoded[1] : '') + l.hash
-        );
-      }
-    }(window.location));
-  </script>
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Ras3uCat — Flutter & Mobile Developer. Designed to engage. Engineered to move. Deployed to perform.">

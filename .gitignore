@@ -54,3 +54,6 @@ run.sh
 planning/leads/
 supabase/.temp/
 cloudflare/email-worker/supabase/.temp/
+
+# Wrangler CLI local cache/session state
+.wrangler/
