@@ -1,0 +1,13 @@
+name = "supabase-keepalive"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+[triggers]
+crons = ["0 8 * * *"]
+
+# Create with `wrangler kv:namespace create SITES_KV`, then paste the returned id below.
+[[kv_namespaces]]
+binding = "SITES_KV"
+id = "c4b7f2b315564476ae770e2a7c96c047"
+
+# Add a site: ./add-site.sh <name> <supabase-url> <anon-key>
