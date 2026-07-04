@@ -10,7 +10,9 @@
 - [x] Completed
 
 **Deployed:** `https://supabase-keepalive.skyjumper32.workers.dev`, cron `0 8 * * *` daily.
-KV namespace `SITES_KV` (id `c4b7f2b315564476ae770e2a7c96c047`) contains `raspucat` and `street_post`.
+KV namespace `SITES_KV` (id `c4b7f2b315564476ae770e2a7c96c047`) currently contains 5 sites:
+`raspucat`, `street_post`, `cheese-inc`, `tracking-faith`, `woo_wed_smite` — each confirmed
+returning 200 on `/auth/v1/health` with its anon key before being registered.
 `street_post/.github/workflows/supabase-keep-alive.yml` deleted (uncommitted in that repo — user to commit there).
 
 **Deviation from original design:** pinging bare `/rest/v1/` with the anon key 401s on both
@@ -45,5 +47,8 @@ Cloudflare's Free plan allows only **5 Cron Triggers per account** (confirmed vi
 - [x] Deployed via `wrangler deploy` using the already-authenticated CLI session (account `skyjumper32@gmail.com`, account ID `61ee775758122837364be8b5f7cdb563`) — no GitHub Actions involved for raspucat/street_post going forward.
 
 ## Follow-up
-- [ ] Watch that raspucat/street_post's Supabase projects don't auto-pause over the next 1-2 weeks to confirm `/auth/v1/health` pings actually reset the inactivity clock.
-- [ ] Use the `keepalive-add-site` skill to register more of the ~15-20 other sites once each one's live Supabase ref is confirmed (several have ambiguous/duplicate refs today — see Overview).
+- [ ] Watch that registered projects don't auto-pause over the next 1-2 weeks to confirm `/auth/v1/health` pings actually reset the inactivity clock.
+- [x] `cheese-inc` — `kblozerexigsrefmeush` (`https://kblozerexigsrefmeush.supabase.co`) — registered. Note: its `client.json` still has raspucat's ref pasted in as an unfilled placeholder (`SUPABASE_SERVICE_ROLE_KEY: "FILL_IN"`) — needs updating to this real project once cheese-inc delivery resumes.
+- [x] `tracking-faith` — `htrzikrcpmsyyxigmyfv` (`https://htrzikrcpmsyyxigmyfv.supabase.co`) — registered.
+- [x] `woo_wed_smite` — `mxzcqjjqjjwtjxrbxcbv` (`https://mxzcqjjqjjwtjxrbxcbv.supabase.co`) — registered (matches the ref already in `lib/main.dart`).
+- [ ] Use the `keepalive-add-site` skill to register the remaining sites once each one's live Supabase ref is confirmed — still outstanding: the "red dot" family (4 ambiguous/duplicate refs across red_dot_ent, red_dot_entertainment, dev/red_dot_ent_v1, wonderverse_guest_survey), `binge_quest`, `dark_arc`, `two-shades-of-travel`, `modular_project`, and whichever of the shelved `.zip` archives are actually still live.

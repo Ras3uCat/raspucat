@@ -28,6 +28,7 @@ part '_outreach_kanban_view.dart';
 part '_outreach_settings_panel.dart';
 part '_outreach_settings_fields.dart';
 part '_outreach_chip_input.dart';
+part '_outreach_industry_pill_selector.dart';
 part '_lead_detail_panel.dart';
 part '_lead_detail_reports.dart';
 part '_lead_detail_sections.dart';

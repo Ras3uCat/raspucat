@@ -14,7 +14,6 @@ class _OutreachSettingsPanelState extends State<_OutreachSettingsPanel> {
   late final TextEditingController _followUpDaysCtrl;
   late final TextEditingController _maxFollowUpsCtrl;
   late final TextEditingController _discoveryRunsCtrl;
-  late final TextEditingController _industryInputCtrl;
   late final TextEditingController _cityInputCtrl;
 
   late List<String> _industries;
@@ -29,7 +28,6 @@ class _OutreachSettingsPanelState extends State<_OutreachSettingsPanel> {
     _followUpDaysCtrl = TextEditingController(text: '${s.followUpDays}');
     _maxFollowUpsCtrl = TextEditingController(text: '${s.maxFollowUps}');
     _discoveryRunsCtrl = TextEditingController(text: '${s.discoveryRunsPerWeek}');
-    _industryInputCtrl = TextEditingController();
     _cityInputCtrl = TextEditingController();
     _industries = List.from(s.targetIndustries);
     _cities = List.from(s.targetCities);
@@ -42,18 +40,12 @@ class _OutreachSettingsPanelState extends State<_OutreachSettingsPanel> {
     _followUpDaysCtrl.dispose();
     _maxFollowUpsCtrl.dispose();
     _discoveryRunsCtrl.dispose();
-    _industryInputCtrl.dispose();
     _cityInputCtrl.dispose();
     super.dispose();
   }
 
   void _save() {
-    // Flush any pending text that hasn't been confirmed with Enter
-    final pendingIndustry = _industryInputCtrl.text.trim();
-    if (pendingIndustry.isNotEmpty && !_industries.contains(pendingIndustry)) {
-      setState(() => _industries.add(pendingIndustry));
-      _industryInputCtrl.clear();
-    }
+    // Flush any pending city text that hasn't been confirmed with Enter
     final pendingCity = _cityInputCtrl.text.trim();
     if (pendingCity.isNotEmpty && !_cities.contains(pendingCity)) {
       setState(() => _cities.add(pendingCity));
@@ -134,14 +126,12 @@ class _OutreachSettingsPanelState extends State<_OutreachSettingsPanel> {
             ],
           ),
           const SizedBox(height: ESizes.lg),
-          _ChipMultiInput(
-            label: 'Target Industries',
-            chips: _industries,
-            inputCtrl: _industryInputCtrl,
-            onAdd: (v) => setState(() => _industries.add(v)),
-            onRemove: (v) => setState(() => _industries.remove(v)),
-            warningCheck: (v) => !widget.ctrl.hasProfileForIndustry(v),
-            warningTooltip: 'No industry profile — run /industry-download first',
+          _IndustryPillSelector(
+            selected: _industries,
+            ctrl: widget.ctrl,
+            onToggle: (name) => setState(() {
+              _industries.contains(name) ? _industries.remove(name) : _industries.add(name);
+            }),
           ),
           const SizedBox(height: ESizes.md),
           _ChipMultiInput(
