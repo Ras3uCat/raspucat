@@ -134,13 +134,18 @@ class _EmailBodyPaneState extends State<_EmailBodyPane> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _EditButton(active: _editing, onTap: _editing ? null : _startEdit),
-            const SizedBox(width: 4),
-            _TestSendButton(draft: widget.draft, ctrl: widget.ctrl),
-            const SizedBox(width: 4),
-            _CopyButton(text: widget.draft.bodyHtml, tooltip: 'Copy HTML'),
+            _ClientEmailIndicator(leadId: widget.draft.leadId, ctrl: widget.ctrl),
+            Row(
+              children: [
+                _EditButton(active: _editing, onTap: _editing ? null : _startEdit),
+                const SizedBox(width: 4),
+                _TestSendButton(draft: widget.draft, ctrl: widget.ctrl),
+                const SizedBox(width: 4),
+                _CopyButton(text: widget.draft.bodyHtml, tooltip: 'Copy HTML'),
+              ],
+            ),
           ],
         ),
         const SizedBox(height: 4),

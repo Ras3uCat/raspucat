@@ -1,5 +1,49 @@
 part of 'admin_outreach_widget.dart';
 
+class _ClientEmailIndicator extends StatelessWidget {
+  const _ClientEmailIndicator({required this.leadId, required this.ctrl});
+
+  final String leadId;
+  final AdminOutreachController ctrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final lead = ctrl.leads.where((l) => l.id == leadId).firstOrNull;
+      final email = lead?.email;
+      final hasEmail = email != null && email.trim().isNotEmpty;
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Tooltip(
+            message: 'Edit client email',
+            child: GestureDetector(
+              onTap: () => _showLeadFormDialog(context, ctrl, lead),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  color: EColors.primary.withAlpha(30),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: const Icon(Icons.edit_outlined, size: 12, color: EColors.primary),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            hasEmail ? email : 'EMAIL NEEDED',
+            style: TextStyle(
+              color: hasEmail ? EColors.softGrey : Colors.redAccent,
+              fontWeight: hasEmail ? FontWeight.normal : FontWeight.w600,
+              fontSize: ESizes.fontSizeLabel,
+            ),
+          ),
+        ],
+      );
+    });
+  }
+}
+
 class _EditButton extends StatelessWidget {
   const _EditButton({required this.active, required this.onTap});
 
