@@ -250,13 +250,13 @@ Deno.serve(async (req) => {
 
       const { data: email, error: fetchErr } = await supabase
         .from('outreach_emails')
-        .select('*, leads(company_name, email, id)')
+        .select('*, leads(company_name, email, id, status)')
         .eq('id', emailId)
         .is('sent_at', null)
         .single();
       if (fetchErr || !email) return json({ error: 'Draft not found.' }, 404);
 
-      const lead = email.leads as { company_name: string; email: string; id: string } | null;
+      const lead = email.leads as { company_name: string; email: string; id: string; status: string } | null;
       if (!lead?.email) return json({ error: 'Lead has no email address.' }, 400);
 
       const wrappedHtml = wrapEmailHtml(email.body_html, lead.id, email.subject);
@@ -272,15 +272,15 @@ Deno.serve(async (req) => {
         .from('outreach_emails')
         .update({ sent_at: now, resend_id: resendId })
         .eq('id', emailId);
-      await supabase
-        .from('leads')
-        .update({
-          status: 'contacted',
-          last_contacted_at: now,
-          next_followup_at: new Date(Date.now() + sendFollowUpDays * 24 * 60 * 60 * 1000).toISOString(),
-        })
-        .eq('id', lead.id)
-        .eq('status', 'prospect');
+
+      // Always refresh contact/follow-up timing — not just on the first (prospect -> contacted) send —
+      // so cadence tracking keeps advancing across follow-up sends too.
+      const leadUpdate: Record<string, unknown> = {
+        last_contacted_at: now,
+        next_followup_at: new Date(Date.now() + sendFollowUpDays * 24 * 60 * 60 * 1000).toISOString(),
+      };
+      if (lead.status === 'prospect') leadUpdate.status = 'contacted';
+      await supabase.from('leads').update(leadUpdate).eq('id', lead.id);
 
       return json({ success: true, resendId });
     }
@@ -320,12 +320,11 @@ Deno.serve(async (req) => {
           .update({ sent_at: now, resend_id: resendId })
           .eq('id', email.id);
 
-        if (lead.status === 'prospect') {
-          await supabase
-            .from('leads')
-            .update({ status: 'contacted', last_contacted_at: now, next_followup_at: followupAt })
-            .eq('id', lead.id);
-        }
+        // Always refresh contact/follow-up timing — not just on the first (prospect -> contacted) send —
+        // so cadence tracking keeps advancing across follow-up sends too.
+        const leadUpdate: Record<string, unknown> = { last_contacted_at: now, next_followup_at: followupAt };
+        if (lead.status === 'prospect') leadUpdate.status = 'contacted';
+        await supabase.from('leads').update(leadUpdate).eq('id', lead.id);
         sent++;
       }
       return json({ sent, failed, skipped });

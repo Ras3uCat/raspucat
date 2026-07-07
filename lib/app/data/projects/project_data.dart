@@ -46,6 +46,7 @@ class EData {
       description:
           'Cross-platform watchlist app for movies and TV shows with Queue Health scoring, mood-based filtering, AI-powered recommendations, and streaming service tracking.',
       technologies: ['Flutter', 'GetX', 'Supabase', 'Firebase'],
+      liveUrl: 'https://raspucat.com/bingequest',
       playStoreUrl: 'https://play.google.com/store/apps/details?id=com.ras3ucat.binge_quest',
       appStoreUrl: 'https://apps.apple.com/eg/app/bingequest/id6759207637',
       type: ProjectType.app,
