@@ -38,9 +38,8 @@ function calculateScore(fields: {
   industry?: string | null;
   targetIndustries?: string[];
 }): number {
-  const { email, website, phone, industry, targetIndustries = [] } = fields;
+  const { website, phone, industry, targetIndustries = [] } = fields;
   let score = 0;
-  if (email) score += 25;
   if (website) score += 15;
   if (phone) score += 10;
   const inIcp = targetIndustries.length === 0 ||

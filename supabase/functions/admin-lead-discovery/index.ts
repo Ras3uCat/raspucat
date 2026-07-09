@@ -89,8 +89,7 @@ function calculateScore(
   let score = 0;
   const benchmark = industryProfile?.audit_signals?.benchmark;
 
-  // Reachability (max 40)
-  if (lead.email) score += 25;
+  // Reachability (max 15) — email presence isn't scored; missing emails are easy to source manually
   if (lead.phone) score += 15;
 
   // Business quality (max 15)
