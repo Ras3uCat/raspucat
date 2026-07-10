@@ -13,14 +13,18 @@ a site is a KV write, not a redeploy.
 - **Site name** — short identifier, e.g. `raspucat`, `street_post`
 - **Supabase project URL** — `https://<ref>.supabase.co`
 - **Supabase anon key** — the public `anon` key (never the `service_role` key)
+- **A real table name** in that project's `public` schema — the ping queries it via
+  PostgREST (`/rest/v1/<table>?select=*&limit=1`), which is what actually resets Supabase's
+  pause timer. `/auth/v1/health` does NOT count as database activity, so a table is mandatory.
 
 If any of these are missing, ask the user before proceeding — do not guess a project ref or
-reuse another site's key.
+reuse another site's key. If you don't know a real table name, check that project's
+`supabase/migrations/*.sql` for a `CREATE TABLE public.<name>` — prefer a small table.
 
 ## Steps
 1. `cd cloudflare/supabase-keepalive`
 2. `npm install` (first time only)
-3. `./add-site.sh <name> <url> <anon-key>`
+3. `./add-site.sh <name> <url> <anon-key> <table>`
 4. Confirm the output lists the new site name alongside existing ones.
 
 ## Removing a Site

@@ -5,12 +5,15 @@ export interface Env {
 interface SiteConfig {
   url: string;
   anonKey: string;
+  table: string;
 }
 
 async function pingSite(name: string, config: SiteConfig): Promise<void> {
   try {
-    const res = await fetch(`${config.url}/auth/v1/health`, {
-      headers: { apikey: config.anonKey },
+    // A real PostgREST query, not /auth/v1/health — Supabase's pause timer
+    // only resets on database activity, and the auth health check never touches Postgres.
+    const res = await fetch(`${config.url}/rest/v1/${config.table}?select=*&limit=1`, {
+      headers: { apikey: config.anonKey, Authorization: `Bearer ${config.anonKey}` },
     });
     if (!res.ok) {
       console.error(`[keepalive] ${name} returned ${res.status}`);
